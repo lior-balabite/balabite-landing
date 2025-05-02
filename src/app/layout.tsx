@@ -1,16 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist } from 'next/font/geist';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const geist = Geist({
   subsets: ['latin'],
-  display: 'swap',
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: '--font-geist',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -25,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-primary-900 h-full">
+    <html lang="en" className={`bg-primary-900 h-full ${geist.variable}`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-primary-900 text-primary-100`}
+        className="antialiased min-h-screen bg-primary-900 text-primary-100"
       >
         {children}
       </body>

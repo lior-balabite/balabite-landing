@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-geist)'],
+        mono: ['var(--font-geist)'],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
