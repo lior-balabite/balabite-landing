@@ -1,11 +1,10 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/geist';
+import { Inter } from 'next/font/google';
 
-const geist = Geist({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-geist',
-  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -20,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`bg-primary-900 h-full ${geist.variable}`}>
+    <html lang="en" className={`bg-primary-900 h-full ${inter.variable}`}>
       <body
         className="antialiased min-h-screen bg-primary-900 text-primary-100"
       >
