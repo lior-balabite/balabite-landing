@@ -3,13 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import WaitlistForm from '../components/WaitlistForm';
+import { Toaster } from 'react-hot-toast';
 
 export default function LandingPage() {
-  const [waitlistCount, setWaitlistCount] = useState(382);
+  const [waitlistCount, setWaitlistCount] = useState(120);
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
+  const [notifications, setNotifications] = useState<Array<{city: string, name: string, time: number}>>([]);
   
   // Ref for the background particles canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  // First add a ref for the waitlist section
+  const waitlistSectionRef = useRef<HTMLDivElement>(null);
   
   // Animation variants
   const fadeIn = {
@@ -140,16 +146,114 @@ export default function LandingPage() {
     };
   }, []);
 
-  // Increment waitlist count randomly
+  // Fetch real restaurant count periodically to keep it current
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setWaitlistCount(prev => prev + 1);
+    async function fetchCount() {
+      try {
+        const response = await fetch('/api/restaurant-count');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.count) {
+            setWaitlistCount(data.count);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch restaurant count:", error);
       }
-    }, 10000);
+    }
+    
+    // Fetch immediately on load
+    fetchCount();
+    
+    // Then fetch every 2 minutes to keep the count current
+    const interval = setInterval(() => {
+      fetchCount();
+    }, 120000); // 2 minutes
     
     return () => clearInterval(interval);
   }, []);
+
+  // Add this effect to create realistic notifications periodically
+  useEffect(() => {
+    // Cities for random notifications based on major restaurant markets
+    const cities = [
+      "New York", "Los Angeles", "Chicago", "Miami", "San Francisco", 
+      "Las Vegas", "Austin", "Seattle", "Dallas", "Houston",
+      "New Orleans", "Boston", "Philadelphia", "Nashville", "Denver"
+    ];
+    
+    // Names of restaurants for more realistic notifications
+    const restaurantTypes = [
+      "Bistro", "Trattoria", "Grill", "Kitchen", "Restaurant", 
+      "Café", "Eatery", "Steakhouse", "Pizzeria", "Brasserie",
+      "Chophouse", "Diner", "Bar & Kitchen", "Tavern", "Cantina"
+    ];
+    
+    // Show initial notification after 5s
+    const timer1 = setTimeout(() => {
+      addNotification(cities, restaurantTypes);
+    }, 5000);
+    
+    // Add more random notifications less frequently for more realism
+    const interval = setInterval(() => {
+      if (Math.random() > 0.85) {
+        addNotification(cities, restaurantTypes);
+      }
+    }, 30000);
+    
+    // Function to add a new notification
+    function addNotification(cities: string[], restaurantTypes: string[]) {
+      const city = cities[Math.floor(Math.random() * cities.length)];
+      const type = restaurantTypes[Math.floor(Math.random() * restaurantTypes.length)];
+      const randomName = generateRestaurantName(type);
+      
+      const newNotification = { 
+        city, 
+        name: randomName,
+        time: Date.now() 
+      };
+      
+      setNotifications(prev => [...prev.slice(-1), newNotification]);
+      
+      // Remove notification after 7 seconds
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n !== newNotification));
+      }, 7000);
+    }
+    
+    // Generate semi-realistic restaurant names
+    function generateRestaurantName(type: string): string {
+      const adjectives = [
+        "Golden", "Blue", "Urban", "Rustic", "Coastal", "Spice", "Wild", 
+        "Green", "Bella", "Olive", "Modern", "Vintage", "Fresh", "Harbor", "Terra"
+      ];
+      
+      const nouns = [
+        "Table", "Plate", "Fork", "Spoon", "Knife", "Garden", "Leaf", 
+        "Harvest", "Season", "Market", "Fire", "Ember", "River", "Grove", "Vine"
+      ];
+      
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      
+      // 50% chance to use Adjective + Noun + Type format
+      if (Math.random() > 0.5) {
+        return `${adj} ${noun} ${type}`;
+      } 
+      // 50% chance to use just Adjective + Noun
+      return `${adj} ${noun}`;
+    }
+    
+    return () => {
+      clearTimeout(timer1);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Add a scroll function to scroll to the waitlist section
+  const scrollToWaitlist = () => {
+    waitlistSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -186,9 +290,15 @@ export default function LandingPage() {
             transition={{ delay: 0.5 }}
             className="mb-12"
           >
-            <button className="btn-primary text-lg px-10 py-4 font-semibold rounded-full hover:scale-105 transition-all hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-              Join Waitlist ({waitlistCount} restaurants)
+            <button 
+              onClick={scrollToWaitlist}
+              className="btn-primary text-lg px-10 py-4 font-semibold rounded-full hover:scale-105 transition-all hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+            >
+              Join Waitlist ({waitlistCount}+ restaurants)
             </button>
+            <p className="mt-4 text-primary-100/60 text-sm">
+              Be among the first to transform your restaurant with AI
+            </p>
           </motion.div>
           
           <motion.div
@@ -215,6 +325,38 @@ export default function LandingPage() {
           </svg>
         </div>
       </header>
+      
+      {/* Floating Notifications */}
+      {notifications.map((notification, index) => (
+        <motion.div 
+          key={notification.time}
+          className="fixed bottom-4 right-4 bg-primary-800/80 backdrop-blur-md p-4 rounded-lg border border-accent-500/40 shadow-lg z-50 max-w-xs"
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 100, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          style={{
+            bottom: `${4 + index * 5}rem`,
+          }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-accent-500/20 flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-accent-300">{notification.name} Joined!</p>
+              <p className="text-xs text-primary-100/70">
+                {notification.city}
+              </p>
+              <p className="text-xs text-primary-100/50 mt-1">
+                {Math.floor((Date.now() - notification.time) / 1000)}s ago
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      ))}
       
       {/* What/Why Section */}
       <section className="relative py-24 bg-gradient-to-b from-primary-900 to-primary-950 z-10">
@@ -402,6 +544,52 @@ export default function LandingPage() {
         </div>
       </section>
       
+      {/* Waitlist Form Section */}
+      <section ref={waitlistSectionRef} className="relative py-24 bg-primary-900 z-10 scroll-mt-20">
+        <div className="container mx-auto px-4">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-accent-300 to-accent-500 text-transparent bg-clip-text">
+              Join the Revolution
+            </h2>
+            <p className="text-xl max-w-3xl mx-auto text-primary-100/80">
+              Be among the first {waitlistCount}+ restaurants to transform dining with AI
+            </p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <WaitlistForm waitlistCount={waitlistCount} />
+          </motion.div>
+          
+          {/* Pioneer Restaurants */}
+          <motion.div 
+            className="mt-16 text-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <p className="text-primary-100/50 mb-3">Pioneering restaurants from across the country</p>
+            <div className="flex flex-wrap justify-center gap-4">
+              {["New York", "San Francisco", "Chicago", "Miami", "Austin", "Las Vegas", "Seattle"].map((city) => (
+                <span key={city} className="px-3 py-1 bg-primary-800/40 rounded-full text-sm text-primary-100/70">
+                  {city}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+      
       {/* Testimonials */}
       <section className="relative py-24 bg-gradient-to-b from-primary-950 to-primary-900 z-10">
         <div className="container mx-auto px-4">
@@ -515,13 +703,16 @@ export default function LandingPage() {
               <div className="relative bg-primary-800/40 backdrop-blur-sm p-12 rounded-2xl border border-accent-500/30">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-300">Ready to Transform Your Restaurant?</h2>
                 <p className="text-xl mb-8 text-primary-100/90">
-                  Join the waitlist today and be among the first to revolutionize your restaurant service with BalaBite.
+                  Join the waitlist today and be among the <span className="text-accent-300 font-bold">{waitlistCount}+</span> restaurants already revolutionizing their service with BalaBite.
                 </p>
-                <button className="btn-primary text-lg px-10 py-4 font-semibold rounded-full hover:scale-105 transition-all hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-                  Join Waitlist ({waitlistCount} restaurants)
+                <button 
+                  onClick={scrollToWaitlist}
+                  className="btn-primary text-lg px-10 py-4 font-semibold rounded-full hover:scale-105 transition-all hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                >
+                  Join the BalaBite Community
                 </button>
                 <p className="mt-6 text-primary-300/60">
-                  Limited spots available for our next deployment phase
+                  Early partners receive priority access and exclusive benefits
                 </p>
               </div>
             </div>
@@ -579,6 +770,7 @@ export default function LandingPage() {
           );
         }
       `}</style>
+      <Toaster position="bottom-center" />
     </div>
   );
 } 

@@ -31,3 +31,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# email preview test files
+/tmp/email-preview*.html
+email-preview*.html
+/src/app/api/email-preview/
+
+# waitlist data test files
+/waitlist-data/
+
+# test and dev-only API endpoints
+/src/app/api/check-env/
+/src/app/api/test/
+/src/app/test/
+**/test-*.ts
+**/test-*.tsx
+
+# temp files
+/tmp/
+**/tmp/
+
+# local environment setup files
+README-EMAIL-SETUP.md
+README-SUPABASE-SETUP.md
+WAITLIST-SETUP.md
+supabase-setup.sql
+supabase-schema.sql
+supabase-permissions-fix.sql
