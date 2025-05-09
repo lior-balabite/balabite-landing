@@ -323,7 +323,9 @@ export default function LandingPage() {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="container mx-auto flex justify-between items-center">
-          <BalaBiteLogo size="md" className="hover:scale-105 transition-transform cursor-pointer" />
+          <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <BalaBiteLogo size="md" className="hover:scale-105 transition-transform cursor-pointer" />
+          </div>
           
           <div className="hidden md:flex items-center gap-8">
             <Link href="#features" className="text-primary-100 hover:text-accent-300 transition-colors">
@@ -1105,7 +1107,9 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
             <div className="mb-8 md:mb-0 flex flex-col items-center md:items-start">
-              <BalaBiteLogo size="sm" className="mb-3" />
+              <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <BalaBiteLogo size="sm" className="mb-3 cursor-pointer hover:scale-105 transition-transform" />
+              </div>
               <p className="text-primary-100/60 text-sm mt-2">© {new Date().getFullYear()} BalaBite Technologies Inc.</p>
               <p className="text-primary-100/40 text-xs mt-1">AI-powered hospitality for the future of dining — Where tradition meets innovation</p>
             </div>

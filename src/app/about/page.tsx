@@ -221,7 +221,9 @@ export default function AboutPage() {
               
               <div className="flex justify-center mb-12">
                 <div className="h-16 w-16 bg-accent-500/30 rounded-full flex items-center justify-center">
-                  <BalaBiteLogo showText={false} size="md" />
+                  <Link href="/">
+                    <BalaBiteLogo showText={false} size="md" className="hover:scale-105 transition-transform" />
+                  </Link>
                 </div>
               </div>
               
@@ -279,7 +281,9 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="py-12 bg-primary-950 border-t border-primary-800">
         <div className="container mx-auto px-4 text-center">
-          <BalaBiteLogo size="sm" className="mx-auto mb-6" />
+          <Link href="/">
+            <BalaBiteLogo size="sm" className="mx-auto mb-6 hover:scale-105 transition-transform" />
+          </Link>
           <p className="text-primary-100/60 text-sm">© {new Date().getFullYear()} BalaBite Technologies Inc.</p>
           <p className="text-primary-100/40 text-xs mt-3">
             AI-powered hospitality for the future of dining — Where tradition meets innovation
