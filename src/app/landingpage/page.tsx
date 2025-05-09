@@ -8,11 +8,13 @@ import { Toaster } from 'react-hot-toast';
 import GuestAppTeaser from '../components/GuestAppTeaser';
 import RestaurantAppFeatures from '../components/RestaurantAppFeatures';
 import HandDrawnIcon from '../components/HandDrawnIcon';
+import BalaBiteLogo from '../components/BalaBiteLogo';
 
 export default function LandingPage() {
   const [waitlistCount, setWaitlistCount] = useState(120);
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
   const [notifications, setNotifications] = useState<Array<{city: string, name: string, time: number}>>([]);
+  const [isScrolled, setIsScrolled] = useState(false);
   
   // Ref for the background particles canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -62,6 +64,22 @@ export default function LandingPage() {
       answer: "We provide 24/7 technical support, regular software updates, and a dedicated account manager for every restaurant partner. Our customer success team ensures you get the most out of the BalaBite system."
     }
   ];
+
+  // Handle scroll event to change navbar appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Initialize particle background
   useEffect(() => {
@@ -295,6 +313,42 @@ export default function LandingPage() {
         className="fixed inset-0 w-full h-full z-0 opacity-50"
       />
       
+      {/* Navigation Bar */}
+      <motion.nav 
+        className={`fixed top-0 left-0 right-0 z-50 px-4 py-2 transition-all duration-300 ${
+          isScrolled ? 'bg-primary-900/95 backdrop-blur-md shadow-md' : 'bg-transparent'
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <div className="container mx-auto flex justify-between items-center">
+          <BalaBiteLogo size="md" className="hover:scale-105 transition-transform cursor-pointer" />
+          
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="#features" className="text-primary-100 hover:text-accent-300 transition-colors">
+              Features
+            </Link>
+            <Link href="#how-it-works" className="text-primary-100 hover:text-accent-300 transition-colors">
+              How It Works
+            </Link>
+            <Link href="#insights" className="text-primary-100 hover:text-accent-300 transition-colors">
+              Insights
+            </Link>
+            <Link href="#faq" className="text-primary-100 hover:text-accent-300 transition-colors">
+              FAQ
+            </Link>
+          </div>
+          
+          <Link 
+            href="#waitlist"
+            className="btn-primary text-sm px-4 py-2 font-semibold rounded-full hover:scale-105 transition-all hover:shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+          >
+            Join Waitlist
+          </Link>
+        </div>
+      </motion.nav>
+      
       {/* Live notifications */}
       <div className="fixed bottom-4 right-4 z-50">
         {notifications.map((notification, index) => (
@@ -315,8 +369,17 @@ export default function LandingPage() {
       </div>
       
       {/* Hero Section */}
-      <header className="relative h-screen flex flex-col items-center justify-center z-10 overflow-hidden">
+      <header className="relative h-screen flex flex-col items-center justify-center z-10 overflow-hidden pt-16">
         <div className="container mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
+            <BalaBiteLogo size="lg" className="mx-auto" />
+          </motion.div>
+          
           <motion.h1 
             className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-accent-400 to-accent-300 text-transparent bg-clip-text"
             initial="hidden"
@@ -379,7 +442,7 @@ export default function LandingPage() {
       </header>
       
       {/* New AI Features Section */}
-      <section className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-900 to-primary-800/70">
+      <section id="features" className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-900 to-primary-800/70">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-16"
@@ -647,7 +710,7 @@ export default function LandingPage() {
       </section>
       
       {/* How It Works Section (Replacing Restaurant Demo) */}
-      <section className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-800/70 to-primary-900">
+      <section id="how-it-works" className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-800/70 to-primary-900">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-12"
@@ -800,7 +863,7 @@ export default function LandingPage() {
       </section>
       
       {/* Industry Insights Section */}
-      <section className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-900/95 to-primary-950/95">
+      <section id="insights" className="relative z-10 py-20 px-4 bg-gradient-to-b from-primary-900/95 to-primary-950/95">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-16"
@@ -931,7 +994,7 @@ export default function LandingPage() {
       </section>
       
       {/* FAQ Section */}
-      <section className="relative py-24 bg-primary-900 z-10">
+      <section id="faq" className="relative py-24 bg-primary-900 z-10">
         <div className="container mx-auto px-4 max-w-4xl">
           <motion.div 
             className="text-center mb-16"
@@ -1037,26 +1100,90 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="relative py-12 bg-primary-950 border-t border-primary-800 z-10">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <div className="text-2xl font-bold text-accent-300">BalaBite.ai</div>
-              <p className="text-primary-100/60">© {new Date().getFullYear()} BalaBite Technologies Inc.</p>
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
+            <div className="mb-8 md:mb-0 flex flex-col items-center md:items-start">
+              <BalaBiteLogo size="sm" className="mb-3" />
+              <p className="text-primary-100/60 text-sm mt-2">© {new Date().getFullYear()} BalaBite Technologies Inc.</p>
+              <p className="text-primary-100/40 text-xs mt-1">Transforming restaurant experiences with AI</p>
             </div>
             
-            <div className="flex space-x-8">
-              <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
-                About
-              </Link>
-              <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
-                Case Studies
-              </Link>
-              <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
-                Privacy
-              </Link>
-              <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
-                Terms
-              </Link>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-6">
+              <div className="flex flex-col items-center md:items-start">
+                <h4 className="text-accent-300 font-medium mb-3">Explore</h4>
+                <div className="flex flex-col gap-2">
+                  <Link href="#features" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Features
+                  </Link>
+                  <Link href="#how-it-works" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    How It Works
+                  </Link>
+                  <Link href="#insights" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Insights
+                  </Link>
+                  <Link href="#faq" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    FAQ
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="flex flex-col items-center md:items-start">
+                <h4 className="text-accent-300 font-medium mb-3">Company</h4>
+                <div className="flex flex-col gap-2">
+                  <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    About Us
+                  </Link>
+                  <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Careers
+                  </Link>
+                  <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Blog
+                  </Link>
+                  <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Contact
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="flex flex-col items-center md:items-start col-span-2 md:col-span-1">
+                <h4 className="text-accent-300 font-medium mb-3">Connect</h4>
+                <div className="flex flex-col gap-2">
+                  <Link href="#waitlist" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    Join Waitlist
+                  </Link>
+                  <Link href="mailto:hello@balabite.ai" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    hello@balabite.ai
+                  </Link>
+                  <div className="flex gap-4 mt-2">
+                    <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd"></path>
+                      </svg>
+                    </Link>
+                    <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                      </svg>
+                    </Link>
+                    <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" clipRule="evenodd"></path>
+                      </svg>
+                    </Link>
+                    <Link href="#" className="text-primary-100/70 hover:text-accent-300 transition-colors">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" clipRule="evenodd"></path>
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-primary-800/30 text-center">
+            <p className="text-primary-100/40 text-xs">
+              Privacy Policy • Terms of Service • Data Processing Agreement
+            </p>
           </div>
         </div>
       </footer>
