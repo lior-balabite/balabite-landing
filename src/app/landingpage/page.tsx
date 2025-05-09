@@ -329,6 +329,9 @@ export default function LandingPage() {
             <Link href="#features" className="text-primary-100 hover:text-accent-300 transition-colors">
               Features
             </Link>
+            <Link href="/about" className="text-primary-100 hover:text-accent-300 transition-colors">
+              About
+            </Link>
             <Link href="#how-it-works" className="text-primary-100 hover:text-accent-300 transition-colors">
               How It Works
             </Link>
@@ -1104,7 +1107,7 @@ export default function LandingPage() {
             <div className="mb-8 md:mb-0 flex flex-col items-center md:items-start">
               <BalaBiteLogo size="sm" className="mb-3" />
               <p className="text-primary-100/60 text-sm mt-2">© {new Date().getFullYear()} BalaBite Technologies Inc.</p>
-              <p className="text-primary-100/40 text-xs mt-1">Transforming restaurant experiences with AI</p>
+              <p className="text-primary-100/40 text-xs mt-1">AI-powered hospitality for the future of dining — Where tradition meets innovation</p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-6">
@@ -1113,6 +1116,9 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-2">
                   <Link href="#features" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
                     Features
+                  </Link>
+                  <Link href="/about" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
+                    About
                   </Link>
                   <Link href="#how-it-works" className="text-primary-100/70 hover:text-accent-300 transition-colors text-sm">
                     How It Works
@@ -1183,6 +1189,9 @@ export default function LandingPage() {
           <div className="mt-8 pt-8 border-t border-primary-800/30 text-center">
             <p className="text-primary-100/40 text-xs">
               Privacy Policy • Terms of Service • Data Processing Agreement
+            </p>
+            <p className="text-primary-100/40 text-xs mt-3">
+              <span className="text-accent-300/70">בעל הבית</span> × bite × byte — Bringing together tradition and technology for exceptional hospitality
             </p>
           </div>
         </div>

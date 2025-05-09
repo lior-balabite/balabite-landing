@@ -11,7 +11,25 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'BalaBite.ai - Your Best Waiter, At Every Table',
-  description: 'AI-powered digital waiter system revolutionizing restaurant service',
+  description: 'AI-powered digital waiter system revolutionizing restaurant service with personal care',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/favicon.svg',
+        color: '#38BDF8'
+      },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  themeColor: '#0F172A',
 };
 
 export default function RootLayout({
