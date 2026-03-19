@@ -8,7 +8,7 @@ interface HandDrawnIconProps {
 }
 
 const HandDrawnIcon: React.FC<HandDrawnIconProps> = ({ name, className = "" }) => {
-  const iconComponents: Record<string, JSX.Element> = {
+  const iconComponents: Record<string, React.ReactElement> = {
     // Restaurant management icons
     "menu": (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
