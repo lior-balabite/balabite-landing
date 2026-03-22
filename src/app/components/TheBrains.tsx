@@ -195,13 +195,13 @@ function BrainCard({
 
   return (
     <motion.div
-      className="bg-primary-800/40 backdrop-blur border border-primary-700/50 rounded-2xl p-6 flex flex-col items-center text-center"
+      className="bg-white/80 backdrop-blur border border-cream-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm"
       variants={cardVariant}
     >
       {/* Illustration */}
       <div className="mb-4 relative w-[120px] h-[120px]">
         <Image
-          src={`/illustrations/${brain.id}-brain.png`}
+          src={`/illustrations/characters/${brain.id === 'pulse' ? 'the-pulse' : brain.id + '-brain'}.png`}
           alt={`${brain.name} illustration`}
           width={120}
           height={120}
@@ -210,20 +210,20 @@ function BrainCard({
       </div>
 
       {/* Name */}
-      <h3 className="text-lg font-semibold text-primary-100 mb-2">{name}</h3>
+      <h3 className="text-lg font-semibold text-cream-900 mb-2">{name}</h3>
 
       {/* Description */}
-      <p className="text-sm text-primary-300 mb-4 leading-relaxed">
+      <p className="text-sm text-cream-600 mb-4 leading-relaxed">
         {description}
       </p>
 
       {/* Insight */}
       <div className="w-full mt-auto">
-        <p className="text-xs uppercase tracking-wider text-primary-500 mb-2">
+        <p className="text-xs uppercase tracking-wider text-cream-500 mb-2">
           {insightLabel}
         </p>
         <blockquote
-          className={`text-sm italic text-primary-200 border-l-2 ${borderColor} pl-3 text-left`}
+          className={`text-sm italic text-cream-800 border-l-2 ${borderColor} pl-3 text-left`}
         >
           {insight}
         </blockquote>
@@ -250,7 +250,7 @@ export default function TheBrains() {
       : '8 specialist brains. Three missions. One partner.';
 
   return (
-    <section className="py-24 px-6 bg-primary-900">
+    <section className="py-24 px-6 bg-cream-100">
       <div className="max-w-[72rem] mx-auto">
         {/* Section header */}
         <motion.div
@@ -260,10 +260,10 @@ export default function TheBrains() {
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-100 mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-cream-900 mb-4">
             {heading}
           </h2>
-          <p className="text-lg sm:text-xl text-primary-400 max-w-[42rem] mx-auto">
+          <p className="text-lg sm:text-xl text-cream-600 max-w-[42rem] mx-auto">
             {subheading}
           </p>
         </motion.div>

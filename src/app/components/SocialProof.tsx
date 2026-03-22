@@ -47,9 +47,7 @@ const integrations = ['Square', 'Toast', 'Stripe', 'Syrve'];
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.15 },
-  },
+  visible: { transition: { staggerChildren: 0.15 } },
 };
 
 const itemVariants = {
@@ -73,10 +71,10 @@ export default function SocialProof() {
     : metricValues.map((mv, i) => ({ ...mv, label: `Metric ${i + 1}` }));
 
   return (
-    <section className="py-20 px-6">
+    <section className="py-20 px-6 bg-cream-100">
       <div className="max-w-[56rem] mx-auto text-center">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-white mb-16"
+          className="text-3xl md:text-4xl font-bold text-cream-900 mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -99,10 +97,10 @@ export default function SocialProof() {
               className="flex-1 text-center"
               variants={itemVariants}
             >
-              <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+              <div className="text-5xl md:text-6xl font-bold text-cream-900 mb-2">
                 <AnimatedCounter target={metric.value} suffix={metric.suffix} />
               </div>
-              <div className="text-primary-400 text-sm uppercase tracking-wider">
+              <div className="text-cream-500 text-sm uppercase tracking-wider">
                 {metric.label}
               </div>
             </motion.div>
@@ -111,7 +109,7 @@ export default function SocialProof() {
 
         {/* POS Integration Logos */}
         <motion.div
-          className="flex flex-wrap items-center justify-center gap-3 mb-12"
+          className="flex flex-wrap items-center justify-center gap-3"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -120,14 +118,12 @@ export default function SocialProof() {
           {integrations.map((name) => (
             <span
               key={name}
-              className="bg-primary-800/50 border border-primary-700/40 rounded-full px-4 py-2 text-sm text-primary-300"
+              className="bg-white/60 border border-cream-300 rounded-full px-4 py-2 text-sm text-cream-700"
             >
               {name}
             </span>
           ))}
         </motion.div>
-
-{/* AI model reference removed intentionally */}
       </div>
     </section>
   );

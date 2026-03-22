@@ -17,7 +17,7 @@
   --container-6xl: 72rem;   /* 1152px */
   --container-7xl: 80rem;   /* 1280px */
 
-  /* Primary (Slate) */
+  /* Primary (Slate) — used for dark sections (hero, problem) */
   --color-primary-50: #f8fafc;
   --color-primary-100: #f1f5f9;
   --color-primary-200: #e2e8f0;
@@ -29,6 +29,18 @@
   --color-primary-800: #1e293b;
   --color-primary-900: #0f172a;
   --color-primary-950: #020617;
+
+  /* Cream — used for light/solution sections */
+  --color-cream-50: #FFFDF9;
+  --color-cream-100: #FAF5EE;
+  --color-cream-200: #F0E8DB;
+  --color-cream-300: #E0D5C4;
+  --color-cream-400: #C4B5A0;
+  --color-cream-500: #A89880;
+  --color-cream-600: #8C7B64;
+  --color-cream-700: #6B5D4A;
+  --color-cream-800: #4A3F33;
+  --color-cream-900: #2D2620;
 
   /* Accent (Amber) */
   --color-accent-50: #fffbeb;

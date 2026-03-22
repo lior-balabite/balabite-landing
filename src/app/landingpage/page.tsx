@@ -3,14 +3,17 @@
 import { useRef } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useI18n } from '../../i18n/I18nProvider';
+import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
-import ProblemSection from '../components/ProblemSection';
-import MeetYourTeam from '../components/MeetYourTeam';
-import TheBrains from '../components/TheBrains';
-import PulseShowcase from '../components/PulseShowcase';
-import GuestExperience from '../components/GuestExperience';
+import HatStack from '../components/HatStack';
+import WhatChanges from '../components/WhatChanges';
+import Capabilities from '../components/Capabilities';
+import GuestShowcase from '../components/GuestShowcase';
+import ProductShowcase from '../components/ProductShowcase';
+import HowItWorks from '../components/HowItWorks';
+import VenueTypes from '../components/VenueTypes';
 import SocialProof from '../components/SocialProof';
-import CTASection from '../components/CTASection';
+import FinalCTA from '../components/FinalCTA';
 
 export default function LandingPage() {
   const { isLoading } = useI18n();
@@ -47,33 +50,54 @@ export default function LandingPage() {
         }}
       />
 
-      {/* 1. Hero */}
+      {/* Sticky Navbar */}
+      <Navbar onCtaClick={scrollToCta} />
+
+      {/* === DARK SECTIONS === */}
+
+      {/* Section 1: Hero — "Good morning, Chef." */}
       <HeroSection onCtaClick={scrollToCta} />
 
-      {/* 2. The Problem — "You're wearing too many hats" */}
-      <ProblemSection />
+      {/* Section 2: Problem + Breaking Point — hat stack → collapse */}
+      <HatStack />
 
-      {/* 3. Meet Your Team — team scene reveal */}
-      <MeetYourTeam />
+      {/* === CREAM SECTIONS === */}
 
-      {/* 4. The Brains — 8 specialists in 3 pillars */}
-      <div id="features">
-        <TheBrains />
+      {/* Section 3: The Resolution — nine brains, one partner */}
+      <WhatChanges />
+
+      {/* Section 4: Capabilities — three pillars, outcome-first */}
+      <div id="capabilities">
+        <Capabilities />
       </div>
 
-      {/* 5. The Pulse — morning briefing */}
-      <PulseShowcase />
+      {/* CTA 3/4 — after capabilities */}
+      <section className="py-12 px-6 bg-cream-100 text-center">
+        <button
+          onClick={scrollToCta}
+          className="rounded-full bg-primary-900 px-8 py-3.5 text-base font-semibold text-cream-100 transition-all duration-200 hover:bg-primary-800 active:scale-[0.97]"
+        >
+          Join the Waitlist
+        </button>
+      </section>
 
-      {/* 6. Guest Experience */}
-      <GuestExperience />
+      {/* Section 5: Guest Experience */}
+      <GuestShowcase />
 
-      {/* 7. Social Proof */}
+      {/* Section 6: Product Showcase — Pulse Briefing */}
+      <ProductShowcase />
+
+      {/* Section 7: How It Works — 3 Steps */}
+      <HowItWorks />
+
+      {/* Section 8: Venue Types */}
+      <VenueTypes />
+
+      {/* Section 9: Social Proof */}
       <SocialProof />
 
-      {/* 8. CTA + Footer */}
-      <div ref={ctaSectionRef}>
-        <CTASection />
-      </div>
+      {/* Section 10: Final CTA + Footer */}
+      <FinalCTA ref={ctaSectionRef} />
     </div>
   );
 }

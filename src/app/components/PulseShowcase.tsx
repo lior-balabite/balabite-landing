@@ -61,11 +61,10 @@ export default function PulseShowcase() {
       ];
 
   return (
-    <section className="relative bg-primary-900 py-24 md:py-32 overflow-hidden">
+    <section className="relative bg-cream-100 py-24 md:py-32 overflow-hidden">
       {/* Ambient background glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-amber-500/5 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-purple-600/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-[72rem] px-6">
@@ -77,10 +76,10 @@ export default function PulseShowcase() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-cream-900 mb-4">
             {t('pulse.heading')}
           </h2>
-          <p className="text-lg md:text-xl text-primary-300 max-w-[42rem] mx-auto">
+          <p className="text-lg md:text-xl text-cream-600 max-w-[42rem] mx-auto">
             {t('pulse.subheading')}
           </p>
         </motion.div>
@@ -99,7 +98,7 @@ export default function PulseShowcase() {
             aria-hidden="true"
           />
           <Image
-            src="/illustrations/pulse.png"
+            src="/illustrations/characters/the-pulse.png"
             alt="Pulse — AI brain for your restaurant"
             width={200}
             height={200}
@@ -109,15 +108,15 @@ export default function PulseShowcase() {
 
         {/* Morning Briefing Card */}
         <motion.div
-          className="mx-auto max-w-[42rem] rounded-2xl border border-primary-700/50 bg-primary-800/60 p-6 md:p-8 backdrop-blur-xl"
+          className="mx-auto max-w-[42rem] rounded-2xl border border-cream-200 bg-white/80 p-6 md:p-8 backdrop-blur-xl shadow-sm"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           {/* Briefing header */}
-          <p className="text-sm text-primary-400 mb-1">{t('pulse.briefingLabel')}</p>
-          <h3 className="text-lg md:text-xl font-semibold text-white mb-6">
+          <p className="text-sm text-cream-500 mb-1">{t('pulse.briefingLabel')}</p>
+          <h3 className="text-lg md:text-xl font-semibold text-cream-900 mb-6">
             {t('pulse.briefingGreeting')}
           </h3>
 
@@ -132,7 +131,7 @@ export default function PulseShowcase() {
             {BRIEFING_ITEMS.map((item, i) => (
               <motion.li
                 key={item.color}
-                className={`rounded-xl border-l-4 ${item.borderColor} bg-primary-900/50 p-4`}
+                className={`rounded-xl border-l-4 ${item.borderColor} bg-cream-50 p-4`}
                 variants={itemVariants}
               >
                 <div className="flex items-start gap-3">
@@ -142,7 +141,7 @@ export default function PulseShowcase() {
                     {briefingItems[i]?.ring}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-primary-200 leading-relaxed">
+                    <p className="text-sm text-cream-700 leading-relaxed">
                       {briefingItems[i]?.text}
                     </p>
                     {item.actions && (

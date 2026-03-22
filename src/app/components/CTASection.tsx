@@ -160,7 +160,7 @@ export default function CTASection() {
   // ── Render ─────────────────────────────────────────
 
   return (
-    <section className="relative py-24 px-6 bg-primary-900">
+    <section className="relative py-24 px-6 bg-cream-100">
       {/* ── Header ── */}
       <div className="max-w-[48rem] mx-auto text-center mb-16">
         <motion.h2
@@ -168,7 +168,7 @@ export default function CTASection() {
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
           variants={fadeUp}
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-8"
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-cream-900 leading-tight mb-8"
         >
           {t('cta.mainHeading')}{' '}
           <span className="text-accent-500">{t('cta.mainHeadingAccent')}</span>
