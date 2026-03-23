@@ -102,14 +102,15 @@ html, body, #__next {
   box-sizing: border-box;
 }
 
-/* Hat tower wobble — rotation from base so only the top sways */
+/* Balance board wobble — 3D perspective rock from the cylinder base */
 @keyframes hat-wobble {
-  0%, 100% { transform: rotate(0deg); }
-  30%      { transform: rotate(0.8deg); }
-  70%      { transform: rotate(-0.6deg); }
+  0%, 100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) rotate(0deg); }
+  20%      { transform: perspective(800px) rotateY(2deg) rotateX(-0.5deg) rotate(0.6deg); }
+  50%      { transform: perspective(800px) rotateY(-2.5deg) rotateX(0.3deg) rotate(-0.8deg); }
+  75%      { transform: perspective(800px) rotateY(1.5deg) rotateX(-0.2deg) rotate(0.4deg); }
 }
 
 .animate-hat-wobble {
-  animation: hat-wobble 3.5s ease-in-out infinite;
+  animation: hat-wobble 5s ease-in-out infinite;
   transform-origin: 50% 95%;
 }

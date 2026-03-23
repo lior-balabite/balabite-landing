@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
@@ -103,7 +103,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [userLabel, setUserLabel] = useState('');
   const [userLabels, setUserLabels] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(30);
-  const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
   const [margin, setMargin] = useState(5.0);
 
   useEffect(() => {
@@ -129,24 +128,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Mouse-driven 3D tilt — perspective, both axes, origin at the cylinder
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!imageRef.current) return;
-    const rect = imageRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-    setMouseTilt({
-      x: Math.max(-1, Math.min(1, x)) * 4,
-      y: Math.max(-1, Math.min(1, y)) * -2,
-    });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setMouseTilt({ x: 0, y: 0 });
-  }, []);
-
   const handleAddLabel = () => {
     const trimmed = userLabel.trim();
     if (!trimmed || trimmed.length > 80) return;
@@ -162,8 +143,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   return (
     <section
       className="relative min-h-screen flex flex-col overflow-hidden bg-cream-100"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="relative z-10 flex flex-1 items-center px-6 pt-24 pb-8">
         <div className="mx-auto flex max-w-[76rem] w-full flex-col lg:flex-row items-center gap-10 lg:gap-12">
@@ -243,36 +222,24 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             <div
               ref={imageRef}
               className="relative w-full max-w-[440px]"
-              style={{
-                perspective: '1000px',
-              }}
             >
-              {/* The balance board — 3D tilt on mouse.
-                  Plain div for the tilt (Framer Motion's style prop conflicts with CSS transform).
-                  Motion wrapper only for the fade-up entrance. */}
+              {/* The balance board — continuous 3D wobble via CSS.
+                  No mouse tracking needed. The instability is ambient. */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={2}
+                className="animate-hat-wobble"
               >
-                <div
-                  style={{
-                    transform: `perspective(800px) rotateY(${mouseTilt.x}deg) rotateX(${mouseTilt.y}deg)`,
-                    transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-                    transformOrigin: '50% 95%',
-                    willChange: 'transform',
-                  }}
-                >
-                  <Image
-                    src="/illustrations/scenes/hero1.png"
-                    alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
-                    width={800}
-                    height={1400}
-                    className="w-full h-auto relative z-10"
-                    priority
-                  />
-                </div>
+                <Image
+                  src="/illustrations/scenes/hero1.png"
+                  alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
+                  width={800}
+                  height={1400}
+                  className="w-full h-auto relative z-10"
+                  priority
+                />
               </motion.div>
 
               {/* Label cloud — 30 labels swarming the image */}
@@ -313,26 +280,54 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
               ))}
             </div>
 
-            {/* P&L — animated, reacting */}
+            {/* P&L — animated bars + ticking margin */}
             <motion.div
-              className="mt-3 flex items-center justify-center gap-4 text-xs"
+              className="mt-4 flex items-center justify-center gap-5 text-xs"
               variants={fadeUp}
               initial="hidden"
               animate="visible"
               custom={5}
             >
-              <span className="flex items-center gap-1.5 text-red-500/70">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-                Revenue ↓
+              {/* Revenue bar — shrinking */}
+              <span className="flex items-center gap-2 text-red-500/80">
+                <span className="flex flex-col items-end gap-0.5">
+                  <span className="text-[9px] text-cream-500">Revenue</span>
+                  <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
+                    <span
+                      className="absolute inset-y-0 left-0 bg-red-400 rounded-full"
+                      style={{
+                        width: `${Math.max(30, 100 - ((5.0 - margin) / 1.8) * 70)}%`,
+                        transition: 'width 0.5s ease-out',
+                      }}
+                    />
+                  </span>
+                </span>
+                <span className="text-red-500 font-medium">↓</span>
               </span>
-              <span className="text-cream-300">|</span>
-              <span className="flex items-center gap-1.5 text-red-600/70">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-                Costs ↑
+
+              {/* Costs bar — growing */}
+              <span className="flex items-center gap-2 text-red-600/80">
+                <span className="text-red-600 font-medium">↑</span>
+                <span className="flex flex-col items-start gap-0.5">
+                  <span className="text-[9px] text-cream-500">Costs</span>
+                  <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
+                    <span
+                      className="absolute inset-y-0 left-0 bg-red-600 rounded-full"
+                      style={{
+                        width: `${Math.min(95, 50 + ((5.0 - margin) / 1.8) * 45)}%`,
+                        transition: 'width 0.5s ease-out',
+                      }}
+                    />
+                  </span>
+                </span>
               </span>
-              <span className="text-cream-300">|</span>
-              <span className={`font-bold tabular-nums ${marginColor} transition-colors duration-500`}>
-                Margin: {margin}%
+
+              {/* Margin — ticking number with color shift */}
+              <span className="flex flex-col items-center gap-0.5">
+                <span className="text-[9px] text-cream-500">Margin</span>
+                <span className={`font-bold text-sm tabular-nums ${marginColor} transition-colors duration-300`}>
+                  {margin}%
+                </span>
               </span>
             </motion.div>
 
