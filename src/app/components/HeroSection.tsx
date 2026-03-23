@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
@@ -114,55 +114,87 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
    * costs spike. Margin trends downward over the first 10 seconds
    * then oscillates around 3.2%.
    */
+  /*
+   * JS-driven wobble + mouse influence.
+   *
+   * Ambient wobble runs continuously (sine waves).
+   * Mouse hover on the image ADDS extra tilt — like pushing the board.
+   * Both feed into the P&L: tilt left = revenue drops, tilt right = costs spike.
+   * Margin decays from 5.0% → 3.2% over 20 seconds (slow enough to watch).
+   */
   const [wobble, setWobble] = useState({ rotY: 0, rotX: 0, rotZ: 0, tiltNorm: 0 });
   const [margin, setMargin] = useState(5.0);
   const [revenueWidth, setRevenueWidth] = useState(75);
   const [costWidth, setCostWidth] = useState(50);
   const frameRef = useRef<number>(0);
+  const mouseTiltRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const stored = localStorage.getItem('balabite-pile-count');
     if (stored) setTotalCount(Math.max(30, parseInt(stored, 10)));
   }, []);
 
+  // Mouse handler — adds extra tilt on top of ambient wobble
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!imageRef.current) return;
+    const rect = imageRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const x = (e.clientX - centerX) / (rect.width / 2);
+    const y = (e.clientY - centerY) / (rect.height / 2);
+    mouseTiltRef.current = {
+      x: Math.max(-1, Math.min(1, x)) * 5,
+      y: Math.max(-1, Math.min(1, y)) * -2,
+    };
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    mouseTiltRef.current = { x: 0, y: 0 };
+  }, []);
+
   useEffect(() => {
     const startTime = Date.now();
 
     const tick = () => {
-      const elapsed = (Date.now() - startTime) / 1000; // seconds
+      const elapsed = (Date.now() - startTime) / 1000;
+      const mouse = mouseTiltRef.current;
 
-      // Composite sine waves for organic wobble
-      const rotY = Math.sin(elapsed * 1.1) * 2.5 + Math.sin(elapsed * 0.7) * 1.0;
-      const rotX = Math.sin(elapsed * 0.8 + 1) * 0.5 + Math.sin(elapsed * 1.3) * 0.3;
-      const rotZ = Math.sin(elapsed * 0.9 + 2) * 0.8 + Math.sin(elapsed * 0.5) * 0.4;
+      // Ambient wobble: composite sine waves
+      const ambientY = Math.sin(elapsed * 1.1) * 2.5 + Math.sin(elapsed * 0.7) * 1.0;
+      const ambientX = Math.sin(elapsed * 0.8 + 1) * 0.5 + Math.sin(elapsed * 1.3) * 0.3;
+      const ambientZ = Math.sin(elapsed * 0.9 + 2) * 0.8 + Math.sin(elapsed * 0.5) * 0.4;
+
+      // Combine ambient + mouse (mouse smoothly blended)
+      const rotY = ambientY + mouse.x;
+      const rotX = ambientX + mouse.y;
+      const rotZ = ambientZ;
 
       // Normalized tilt: -1 (full left/revenue) to +1 (full right/costs)
-      const tiltNorm = Math.max(-1, Math.min(1, rotY / 3.5));
+      const tiltNorm = Math.max(-1, Math.min(1, rotY / 5));
 
       setWobble({ rotY, rotX, rotZ, tiltNorm });
 
-      // Margin trends down over first 10 seconds, then oscillates around 3.2%
-      const marginDecay = Math.min(elapsed / 10, 1); // 0 → 1 over 10 seconds
+      // Margin decays over 20 seconds (slow enough to watch), then oscillates
+      const marginDecay = Math.min(elapsed / 20, 1);
       const baseMargin = 5.0 - (5.0 - 3.2) * (1 - Math.pow(1 - marginDecay, 3));
-      // Tilt influences margin: left tilt = revenue drops = margin dips further
-      const tiltEffect = tiltNorm * 0.3;
-      const currentMargin = Math.max(1.5, Math.min(5.0, baseMargin - tiltEffect));
+      // Tilt influences margin: bigger swing = bigger P&L impact
+      const tiltEffect = tiltNorm * 0.4;
+      const currentMargin = Math.max(1.8, Math.min(5.0, baseMargin - Math.abs(tiltEffect)));
       setMargin(parseFloat(currentMargin.toFixed(1)));
 
       // Revenue bar: shrinks over time, dips more when tilting left
-      const baseRevenue = 75 - 30 * marginDecay;
-      const revTiltEffect = Math.min(0, tiltNorm) * 15; // only negative tilt hurts revenue
+      const baseRevenue = 75 - 25 * marginDecay;
+      const revTiltEffect = Math.min(0, tiltNorm) * 20;
       setRevenueWidth(Math.max(20, baseRevenue + revTiltEffect));
 
       // Cost bar: grows over time, spikes when tilting right
-      const baseCost = 50 + 30 * marginDecay;
-      const costTiltEffect = Math.max(0, tiltNorm) * 15; // only positive tilt raises costs
+      const baseCost = 45 + 30 * marginDecay;
+      const costTiltEffect = Math.max(0, tiltNorm) * 20;
       setCostWidth(Math.min(95, baseCost + costTiltEffect));
 
       frameRef.current = requestAnimationFrame(tick);
     };
 
-    // Start after entrance animations
     const timer = setTimeout(() => {
       frameRef.current = requestAnimationFrame(tick);
     }, 1500);
@@ -263,10 +295,12 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
           {/* RIGHT — Image with label cloud */}
           <div className="flex-1 flex flex-col items-center w-full lg:max-w-[520px]">
-            {/* Image container with label cloud */}
+            {/* Image container — mouse hover adds extra tilt + spikes P&L */}
             <div
               ref={imageRef}
               className="relative w-full max-w-[440px]"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             >
               {/* The balance board — JS-driven 3D wobble.
                   The tilt values also drive the P&L bars below. */}
