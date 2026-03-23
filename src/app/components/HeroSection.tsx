@@ -103,29 +103,74 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [userLabel, setUserLabel] = useState('');
   const [userLabels, setUserLabels] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(30);
+  /*
+   * JS-driven wobble — one animation loop drives:
+   * 1. The 3D tilt transform on the image
+   * 2. The P&L bars and margin number
+   *
+   * The wobble is a composite of sine waves at different speeds
+   * to feel organic, not mechanical. When the board tilts toward
+   * "revenue" side (left), revenue drops. When toward "costs" (right),
+   * costs spike. Margin trends downward over the first 10 seconds
+   * then oscillates around 3.2%.
+   */
+  const [wobble, setWobble] = useState({ rotY: 0, rotX: 0, rotZ: 0, tiltNorm: 0 });
   const [margin, setMargin] = useState(5.0);
+  const [revenueWidth, setRevenueWidth] = useState(75);
+  const [costWidth, setCostWidth] = useState(50);
+  const frameRef = useRef<number>(0);
 
   useEffect(() => {
     const stored = localStorage.getItem('balabite-pile-count');
     if (stored) setTotalCount(Math.max(30, parseInt(stored, 10)));
   }, []);
 
-  // Animated margin countdown: 5.0% → 3.2% over 8 seconds
   useEffect(() => {
-    const start = 5.0;
-    const end = 3.2;
-    const duration = 8000;
     const startTime = Date.now();
+
     const tick = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setMargin(parseFloat((start - (start - end) * eased).toFixed(1)));
-      if (progress < 1) requestAnimationFrame(tick);
+      const elapsed = (Date.now() - startTime) / 1000; // seconds
+
+      // Composite sine waves for organic wobble
+      const rotY = Math.sin(elapsed * 1.1) * 2.5 + Math.sin(elapsed * 0.7) * 1.0;
+      const rotX = Math.sin(elapsed * 0.8 + 1) * 0.5 + Math.sin(elapsed * 1.3) * 0.3;
+      const rotZ = Math.sin(elapsed * 0.9 + 2) * 0.8 + Math.sin(elapsed * 0.5) * 0.4;
+
+      // Normalized tilt: -1 (full left/revenue) to +1 (full right/costs)
+      const tiltNorm = Math.max(-1, Math.min(1, rotY / 3.5));
+
+      setWobble({ rotY, rotX, rotZ, tiltNorm });
+
+      // Margin trends down over first 10 seconds, then oscillates around 3.2%
+      const marginDecay = Math.min(elapsed / 10, 1); // 0 → 1 over 10 seconds
+      const baseMargin = 5.0 - (5.0 - 3.2) * (1 - Math.pow(1 - marginDecay, 3));
+      // Tilt influences margin: left tilt = revenue drops = margin dips further
+      const tiltEffect = tiltNorm * 0.3;
+      const currentMargin = Math.max(1.5, Math.min(5.0, baseMargin - tiltEffect));
+      setMargin(parseFloat(currentMargin.toFixed(1)));
+
+      // Revenue bar: shrinks over time, dips more when tilting left
+      const baseRevenue = 75 - 30 * marginDecay;
+      const revTiltEffect = Math.min(0, tiltNorm) * 15; // only negative tilt hurts revenue
+      setRevenueWidth(Math.max(20, baseRevenue + revTiltEffect));
+
+      // Cost bar: grows over time, spikes when tilting right
+      const baseCost = 50 + 30 * marginDecay;
+      const costTiltEffect = Math.max(0, tiltNorm) * 15; // only positive tilt raises costs
+      setCostWidth(Math.min(95, baseCost + costTiltEffect));
+
+      frameRef.current = requestAnimationFrame(tick);
     };
-    const timer = setTimeout(tick, 2000); // start after labels begin
-    return () => clearTimeout(timer);
+
+    // Start after entrance animations
+    const timer = setTimeout(() => {
+      frameRef.current = requestAnimationFrame(tick);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(frameRef.current);
+    };
   }, []);
 
   const handleAddLabel = () => {
@@ -223,23 +268,30 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
               ref={imageRef}
               className="relative w-full max-w-[440px]"
             >
-              {/* The balance board — continuous 3D wobble via CSS.
-                  No mouse tracking needed. The instability is ambient. */}
+              {/* The balance board — JS-driven 3D wobble.
+                  The tilt values also drive the P&L bars below. */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={2}
-                className="animate-hat-wobble"
               >
-                <Image
-                  src="/illustrations/scenes/hero1.png"
-                  alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
-                  width={800}
-                  height={1400}
-                  className="w-full h-auto relative z-10"
-                  priority
-                />
+                <div
+                  style={{
+                    transform: `perspective(800px) rotateY(${wobble.rotY}deg) rotateX(${wobble.rotX}deg) rotate(${wobble.rotZ}deg)`,
+                    transformOrigin: '50% 95%',
+                    willChange: 'transform',
+                  }}
+                >
+                  <Image
+                    src="/illustrations/scenes/hero1.png"
+                    alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
+                    width={800}
+                    height={1400}
+                    className="w-full h-auto relative z-10"
+                    priority
+                  />
+                </div>
               </motion.div>
 
               {/* Label cloud — 30 labels swarming the image */}
@@ -288,24 +340,21 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
               animate="visible"
               custom={5}
             >
-              {/* Revenue bar — shrinking */}
+              {/* Revenue bar — shrinks, dips when board tilts left */}
               <span className="flex items-center gap-2 text-red-500/80">
                 <span className="flex flex-col items-end gap-0.5">
                   <span className="text-[9px] text-cream-500">Revenue</span>
                   <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
                     <span
                       className="absolute inset-y-0 left-0 bg-red-400 rounded-full"
-                      style={{
-                        width: `${Math.max(30, 100 - ((5.0 - margin) / 1.8) * 70)}%`,
-                        transition: 'width 0.5s ease-out',
-                      }}
+                      style={{ width: `${revenueWidth}%` }}
                     />
                   </span>
                 </span>
                 <span className="text-red-500 font-medium">↓</span>
               </span>
 
-              {/* Costs bar — growing */}
+              {/* Costs bar — grows, spikes when board tilts right */}
               <span className="flex items-center gap-2 text-red-600/80">
                 <span className="text-red-600 font-medium">↑</span>
                 <span className="flex flex-col items-start gap-0.5">
@@ -313,10 +362,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
                     <span
                       className="absolute inset-y-0 left-0 bg-red-600 rounded-full"
-                      style={{
-                        width: `${Math.min(95, 50 + ((5.0 - margin) / 1.8) * 45)}%`,
-                        transition: 'width 0.5s ease-out',
-                      }}
+                      style={{ width: `${costWidth}%` }}
                     />
                   </span>
                 </span>
