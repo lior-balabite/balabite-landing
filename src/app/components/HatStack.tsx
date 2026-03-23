@@ -7,29 +7,18 @@ import Image from 'next/image';
 /*
  * THE TURN + THE UNBURYING
  *
- * Act 2: The quiet — empty space, "What if you weren't alone."
- * Act 3: The unburying — 9 figurines appear and take items from the pile.
- *        The pile shrinks. The board levels. The operator looks up.
- *        Each character walks to their station holding their items.
- *
- * Uses scroll-driven animations via Framer Motion useScroll/useTransform.
+ * The transition from chaos to calm. Three beats:
+ * 1. The quiet — breathing room after the avalanche
+ * 2. The question — "What if you weren't alone."
+ * 3. The unburying — characters appear, each taking a piece of the pile
  */
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-  },
-};
 
 const staggerIn = {
   hidden: { opacity: 0, x: -12 },
   visible: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: 0.6 + 0.2 * i, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { delay: 0.15 * i, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   }),
 };
 
@@ -41,7 +30,6 @@ const briefingItems = [
   'Nothing caught fire.',
 ];
 
-/* The 9 brains — each one takes a category of chaos */
 const brains = [
   { name: 'Menu Brain', takes: 'plates, recipes, food costs', image: '/illustrations/characters/menu-brain.png' },
   { name: 'Finance Brain', takes: 'invoices, PAST DUE, margins', image: '/illustrations/characters/finance-brain.png' },
@@ -51,56 +39,61 @@ const brains = [
   { name: 'Voice Brain', takes: 'missed calls, messages, orders', image: '/illustrations/characters/voice-brain.png' },
   { name: 'Growth Brain', takes: 'marketing, traffic, promos', image: '/illustrations/characters/growth-brain.png' },
   { name: 'Market Brain', takes: 'competitors, trends, pricing', image: '/illustrations/characters/market-brain.png' },
-  { name: 'The Pulse', takes: 'everything else — your morning briefing', image: '/illustrations/characters/the-pulse.png' },
+  { name: 'The Pulse', takes: 'your morning briefing', image: '/illustrations/characters/the-pulse.png' },
 ];
 
 export default function HatStack() {
+  const turnRef = useRef<HTMLDivElement>(null);
   const unburyRef = useRef<HTMLDivElement>(null);
 
-  // Scroll progress for the unburying section
-  const { scrollYProgress } = useScroll({
+  // Scroll-driven transition: the "what if" line scales up as you scroll into it
+  const { scrollYProgress: turnProgress } = useScroll({
+    target: turnRef,
+    offset: ['start end', 'center center'],
+  });
+  const turnScale = useTransform(turnProgress, [0, 1], [0.85, 1]);
+  const turnOpacity = useTransform(turnProgress, [0, 0.5, 1], [0, 0.3, 1]);
+
+  // Scroll-driven unburying: pile fades, characters appear
+  const { scrollYProgress: unburyProgress } = useScroll({
     target: unburyRef,
     offset: ['start end', 'end start'],
   });
-
-  // Opacity for the pile shrinking effect
-  const pileOpacity = useTransform(scrollYProgress, [0.2, 0.5], [1, 0]);
-  const cleanOpacity = useTransform(scrollYProgress, [0.4, 0.7], [0, 1]);
+  const pileOpacity = useTransform(unburyProgress, [0.1, 0.35], [1, 0]);
+  const cleanOpacity = useTransform(unburyProgress, [0.25, 0.5], [0, 1]);
 
   return (
     <section className="relative bg-cream-100">
 
-      {/* ===== ACT 2: THE QUIET ===== */}
-      <div className="h-[30vh]" />
+      {/* ===== THE QUIET — empty space, the exhale ===== */}
+      <div className="h-[50vh]" />
 
-      <div className="flex flex-col items-center justify-center px-6 pb-24">
-        <motion.p
-          className="text-xs uppercase tracking-[0.25em] text-cream-500 mb-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeUp}
-        >
-          What if
-        </motion.p>
-
-        <motion.h2
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-900 text-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeUp}
-        >
-          You weren&apos;t alone.
-        </motion.h2>
-
-        {/* The morning briefing — handwritten note, not a dashboard */}
+      {/* ===== THE TURN — scroll-driven scale + fade ===== */}
+      <div ref={turnRef} className="min-h-[80vh] flex flex-col items-center justify-center px-6">
         <motion.div
-          className="mt-16 max-w-md w-full"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={fadeUp}
+          className="text-center"
+          style={{
+            scale: turnScale,
+            opacity: turnOpacity,
+          }}
+        >
+          <p className="text-xs uppercase tracking-[0.3em] text-cream-400 mb-6">
+            What if
+          </p>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-primary-900">
+            You weren&apos;t alone.
+          </h2>
+        </motion.div>
+      </div>
+
+      {/* ===== THE BRIEFING — what "not alone" looks like ===== */}
+      <div className="flex flex-col items-center px-6 pb-24">
+        <motion.div
+          className="max-w-md w-full"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.8 }}
         >
           <p className="text-sm text-cream-500 italic mb-6">
             Last night, while you slept:
@@ -129,16 +122,15 @@ export default function HatStack() {
         </motion.div>
       </div>
 
-      {/* ===== ACT 3: THE UNBURYING ===== */}
+      {/* ===== THE UNBURYING — characters take the pile apart ===== */}
       <div ref={unburyRef} className="relative px-6 pb-32">
 
-        {/* Section header */}
         <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          variants={fadeUp}
+          transition={{ duration: 0.7 }}
         >
           <p className="text-xs uppercase tracking-[0.25em] text-cream-500 mb-3">
             Meet
@@ -147,19 +139,17 @@ export default function HatStack() {
             Balabite.
           </h2>
           <p className="text-base sm:text-lg text-cream-600 max-w-lg mx-auto">
-            Nine AI brains. Each one takes something off your pile.
+            Each one takes something off your pile.
           </p>
         </motion.div>
 
-        {/* The unburying visual — pile fading, characters appearing */}
         <div className="relative max-w-5xl mx-auto">
-
-          {/* The pile (fading out as you scroll) */}
+          {/* Ghost pile fading out */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ opacity: pileOpacity }}
           >
-            <div className="w-48 sm:w-64 opacity-30">
+            <div className="w-48 sm:w-56 opacity-20">
               <Image
                 src="/illustrations/scenes/hero1.png"
                 alt=""
@@ -171,12 +161,9 @@ export default function HatStack() {
             </div>
           </motion.div>
 
-          {/* The 9 characters grid (fading in) */}
-          <motion.div
-            className="relative z-10"
-            style={{ opacity: cleanOpacity }}
-          >
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-9 gap-6 lg:gap-4">
+          {/* Characters grid appearing */}
+          <motion.div className="relative z-10" style={{ opacity: cleanOpacity }}>
+            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-9 gap-6 lg:gap-4">
               {brains.map((brain, i) => (
                 <motion.div
                   key={brain.name}
@@ -184,11 +171,7 @@ export default function HatStack() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{
-                    delay: 0.1 * i,
-                    duration: 0.6,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
+                  transition={{ delay: 0.08 * i, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-3">
                     <Image
@@ -211,11 +194,11 @@ export default function HatStack() {
 
             {/* The punchline */}
             <motion.p
-              className="text-center mt-16 text-lg sm:text-xl text-cream-700"
+              className="text-center mt-20 text-lg sm:text-xl text-cream-700"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.8 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
             >
               The pile is gone. The board is level.{' '}
               <span className="font-semibold text-primary-900">You look up.</span>
@@ -223,9 +206,6 @@ export default function HatStack() {
           </motion.div>
         </div>
       </div>
-
-      {/* Gradient transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-cream-100" />
     </section>
   );
 }

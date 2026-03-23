@@ -61,7 +61,7 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
                 : 'bg-primary-100 text-primary-900 hover:bg-white'
             }`}
           >
-            Get Started
+            Put AI to Work
           </button>
         </div>
       </div>
