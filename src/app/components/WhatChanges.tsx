@@ -16,18 +16,17 @@ export default function WhatChanges() {
           transition={{ duration: 0.7 }}
         >
           <p className="text-sm uppercase tracking-[0.2em] text-cream-500 mb-4">
-            THE SHIFT
+            Meet your AI partner
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-cream-900 mb-4">
-            Nine brains. One partner.
+            The team you can&apos;t afford to hire.
           </h2>
-          <p className="text-lg text-cream-600 max-w-[48rem] mx-auto leading-relaxed">
-            Each one runs a department so you don&apos;t have to. They work while
-            you sleep, brief you at sunrise, and never call in sick.
+          <p className="text-lg text-cream-600 max-w-[40rem] mx-auto leading-relaxed">
+            Works while you sleep. Doesn&apos;t ask for a raise.
           </p>
         </motion.div>
 
-        {/* Team lineup illustration — atmospheric, no introductions */}
+        {/* Team lineup illustration */}
         <motion.div
           className="relative w-full"
           initial={{ opacity: 0 }}
@@ -37,7 +36,7 @@ export default function WhatChanges() {
         >
           <Image
             src="/illustrations/scenes/team-lineup.png"
-            alt="Nine AI brain characters in a confident lineup"
+            alt="AI brain characters — each one handles a different part of your restaurant"
             width={1920}
             height={640}
             className="w-full h-auto rounded-2xl"

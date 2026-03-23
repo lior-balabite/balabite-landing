@@ -128,10 +128,10 @@ export default function Capabilities() {
           transition={{ duration: 0.7 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-cream-900 mb-4">
-            What nine brains actually do.
+            What you stop worrying about.
           </h2>
           <p className="text-lg sm:text-xl text-cream-600 max-w-[42rem] mx-auto">
-            Three missions. Real numbers.
+            Three missions. Real results.
           </p>
         </motion.div>
 

@@ -36,7 +36,7 @@ export default function MeetYourTeam() {
         >
           <Image
             src="/illustrations/scenes/team-lineup.png"
-            alt="Nine AI brain characters standing in a confident lineup — each with a unique hat representing their specialty"
+            alt="AI brain characters standing in a confident lineup — each with a unique hat representing their specialty"
             width={1920}
             height={640}
             className="w-full h-auto rounded-2xl"

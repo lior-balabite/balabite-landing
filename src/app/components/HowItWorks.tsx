@@ -13,7 +13,7 @@ const steps = [
   {
     number: '2',
     title: 'Your AI team learns',
-    body: 'Nine brains analyze your menu, sales, costs, staff, and guests. Takes 24 hours.',
+    body: 'Balabite analyzes your menu, sales, costs, staff, and guests. Takes 24 hours.',
     character: '/illustrations/characters/kitchen-brain.png',
   },
   {

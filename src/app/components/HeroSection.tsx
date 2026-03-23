@@ -247,26 +247,32 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 perspective: '1000px',
               }}
             >
-              {/* The balance board — 3D tilt on mouse */}
+              {/* The balance board — 3D tilt on mouse.
+                  Plain div for the tilt (Framer Motion's style prop conflicts with CSS transform).
+                  Motion wrapper only for the fade-up entrance. */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={2}
-                style={{
-                  transform: `perspective(1000px) rotateY(${mouseTilt.x}deg) rotateX(${mouseTilt.y}deg)`,
-                  transition: 'transform 0.15s ease-out',
-                  transformOrigin: '50% 95%',
-                }}
               >
-                <Image
-                  src="/illustrations/scenes/hero1.png"
-                  alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
-                  width={800}
-                  height={1400}
-                  className="w-full h-auto relative z-10"
-                  priority
-                />
+                <div
+                  style={{
+                    transform: `perspective(800px) rotateY(${mouseTilt.x}deg) rotateX(${mouseTilt.y}deg)`,
+                    transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+                    transformOrigin: '50% 95%',
+                    willChange: 'transform',
+                  }}
+                >
+                  <Image
+                    src="/illustrations/scenes/hero1.png"
+                    alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
+                    width={800}
+                    height={1400}
+                    className="w-full h-auto relative z-10"
+                    priority
+                  />
+                </div>
               </motion.div>
 
               {/* Label cloud — 30 labels swarming the image */}
