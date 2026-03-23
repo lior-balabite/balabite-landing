@@ -17,59 +17,86 @@ const fadeUp = {
   }),
 };
 
-const labelFade = {
-  hidden: { opacity: 0, scale: 0.85, filter: 'blur(4px)' },
+const labelFloat = {
+  hidden: { opacity: 0, scale: 0.7 },
   visible: (i: number) => ({
-    opacity: 1,
+    opacity: [0.5, 0.9, 0.7][i % 3], // varying opacity = depth
     scale: 1,
-    filter: 'blur(0px)',
-    transition: { delay: 1.2 + 0.12 * i, duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { delay: 1.0 + 0.1 * i, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   }),
 };
 
-/* Fewer labels per column — only what fits in viewport */
-const revenueLabels = [
-  { text: '"Sorry, can\'t make it today"', style: 'sms' as const },
-  { text: 'Yelp: 1 star', style: 'alert' as const },
-  { text: 'Table 9 still waiting', style: 'ticket' as const },
-  { text: '86 the special', style: 'ticket' as const },
-  { text: '"Karen wants the manager"', style: 'sms' as const },
-  { text: 'Google: "never coming back"', style: 'alert' as const },
-  { text: 'Closing Mondays', style: 'note' as const },
-  { text: 'Where\'s Miguel?', style: 'sms' as const },
-  { text: 'Dishwasher quit', style: 'sms' as const },
-  { text: '"We need to talk"', style: 'sms' as const },
+/*
+ * ALL 30 LABELS — positioned as a cloud around the image.
+ * Coordinates are % relative to the image container.
+ * Some overlap. Some are partially behind. That's the point — it's suffocating.
+ */
+const labels: {
+  text: string;
+  top: string;
+  left: string;
+  rotate: string;
+  size: 'sm' | 'md' | 'lg';
+  style: 'sms' | 'stamp' | 'ticket' | 'note' | 'alert';
+}[] = [
+  // Surrounding the top of the pile
+  { text: 'PAST DUE', top: '-2%', left: '75%', rotate: '3deg', size: 'lg', style: 'stamp' },
+  { text: '"Sorry, can\'t make it"', top: '0%', left: '-15%', rotate: '-2deg', size: 'md', style: 'sms' },
+  { text: 'Yelp: 1 star', top: '5%', left: '85%', rotate: '-1deg', size: 'sm', style: 'alert' },
+  { text: 'Insurance +22%', top: '8%', left: '-25%', rotate: '2deg', size: 'md', style: 'stamp' },
+
+  // Upper-middle cluster
+  { text: '86 the special', top: '14%', left: '78%', rotate: '2deg', size: 'md', style: 'ticket' },
+  { text: 'Where\'s Miguel?', top: '16%', left: '-18%', rotate: '-3deg', size: 'sm', style: 'sms' },
+  { text: 'Food cost +30%', top: '20%', left: '88%', rotate: '-2deg', size: 'lg', style: 'alert' },
+  { text: 'Rent due in 3 days', top: '22%', left: '-22%', rotate: '1deg', size: 'md', style: 'stamp' },
+
+  // Middle — closing in tight
+  { text: 'Table 9 still waiting', top: '28%', left: '80%', rotate: '1deg', size: 'sm', style: 'ticket' },
+  { text: '"We need to talk"', top: '30%', left: '-12%', rotate: '-2deg', size: 'md', style: 'sms' },
+  { text: 'POS just froze', top: '34%', left: '85%', rotate: '-3deg', size: 'md', style: 'alert' },
+  { text: 'Gas bill doubled', top: '36%', left: '-20%', rotate: '2deg', size: 'sm', style: 'stamp' },
+  { text: 'DoorDash refund', top: '40%', left: '78%', rotate: '2deg', size: 'sm', style: 'alert' },
+  { text: 'Dishwasher quit', top: '42%', left: '-15%', rotate: '-1deg', size: 'md', style: 'sms' },
+
+  // Lower-middle
+  { text: '"Karen wants the manager"', top: '48%', left: '82%', rotate: '-2deg', size: 'md', style: 'sms' },
+  { text: 'AC is out again', top: '50%', left: '-18%', rotate: '3deg', size: 'sm', style: 'ticket' },
+  { text: 'Register short $47', top: '54%', left: '88%', rotate: '1deg', size: 'md', style: 'alert' },
+  { text: 'Grease trap backing up', top: '56%', left: '-22%', rotate: '-2deg', size: 'sm', style: 'ticket' },
+  { text: 'Google: "never coming back"', top: '60%', left: '75%', rotate: '-1deg', size: 'lg', style: 'alert' },
+  { text: 'Ice machine down', top: '62%', left: '-12%', rotate: '2deg', size: 'sm', style: 'ticket' },
+
+  // Lower cluster
+  { text: 'Health inspection Tuesday', top: '66%', left: '82%', rotate: '2deg', size: 'md', style: 'alert' },
+  { text: '"Can you cover?"', top: '68%', left: '-16%', rotate: '-3deg', size: 'md', style: 'sms' },
+  { text: 'Closing Mondays', top: '72%', left: '86%', rotate: '-1deg', size: 'sm', style: 'note' },
+  { text: 'Fire suppression failed', top: '74%', left: '-20%', rotate: '2deg', size: 'lg', style: 'stamp' },
+  { text: 'No one\'s closing tonight', top: '78%', left: '80%', rotate: '1deg', size: 'sm', style: 'sms' },
+  { text: 'Walk-in temp is 48°', top: '80%', left: '-14%', rotate: '-2deg', size: 'md', style: 'alert' },
+
+  // Bottom — around the feet/board
+  { text: 'Broke a case of wine', top: '84%', left: '78%', rotate: '-3deg', size: 'sm', style: 'note' },
+  { text: 'Sysco wrong order', top: '86%', left: '-18%', rotate: '1deg', size: 'sm', style: 'note' },
+  { text: 'Permit expires Friday', top: '90%', left: '85%', rotate: '2deg', size: 'md', style: 'alert' },
+  { text: '2-top waiting 40 min', top: '92%', left: '-12%', rotate: '-1deg', size: 'sm', style: 'ticket' },
 ];
 
-const costLabels = [
-  { text: 'PAST DUE', style: 'stamp' as const },
-  { text: 'Rent due in 3 days', style: 'stamp' as const },
-  { text: 'Insurance +22%', style: 'stamp' as const },
-  { text: 'Food cost +30%', style: 'alert' as const },
-  { text: 'Register short $47', style: 'alert' as const },
-  { text: 'POS just froze', style: 'alert' as const },
-  { text: 'AC is out again', style: 'ticket' as const },
-  { text: 'Ice machine down', style: 'ticket' as const },
-  { text: 'Grease trap backing up', style: 'ticket' as const },
-  { text: 'Fire suppression failed', style: 'stamp' as const },
-];
-
-function getLabelClasses(style: string) {
+function getLabelClasses(style: string, size: string) {
+  const sizeClass = size === 'lg' ? 'text-xs sm:text-sm' : size === 'md' ? 'text-[10px] sm:text-xs' : 'text-[9px] sm:text-[10px]';
   switch (style) {
     case 'stamp':
-      return 'bg-red-50 text-red-700 border border-red-300 font-bold uppercase tracking-wider text-[10px] sm:text-xs px-2.5 py-1 shadow-md';
+      return `bg-red-50 text-red-700 border border-red-300 font-bold uppercase tracking-wider ${sizeClass} px-2 py-0.5 shadow-md`;
     case 'sms':
-      return 'bg-white text-primary-800 border border-primary-200 text-[10px] sm:text-xs px-3 py-1.5 shadow-sm rounded-xl italic';
+      return `bg-white text-primary-800 border border-primary-200 ${sizeClass} px-2.5 py-1 shadow-sm rounded-xl italic`;
     case 'ticket':
-      return 'bg-amber-50 text-amber-900 border border-amber-300 font-mono text-[10px] sm:text-xs px-2.5 py-1 shadow-sm';
+      return `bg-amber-50 text-amber-900 border border-amber-300 font-mono ${sizeClass} px-2 py-0.5 shadow-sm`;
     case 'alert':
-      return 'bg-orange-50 text-orange-800 border border-orange-300 text-[10px] sm:text-xs px-2.5 py-1 shadow-sm font-medium';
+      return `bg-orange-50 text-orange-800 border border-orange-300 ${sizeClass} px-2 py-0.5 shadow-sm font-medium`;
     default:
-      return 'bg-cream-50 text-cream-800 border border-cream-300 text-[10px] sm:text-xs px-2.5 py-1 shadow-sm';
+      return `bg-cream-200/80 text-cream-700 border border-cream-300 ${sizeClass} px-2 py-0.5 shadow-sm`;
   }
 }
-
-const rotations = ['-2deg', '1.5deg', '-1deg', '2deg', '-1.5deg', '1deg', '-2.5deg', '3deg', '-1deg', '2.5deg'];
 
 export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const imageRef = useRef<HTMLDivElement>(null);
@@ -77,25 +104,42 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [userLabels, setUserLabels] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(30);
   const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
+  const [margin, setMargin] = useState(5.0);
 
   useEffect(() => {
     const stored = localStorage.getItem('balabite-pile-count');
     if (stored) setTotalCount(Math.max(30, parseInt(stored, 10)));
   }, []);
 
-  /*
-   * Mouse-driven tilt — transform origin at the BOTTOM CENTER (the cylinder).
-   * This makes it feel like the balance board is physically rocking on the cylinder.
-   * Only rotateZ (left-right lean), not rotateX/Y — boards don't tip forward.
-   */
+  // Animated margin countdown: 5.0% → 3.2% over 8 seconds
+  useEffect(() => {
+    const start = 5.0;
+    const end = 3.2;
+    const duration = 8000;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setMargin(parseFloat((start - (start - end) * eased).toFixed(1)));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    const timer = setTimeout(tick, 2000); // start after labels begin
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Mouse-driven 3D tilt — perspective, both axes, origin at the cylinder
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!imageRef.current) return;
     const rect = imageRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
     const x = (e.clientX - centerX) / (rect.width / 2);
+    const y = (e.clientY - centerY) / (rect.height / 2);
     setMouseTilt({
-      x: Math.max(-1, Math.min(1, x)) * 5,
-      y: 0,
+      x: Math.max(-1, Math.min(1, x)) * 4,
+      y: Math.max(-1, Math.min(1, y)) * -2,
     });
   }, []);
 
@@ -113,6 +157,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     localStorage.setItem('balabite-pile-count', String(newCount));
   };
 
+  const marginColor = margin > 4.5 ? 'text-green-700' : margin > 3.8 ? 'text-amber-700' : 'text-red-700';
+
   return (
     <section
       className="relative min-h-screen flex flex-col overflow-hidden bg-cream-100"
@@ -120,76 +166,120 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="relative z-10 flex flex-1 items-center px-6 pt-24 pb-8">
-        <div className="mx-auto flex max-w-[80rem] w-full flex-col lg:flex-row items-start gap-8 lg:gap-0">
+        <div className="mx-auto flex max-w-[76rem] w-full flex-col lg:flex-row items-center gap-10 lg:gap-12">
 
-          {/* LEFT — Headline + copy + labels */}
-          <div className="flex-1 flex flex-col lg:pr-8">
-            <div className="lg:max-w-lg text-center lg:text-right mb-6">
-              <motion.p
-                className="text-xs uppercase tracking-[0.2em] text-cream-500 mb-3"
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={0}
+          {/* LEFT — Headline + copy + CTA */}
+          <div className="flex-1 text-center lg:text-left lg:max-w-lg">
+            <motion.p
+              className="text-xs uppercase tracking-[0.2em] text-cream-500 mb-3"
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0}
+            >
+              The reality
+            </motion.p>
+
+            <motion.h1
+              className="text-3xl font-bold leading-[1.15] tracking-tight text-primary-900 sm:text-4xl md:text-5xl"
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={1}
+            >
+              You&apos;re the only thing holding this together.
+            </motion.h1>
+
+            <motion.p
+              className="mt-4 text-base leading-relaxed text-cream-600 sm:text-lg"
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={2}
+            >
+              And it&apos;s costing you everything.
+            </motion.p>
+
+            <motion.div
+              className="mt-8 flex gap-3 justify-center lg:justify-start"
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={3}
+            >
+              <button
+                onClick={onCtaClick}
+                className="rounded-full bg-primary-900 px-7 py-3 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97]"
               >
-                The reality of running a restaurant
-              </motion.p>
-
-              <motion.h1
-                className="text-3xl font-bold leading-tight tracking-tight text-primary-900 sm:text-4xl md:text-5xl"
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={1}
+                Put AI to Work
+              </button>
+              <button
+                onClick={() => document.getElementById('capabilities')?.scrollIntoView({ behavior: 'smooth' })}
+                className="rounded-full border border-primary-900/20 px-7 py-3 text-sm font-semibold text-primary-900 transition-all hover:border-primary-900/40 hover:bg-primary-900/5 active:scale-[0.97]"
               >
-                Every hat. Every fire.{' '}
-                <span className="text-cream-500">Every single day.</span>
-              </motion.h1>
+                See what changes
+              </button>
+            </motion.div>
 
-              <motion.p
-                className="mt-3 text-sm leading-relaxed text-cream-600 sm:text-base"
+            {/* Social proof */}
+            <motion.div
+              className="mt-6 flex items-center gap-2.5 text-sm text-cream-500 justify-center lg:justify-start"
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={4}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-600" />
+              </span>
+              Live in 3 restaurants
+            </motion.div>
+          </div>
+
+          {/* RIGHT — Image with label cloud */}
+          <div className="flex-1 flex flex-col items-center w-full lg:max-w-[520px]">
+            {/* Image container with label cloud */}
+            <div
+              ref={imageRef}
+              className="relative w-full max-w-[440px]"
+              style={{
+                perspective: '1000px',
+              }}
+            >
+              {/* The balance board — 3D tilt on mouse */}
+              <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={2}
+                style={{
+                  transform: `perspective(1000px) rotateY(${mouseTilt.x}deg) rotateX(${mouseTilt.y}deg)`,
+                  transition: 'transform 0.15s ease-out',
+                  transformOrigin: '50% 95%',
+                }}
               >
-                39% of restaurants weren&apos;t profitable last year.
-                The ones that survived? They carried all of this.
-              </motion.p>
-
-              <motion.div
-                className="mt-6 flex gap-3 lg:justify-end justify-center"
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={3}
-              >
-                <button
-                  onClick={onCtaClick}
-                  className="rounded-full bg-primary-900 px-7 py-3 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97]"
-                >
-                  Put AI to Work
-                </button>
-                <button
-                  onClick={() => document.getElementById('capabilities')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="rounded-full border border-primary-900/20 px-7 py-3 text-sm font-semibold text-primary-900 transition-all hover:border-primary-900/40 hover:bg-primary-900/5 active:scale-[0.97]"
-                >
-                  See what changes
-                </button>
+                <Image
+                  src="/illustrations/scenes/hero1.png"
+                  alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
+                  width={800}
+                  height={1400}
+                  className="w-full h-auto relative z-10"
+                  priority
+                />
               </motion.div>
-            </div>
 
-            {/* Revenue pressure labels */}
-            <div className="hidden lg:flex flex-col items-end gap-2">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-1 mr-1">
-                Revenue pressure
-              </p>
-              {revenueLabels.map((label, i) => (
+              {/* Label cloud — 30 labels swarming the image */}
+              {labels.map((label, i) => (
                 <motion.div
                   key={label.text}
-                  className={`rounded-md whitespace-nowrap ${getLabelClasses(label.style)}`}
-                  style={{ transform: `rotate(${rotations[i % rotations.length]})` }}
-                  variants={labelFade}
+                  className={`absolute z-20 rounded-md whitespace-nowrap hidden sm:block ${getLabelClasses(label.style, label.size)}`}
+                  style={{
+                    top: label.top,
+                    left: label.left,
+                    transform: `rotate(${label.rotate})`,
+                  }}
+                  variants={labelFloat}
                   initial="hidden"
                   animate="visible"
                   custom={i}
@@ -197,77 +287,56 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   {label.text}
                 </motion.div>
               ))}
-              {userLabels.filter((_, i) => i % 2 === 0).map((text, i) => (
+
+              {/* User-submitted labels join the cloud */}
+              {userLabels.map((text, i) => (
                 <motion.div
-                  key={`user-l-${i}`}
-                  className="rounded-md whitespace-nowrap bg-red-50 text-red-800 border border-red-300 text-[10px] sm:text-xs px-3 py-1.5 shadow-md font-medium"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  key={`user-${i}`}
+                  className="absolute z-30 rounded-md whitespace-nowrap hidden sm:block bg-red-50 text-red-800 border border-red-300 text-[10px] sm:text-xs px-2.5 py-1 shadow-lg font-medium"
+                  style={{
+                    top: `${15 + (i * 7) % 70}%`,
+                    left: i % 2 === 0 ? '-20%' : '82%',
+                    transform: `rotate(${i % 2 === 0 ? '-2' : '2'}deg)`,
+                  }}
+                  initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  style={{ transform: `rotate(${rotations[(i + 3) % rotations.length]})` }}
+                  transition={{ duration: 0.4 }}
                 >
                   {text}
                 </motion.div>
               ))}
             </div>
-          </div>
 
-          {/* CENTER-RIGHT — Hero image + counter + P&L */}
-          <div className="w-full lg:w-auto lg:min-w-[380px] lg:max-w-[440px] flex flex-col items-center">
-            {/* Balance board image — tilts like a physical board on a cylinder */}
-            <div
-              ref={imageRef}
-              className="relative w-full"
-              style={{
-                transform: `rotate(${mouseTilt.x}deg)`,
-                transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-                transformOrigin: '50% 95%', /* cylinder is at the bottom */
-              }}
-            >
-              <motion.div
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={2}
-              >
-                <Image
-                  src="/illustrations/scenes/hero1.png"
-                  alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
-                  width={800}
-                  height={1400}
-                  className="w-full h-auto"
-                  priority
-                />
-              </motion.div>
-            </div>
-
-            {/* P&L indicator — right under the image */}
+            {/* P&L — animated, reacting */}
             <motion.div
-              className="mt-2 flex items-center justify-center gap-4 text-[10px] sm:text-xs text-cream-500"
+              className="mt-3 flex items-center justify-center gap-4 text-xs"
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              custom={4}
+              custom={5}
             >
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-400/50" />
-                Revenue shrinking
+              <span className="flex items-center gap-1.5 text-red-500/70">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                Revenue ↓
               </span>
               <span className="text-cream-300">|</span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-600/50" />
-                Costs rising
+              <span className="flex items-center gap-1.5 text-red-600/70">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                Costs ↑
               </span>
               <span className="text-cream-300">|</span>
-              <span className="font-semibold text-primary-900">Margin: 3.2%</span>
+              <span className={`font-bold tabular-nums ${marginColor} transition-colors duration-500`}>
+                Margin: {margin}%
+              </span>
             </motion.div>
 
-            {/* Counter + Add yours — compact, right under P&L */}
+            {/* Counter + Add yours */}
             <motion.div
               className="mt-4 w-full max-w-sm"
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              custom={5}
+              custom={6}
             >
               <p className="text-center text-sm text-cream-600 mb-2">
                 Things on this person&apos;s plate:{' '}
@@ -294,73 +363,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 Every operator carries something different. Leave yours.
               </p>
             </motion.div>
-          </div>
-
-          {/* RIGHT — Cost pressure labels */}
-          <div className="hidden lg:flex flex-1 flex-col items-start gap-2 lg:pl-8 pt-24">
-            <p className="text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-1 ml-1">
-              Cost pressure
-            </p>
-            {costLabels.map((label, i) => (
-              <motion.div
-                key={label.text}
-                className={`rounded-md whitespace-nowrap ${getLabelClasses(label.style)}`}
-                style={{ transform: `rotate(${rotations[(i + 5) % rotations.length]})` }}
-                variants={labelFade}
-                initial="hidden"
-                animate="visible"
-                custom={i}
-              >
-                {label.text}
-              </motion.div>
-            ))}
-            {userLabels.filter((_, i) => i % 2 === 1).map((text, i) => (
-              <motion.div
-                key={`user-r-${i}`}
-                className="rounded-md whitespace-nowrap bg-red-50 text-red-800 border border-red-300 text-[10px] sm:text-xs px-3 py-1.5 shadow-md font-medium"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                style={{ transform: `rotate(${rotations[(i + 7) % rotations.length]})` }}
-              >
-                {text}
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Mobile labels */}
-          <div className="flex lg:hidden gap-3 w-full max-w-md mx-auto">
-            <div className="flex-1 flex flex-col items-end gap-1.5">
-              <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Revenue</p>
-              {revenueLabels.slice(0, 6).map((label, i) => (
-                <motion.div
-                  key={label.text}
-                  className={`rounded-md whitespace-nowrap ${getLabelClasses(label.style)}`}
-                  style={{ transform: `rotate(${rotations[i % rotations.length]})` }}
-                  variants={labelFade}
-                  initial="hidden"
-                  animate="visible"
-                  custom={i}
-                >
-                  {label.text}
-                </motion.div>
-              ))}
-            </div>
-            <div className="flex-1 flex flex-col items-start gap-1.5">
-              <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Costs</p>
-              {costLabels.slice(0, 6).map((label, i) => (
-                <motion.div
-                  key={label.text}
-                  className={`rounded-md whitespace-nowrap ${getLabelClasses(label.style)}`}
-                  style={{ transform: `rotate(${rotations[(i + 5) % rotations.length]})` }}
-                  variants={labelFade}
-                  initial="hidden"
-                  animate="visible"
-                  custom={i}
-                >
-                  {label.text}
-                </motion.div>
-              ))}
-            </div>
           </div>
 
         </div>
