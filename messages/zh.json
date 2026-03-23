@@ -1,0 +1,21 @@
+{
+  "navigation": {
+    "features": "功能特色",
+    "about": "关于我们",
+    "howItWorks": "工作原理",
+    "insights": "行业洞察",
+    "faq": "常见问题",
+    "joinWaitlist": "加入等候名单"
+  },
+  "hero": {
+    "title": "您最好的服务员，在每一桌",
+    "subtitle": "AI驱动的数字服务员系统，革新餐厅服务体验。",
+    "cta": "加入等候名单 ({count}+ 家餐厅)",
+    "ctaSubtext": "成为首批用AI转型餐厅的先行者"
+  },
+  "waitlist": {
+    "title": "加入我们的等候名单",
+    "subtitle": "成为首批体验未来餐饮服务的餐厅。"
+  }
+}
+

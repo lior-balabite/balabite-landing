@@ -154,9 +154,9 @@ export default function Capabilities() {
                 </span>
               </motion.div>
 
-              {/* Outcome cards */}
+              {/* Outcome cards — horizontal: portrait left, insight right */}
               <div
-                className={`grid gap-6 ${
+                className={`grid gap-4 ${
                   pillar.cards.length === 4
                     ? 'grid-cols-1 sm:grid-cols-2'
                     : 'grid-cols-1 sm:grid-cols-2 max-w-[48rem] mx-auto'
@@ -165,23 +165,23 @@ export default function Capabilities() {
                 {pillar.cards.map((card, i) => (
                   <motion.div
                     key={i}
-                    className="bg-white/80 backdrop-blur border border-cream-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm"
+                    className="bg-white/80 backdrop-blur border border-cream-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm"
                     variants={cardVariant}
                   >
-                    {/* Character portrait — decorative, no name */}
-                    <div className="mb-4 relative w-[120px] h-[120px]">
+                    {/* Character portrait — small, decorative */}
+                    <div className="shrink-0 w-[64px] h-[64px]">
                       <Image
                         src={card.characterImg}
                         alt=""
-                        width={120}
-                        height={120}
+                        width={64}
+                        height={64}
                         className="object-contain"
                       />
                     </div>
 
                     {/* Outcome insight */}
                     <blockquote
-                      className={`text-sm italic text-cream-800 border-l-2 ${pillar.borderColor} pl-3 text-left w-full`}
+                      className={`text-sm italic text-cream-800 border-l-2 ${pillar.borderColor} pl-3 flex-1`}
                     >
                       {card.insight}
                     </blockquote>

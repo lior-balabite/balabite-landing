@@ -61,7 +61,7 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
                 : 'bg-primary-100 text-primary-900 hover:bg-white'
             }`}
           >
-            Join Waitlist
+            Get Started
           </button>
         </div>
       </div>

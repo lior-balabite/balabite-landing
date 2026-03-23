@@ -1,0 +1,21 @@
+{
+  "navigation": {
+    "features": "Características",
+    "about": "Acerca de",
+    "howItWorks": "Cómo Funciona",
+    "insights": "Información",
+    "faq": "Preguntas Frecuentes",
+    "joinWaitlist": "Unirse a la Lista de Espera"
+  },
+  "hero": {
+    "title": "Tu Mejor Mesero, En Cada Mesa",
+    "subtitle": "El sistema de mesero digital con IA que revoluciona la experiencia de servicio en restaurantes.",
+    "cta": "Unirse a la Lista de Espera ({count}+ restaurantes)",
+    "ctaSubtext": "Sé de los primeros en transformar tu restaurante con IA"
+  },
+  "waitlist": {
+    "title": "Únete a Nuestra Lista de Espera",
+    "subtitle": "Sé de los primeros restaurantes en experimentar el futuro del servicio gastronómico."
+  }
+}
+

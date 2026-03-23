@@ -77,7 +77,7 @@ export default function LandingPage() {
           onClick={scrollToCta}
           className="rounded-full bg-primary-900 px-8 py-3.5 text-base font-semibold text-cream-100 transition-all duration-200 hover:bg-primary-800 active:scale-[0.97]"
         >
-          Join the Waitlist
+          Get Started
         </button>
       </section>
 

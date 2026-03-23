@@ -101,3 +101,15 @@ html, body, #__next {
 *, *::before, *::after {
   box-sizing: border-box;
 }
+
+/* Hat tower wobble — rotation from base so only the top sways */
+@keyframes hat-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(0.8deg); }
+  70%      { transform: rotate(-0.6deg); }
+}
+
+.animate-hat-wobble {
+  animation: hat-wobble 3.5s ease-in-out infinite;
+  transform-origin: 50% 95%;
+}
