@@ -141,16 +141,33 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   // P&L, counter, release — continuous opacity
   const pnlOpacity = useTransform(scrollYProgress, [0.45, 0.55], [0, 1]);
   const counterOpacity = useTransform(scrollYProgress, [0.55, 0.65], [0, 1]);
-  const releaseOpacity = useTransform(scrollYProgress, [0.8, 0.95], [1, 0]);
+  // releaseOpacity removed — once things appear, they stay
 
-  // Track label count in state for rendering — but with CSS transitions for smoothness
+  // Track label count — only goes UP (once revealed, stays revealed)
   const [visibleCount, setVisibleCount] = useState(0);
+  const maxSeenRef = useRef(0);
   useEffect(() => {
     const unsub = labelProgress.on('change', (v) => {
-      setVisibleCount(Math.floor(Math.max(0, Math.min(15, v))));
+      const count = Math.floor(Math.max(0, Math.min(15, v)));
+      if (count > maxSeenRef.current) {
+        maxSeenRef.current = count;
+        setVisibleCount(count);
+      }
     });
     return unsub;
   }, [labelProgress]);
+
+  // Track if P&L and counter have been revealed (sticky — don't hide on scroll up)
+  const [pnlRevealed, setPnlRevealed] = useState(false);
+  const [counterRevealed, setCounterRevealed] = useState(false);
+  useEffect(() => {
+    const unsub = pnlOpacity.on('change', (v) => { if (v > 0.5) setPnlRevealed(true); });
+    return unsub;
+  }, [pnlOpacity]);
+  useEffect(() => {
+    const unsub = counterOpacity.on('change', (v) => { if (v > 0.5) setCounterRevealed(true); });
+    return unsub;
+  }, [counterOpacity]);
 
   const handleAdd = () => {
     const trimmed = userLabel.trim();
@@ -163,7 +180,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const mColor = pnl.margin > 4.5 ? 'text-green-700' : pnl.margin > 3.8 ? 'text-amber-700' : 'text-red-700';
 
   return (
-    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
+    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '250vh' }}>
       {/* Sticky viewport — NO overflow-hidden so labels can extend beyond */}
       <div className="sticky top-0 h-screen bg-cream-100">
         <div className="h-full flex items-center px-6 pt-20 pb-8 overflow-x-clip">
@@ -206,8 +223,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             </div>
 
             {/* ── RIGHT: Image + labels + P&L + counter ── */}
-            <motion.div className="flex-1 flex flex-col items-center w-full lg:max-w-[480px]"
-              style={{ opacity: releaseOpacity }}>
+            <div className="flex-1 flex flex-col items-center w-full lg:max-w-[480px]">
 
               {/* Image container — labels cluster around this */}
               <div ref={imgRef} className="relative w-full max-w-[400px]"
@@ -285,9 +301,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* P&L — scroll-driven opacity */}
-              <motion.div className="mt-4 flex items-center justify-center gap-5 text-xs"
-                style={{ opacity: pnlOpacity }}>
+              {/* P&L — once visible, stays visible */}
+              <div className={`mt-4 flex items-center justify-center gap-5 text-xs transition-opacity duration-700 ${pnlRevealed ? 'opacity-100' : 'opacity-0'}`}>
                 <span className="flex items-center gap-2 text-red-500/80">
                   <span className="flex flex-col items-end gap-0.5">
                     <span className="text-[9px] text-cream-500">Revenue</span>
@@ -314,10 +329,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                     {pnl.margin}%
                   </span>
                 </span>
-              </motion.div>
+              </div>
 
-              {/* Counter + Add yours */}
-              <motion.div className="mt-5 w-full max-w-sm" style={{ opacity: counterOpacity }}>
+              {/* Counter + Add yours — once visible, stays visible */}
+              <div className={`mt-5 w-full max-w-sm transition-opacity duration-700 ${counterRevealed ? 'opacity-100' : 'opacity-0'}`}>
                 <p className="text-center text-sm text-cream-600 mb-2">
                   Things on this person&apos;s plate:{' '}
                   <span className="font-bold text-primary-900 text-base">{totalCount}</span>
@@ -336,8 +351,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 <p className="text-[10px] text-cream-400 text-center mt-1.5">
                   Every operator carries something different. Leave yours.
                 </p>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
             {/* Mobile labels — below image, no scroll gating */}
             <div className="flex sm:hidden gap-3 w-full max-w-md mx-auto">
