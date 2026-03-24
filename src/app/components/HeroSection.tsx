@@ -414,39 +414,45 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </button>
                 </div>
 
-                {/* LEFT LABEL CLOUD — layered slots: bottom (original) + top (piled), hover reveals bottom */}
+                {/* LEFT LABEL CLOUD — layered slots: hover lifts top to reveal bottom */}
                 <div ref={leftColRef} className="absolute top-0 right-full pr-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-end w-[240px] overflow-hidden transition-transform duration-200"
                   style={{ transform: nudgeSide === 'left' ? 'translateX(-3px)' : 'translateX(0)' }}>
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
-                  {leftSlots.map((slot, i) => (
-                    <div key={i} data-label-slot className="relative group"
-                      style={{
-                        opacity: i < visibleCount ? 1 : 0,
-                        maxHeight: i < visibleCount ? '32px' : '0px',
-                        overflow: 'visible',
-                        transition: 'opacity 0.7s, max-height 0.7s',
-                        transitionDelay: `${(i % 3) * 60}ms`,
-                      }}>
-                      {/* Bottom label (original) — always visible, slightly peeking when top exists */}
-                      <div className={lc(slot.bottom.s)}
+                  {leftSlots.map((slot, i) => {
+                    const show = i < visibleCount;
+                    return (
+                      <div key={i} data-label-slot className="relative group"
                         style={{
-                          transform: `rotate(${rots[i % rots.length]})`,
-                          opacity: slot.top ? 0.5 : 1,
-                          transition: 'opacity 0.3s',
+                          opacity: show ? 1 : 0,
+                          maxHeight: show ? '40px' : '0px',
+                          transition: 'opacity 0.7s, max-height 0.7s',
+                          transitionDelay: `${(i % 3) * 60}ms`,
                         }}>
-                        {slot.bottom.text}
-                      </div>
-                      {/* Top label (piled) — sits on top, lifts on hover to reveal bottom */}
-                      {slot.top && (
-                        <div className={`${lc(slot.top.s)} absolute inset-0 shadow-md transition-all duration-200 group-hover:-translate-y-2 group-hover:translate-x-1 group-hover:rotate-2 group-hover:shadow-lg`}
-                          style={{ transform: `rotate(${rots[(i + 7) % rots.length]})`, zIndex: 1 }}>
-                          {slot.top.text}
+                        {/* Bottom label — dims when covered, brightens on hover */}
+                        <div className={lc(slot.bottom.s)}
+                          style={{
+                            transform: `rotate(${rots[i % rots.length]})`,
+                            opacity: slot.top ? 0.4 : 1,
+                            transition: 'opacity 0.3s',
+                          }}>
+                          {slot.bottom.text}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {/* Top label — offset so bottom peeks. On hover, lifts up fully */}
+                        {slot.top && (
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg`}
+                            style={{
+                              top: '3px',
+                              left: '-4px',
+                              transform: `rotate(${rots[(i + 7) % rots.length]})`,
+                            }}>
+                            {slot.top.text}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* RIGHT LABEL CLOUD — layered slots */}
@@ -455,33 +461,39 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
-                  {rightSlots.map((slot, i) => (
-                    <div key={i} data-label-slot className="relative group"
-                      style={{
-                        opacity: i < visibleCount ? 1 : 0,
-                        maxHeight: i < visibleCount ? '32px' : '0px',
-                        overflow: 'visible',
-                        transition: 'opacity 0.7s, max-height 0.7s',
-                        transitionDelay: `${(i % 3) * 60}ms`,
-                      }}>
-                      {/* Bottom label (original) */}
-                      <div className={lc(slot.bottom.s)}
+                  {rightSlots.map((slot, i) => {
+                    const show = i < visibleCount;
+                    return (
+                      <div key={i} data-label-slot className="relative group"
                         style={{
-                          transform: `rotate(${rots[(i + 5) % rots.length]})`,
-                          opacity: slot.top ? 0.5 : 1,
-                          transition: 'opacity 0.3s',
+                          opacity: show ? 1 : 0,
+                          maxHeight: show ? '40px' : '0px',
+                          transition: 'opacity 0.7s, max-height 0.7s',
+                          transitionDelay: `${(i % 3) * 60}ms`,
                         }}>
-                        {slot.bottom.text}
-                      </div>
-                      {/* Top label (piled) — lifts on hover */}
-                      {slot.top && (
-                        <div className={`${lc(slot.top.s)} absolute inset-0 shadow-md transition-all duration-200 group-hover:-translate-y-2 group-hover:-translate-x-1 group-hover:-rotate-2 group-hover:shadow-lg`}
-                          style={{ transform: `rotate(${rots[(i + 3) % rots.length]})`, zIndex: 1 }}>
-                          {slot.top.text}
+                        {/* Bottom label */}
+                        <div className={lc(slot.bottom.s)}
+                          style={{
+                            transform: `rotate(${rots[(i + 5) % rots.length]})`,
+                            opacity: slot.top ? 0.4 : 1,
+                            transition: 'opacity 0.3s',
+                          }}>
+                          {slot.bottom.text}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {/* Top label — offset, lifts on hover */}
+                        {slot.top && (
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg`}
+                            style={{
+                              top: '3px',
+                              right: '-4px',
+                              transform: `rotate(${rots[(i + 3) % rots.length]})`,
+                            }}>
+                            {slot.top.text}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* ── Flying label — spawns at button, arcs to target slot ── */}
