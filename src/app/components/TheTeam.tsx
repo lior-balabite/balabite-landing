@@ -9,64 +9,64 @@ const brains = [
     name: 'The Pulse',
     role: 'Your morning briefing',
     image: '/illustrations/characters/the-pulse.png',
-    front: 'Tuesday\u2019s looking tight \u2014 you\u2019re short one closer, lamb shank is 2 days from expiry, and that 4.2 Google rating just dropped to 4.1. Here\u2019s your game plan.',
-    back: 'Last week you made $14K more than the week before. Three things drove it \u2014 the prix fixe upsell, cutting Tuesday lunch hours, and firing that parsley garnish nobody touched.',
+    front: 'It\u2019s 6:40 AM. You haven\u2019t opened the door yet and there are already three problems. Your fish delivery is late, tonight\u2019s reservations just doubled from last Tuesday, and your closer called in sick. You\u2019ll find out about two of those around 4 PM. I found all three before your coffee.',
+    back: 'You used to walk in and ask \u201cwhat happened last night?\u201d and get a different answer from every person. The bartender says it was slow. The server says it was slammed. The POS says you did $4,200 but left $600 in food cost on the table. I don\u2019t have opinions. I have the numbers.',
   },
   {
     name: 'Menu Brain',
     role: 'Your menu strategist',
     image: '/illustrations/characters/menu-brain.png',
-    front: 'Your carbonara costs $4.80 to make and outsells everything 3-to-1, but it\u2019s your cheapest entr\u00e9e. That\u2019s not generosity, that\u2019s a leak.',
-    back: 'Kill the tuna tartare. It sells 4 a week, ties up $120 in inventory, and guests who order it tip 11% below average. Move the short rib to that slot \u2014 it prints money.',
+    front: 'Your braised short rib has been your bestseller for two years. It\u2019s also been losing you $1.80 a plate since beef went up in March. You didn\u2019t touch the price because \u201cpeople love it.\u201d People also love your restaurant staying open.',
+    back: 'Saturday night, table 12 stared at your menu for nine minutes. They ordered the chicken. Not because they wanted the chicken \u2014 because 42 items is not a menu, it\u2019s a phone book. I\u2019ll show you the six dishes doing 60% of your revenue and the fourteen doing nothing but exhausting your line.',
   },
   {
     name: 'Finance Brain',
     role: 'Your margin watchdog',
     image: '/illustrations/characters/finance-brain.png',
-    front: 'Your produce vendor just quietly raised avocado pricing 18% across three invoices. Nobody noticed. I noticed.',
-    back: 'You think you\u2019re running 28% food cost. You\u2019re actually at 33.4% \u2014 because nobody\u2019s accounting for staff meals, comps, and the \u201cfamily and friends\u201d tabs your bartender keeps opening.',
+    front: 'Your produce vendor raised the price on microgreens by 18% in October. Small line item, easy to miss. You missed it. So did November. That\u2019s $1,100 gone on a garnish your customers push to the side of the plate.',
+    back: 'It\u2019s the first of the month. You need to know if you made money in February. Your bookkeeper will tell you in three weeks. Your accountant in six. I\u2019ll tell you right now: you made money, but not on Sundays, not on brunch, and not on the patio. We should talk about the patio.',
   },
   {
     name: 'Team Brain',
     role: 'Your people operator',
     image: '/illustrations/characters/team-brain.png',
-    front: 'Sofia has worked 11 doubles in 3 weeks. She hasn\u2019t complained yet. She will \u2014 with a resignation letter. Move her to 4 days before you lose your best server.',
-    back: 'Thursday night keeps bleeding money because you schedule 6 when you need 4. Saturday you\u2019re running a skeleton crew through a 90-minute wait. Flip it.',
+    front: 'Your best server just picked up her sixth double this month. She hasn\u2019t complained yet. She won\u2019t complain. She\u2019ll just stop showing up one Tuesday and you\u2019ll find out she\u2019s pouring wine at the place down the street. I see the burnout three weeks before the resignation text.',
+    back: 'You\u2019ve got eleven people on the floor Saturday and four on Wednesday. Saturdays, your servers are tripping over each other. Wednesdays, they\u2019re apologizing to every table. You\u2019re spending the same labor both nights and neither night is right.',
   },
   {
     name: 'Kitchen Brain',
     role: 'Your back-of-house brain',
     image: '/illustrations/characters/kitchen-brain.png',
-    front: 'You prepped 40 portions of soup today. You\u2019ve sold 11 every Wednesday for 6 weeks. That\u2019s 29 portions of margin going into the bin.',
-    back: 'Your walk-in has $2,300 in proteins expiring by Friday. I\u2019ve reworked the specials board to burn through the salmon and duck breast first.',
+    front: 'Your prep cook made 6 quarts of pico on Monday morning. You threw out 2 on Wednesday night. This has happened every week since September. That\u2019s not a recipe problem, it\u2019s a par problem, and it\u2019s been costing you $80 a week on just that one sixth pan.',
+    back: 'The walk-in is a graveyard of good intentions. Half a case of basil from a special two weeks ago. A hotel pan of braised pork shoulder \u201csomeone was going to use.\u201d Your inventory doesn\u2019t have a counting problem. It has a nobody-talks-to-each-other problem. I talk to everyone.',
   },
   {
     name: 'Guest Brain',
     role: 'Your guest memory',
     image: '/illustrations/characters/guest-brain.png',
-    front: 'Table 12 is the couple who sent back the risotto in October and left a 2-star review. They\u2019re back. This is your redemption dinner.',
-    back: '340 guests came exactly once in 90 days and never returned. That\u2019s not a marketing problem. That\u2019s $68K in lost repeat revenue in your blind spot.',
+    front: 'A woman left a 3-star review last Thursday. Said \u201cfood was fine, felt rushed.\u201d She\u2019s been in nine times this year. Average check: $140. She\u2019s not a complainer \u2014 she\u2019s a regular who just told you she\u2019s about to become someone else\u2019s regular. That review is a $6,000 warning.',
+    back: 'Table 7 tonight is a couple who came in on their first date fourteen months ago. They\u2019ve been back eleven times. They always start with the burrata. He\u2019s allergic to tree nuts. She drinks the Sancerre, not the Sauvignon Blanc \u2014 she\u2019s corrected your staff twice. This should not be the third time.',
   },
   {
     name: 'Voice Brain',
     role: 'Your front-of-house voice',
     image: '/illustrations/characters/voice-brain.png',
-    front: 'While your staff was slammed at 7pm last night, I picked up 23 calls, booked 14 reservations, and talked one guy out of canceling his party of 12.',
-    back: 'A woman called three times about dairy-free for her kid\u2019s birthday. Your host dropped the call twice. I called her back, handled it, and booked a party of 18.',
+    front: 'Seventeen calls went to voicemail last Friday between 5 and 7 PM. Eleven were reservation attempts. Your host was seating a six-top. That\u2019s a slow Tuesday night of revenue that called and you sent it to \u201cleave a message after the beep.\u201d',
+    back: 'A guy called at 2:15 asking about private dining for 30 on the 18th. Your lunch server said \u201cI think so, let me have the manager call you back.\u201d The manager was off. Nobody called back. He booked the Italian place. That\u2019s an $8,000 event you lost to \u201cI think so.\u201d',
   },
   {
     name: 'Growth Brain',
     role: 'Your traffic engine',
     image: '/illustrations/characters/growth-brain.png',
-    front: 'Your competitor two blocks over is running a $9.99 lunch deal pulling your weekday traffic. I\u2019ve drafted a counter-offer that protects your margins.',
-    back: 'You spent $800 on Instagram ads last month and got 12 bookings. Your Google Business listing is misspelling \u201cWednesday.\u201d Fix the free stuff before you burn cash.',
+    front: 'You posted a photo of your salmon on Instagram last Tuesday. 40 likes. Your bartender posted a 12-second video of a cocktail being lit on fire \u2014 1,100 likes. Your marketing isn\u2019t bad. It just doesn\u2019t know what people stop scrolling for. I do.',
+    back: '900 people within a mile search \u201cdinner near me\u201d on a Thursday night. You\u2019re not showing up. The Thai place that opened four months ago is. They\u2019re not better \u2014 they just answered 11 questions on their Google profile that you left blank in 2021.',
   },
   {
     name: 'Market Brain',
     role: 'Your competitive radar',
     image: '/illustrations/characters/market-brain.png',
-    front: 'Three new poke spots opened within a mile this quarter. None serve cooked food after 3pm. Your dinner game just became your moat \u2014 lean into it.',
-    back: 'The neighborhood\u2019s average entr\u00e9e price jumped 14% this year. You raised yours 3%. You\u2019re leaving $6,200 a month on the table out of politeness.',
+    front: 'The new place on Elm Street priced their burger at $17. Yours is $22. Theirs is a smash burger with American cheese. Yours is dry-aged with gruy\u00e8re and bone marrow aioli. You\u2019re not overpriced \u2014 you\u2019ve just never told anyone why there\u2019s a $5 difference.',
+    back: 'Three restaurants in your neighborhood added a \u201cdate night for two\u201d prix fixe in the last six weeks. Your Thursday covers dropped 15% this month and you blamed the weather. It\u2019s not the weather. It\u2019s the $72 couple\u2019s menu at the place your customers drive past to get to you.',
   },
 ];
 
@@ -156,7 +156,7 @@ export default function TheTeam() {
         transition={{ duration: 0.6 }}
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900 mb-3">
-          Nine specialists. Zero salaries.
+          Your dream team. Already hired.
         </h2>
         <p className="text-base sm:text-lg text-cream-600 max-w-xl mx-auto">
           They don&apos;t call in sick. They don&apos;t need health insurance.
@@ -197,7 +197,7 @@ export default function TheTeam() {
 
         {/* Scroll hint */}
         <p className="text-center text-[10px] text-cream-400 mt-4">
-          Scroll to explore all 9 &middot; Hover or tap to flip
+          Scroll to meet the team &middot; Hover or tap to flip
         </p>
       </motion.div>
 
@@ -209,7 +209,7 @@ export default function TheTeam() {
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        Nine brains. One notification. Every morning.
+        One team. One notification. Every morning.
       </motion.p>
     </section>
   );
