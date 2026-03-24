@@ -78,7 +78,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [userLabel, setUserLabel] = useState('');
   const [userLabels, setUserLabels] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(30);
-  const [pnl, setPnl] = useState({ margin: 5.0, revW: 75, costW: 45 });
+  // Realistic restaurant monthly P&L (in $K)
+  // Balanced: $82K rev, $72K costs, $10K margin (12%)
+  // Max tilt: ~$68K rev, ~$67K costs, ~$1K margin (~1.5%)
+  const [pnl, setPnl] = useState({ rev: 82, costs: 72, margin: 12.2 });
 
   useEffect(() => {
     const s = localStorage.getItem('balabite-pile-count');
@@ -118,16 +121,28 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       // Expose tilt for visual indicator
       tiltValueRef.current = rY;
 
-      if (now - lastP > 80) {
+      // Realistic restaurant P&L driven by tilt magnitude
+      // Balanced board = healthy operation, any tilt = both revenue drops AND costs rise
+      if (now - lastP > 60) {
         lastP = now;
-        const tilt = Math.max(-1, Math.min(1, rY / 6));
-        const decay = Math.min(t / 25, 1);
-        const bm = 5.0 - 1.8 * (1 - Math.pow(1 - decay, 3));
-        const margin = Math.max(1.8, Math.min(5.0, bm - Math.abs(tilt) * 0.5));
+        const maxTilt = 6;
+        const tiltMag = Math.min(1, Math.abs(rY) / maxTilt);
+        const eased = tiltMag * tiltMag;
+
+        // Revenue drops when tilted (cancellations, empty tables, bad reviews)
+        // $82K → $68K at max tilt
+        const rev = 82 - eased * 14;
+        // Costs rise when tilted (food waste, overtime, emergency repairs, comps)
+        // $72K → $67K baseline doesn't drop — costs are sticky. They RISE.
+        // $72K → $77K at max tilt
+        const costs = 72 + eased * 5;
+        // Margin = what's left
+        const margin = ((rev - costs) / rev) * 100;
+
         setPnl({
-          margin: parseFloat(margin.toFixed(1)),
-          revW: Math.max(20, 75 - 25 * decay + Math.min(0, tilt) * 18),
-          costW: Math.min(95, 45 + 30 * decay + Math.max(0, tilt) * 18),
+          rev: parseFloat(rev.toFixed(0)),
+          costs: parseFloat(costs.toFixed(0)),
+          margin: parseFloat(Math.max(0.5, margin).toFixed(1)),
         });
       }
 
@@ -144,7 +159,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const labelProgress = useTransform(scrollYProgress, [0.06, 0.5], [0, 15]);
   // P&L, counter, release — continuous opacity
   const pnlOpacity = useTransform(scrollYProgress, [0.45, 0.55], [0, 1]);
-  const counterOpacity = useTransform(scrollYProgress, [0.55, 0.65], [0, 1]);
   // releaseOpacity removed — once things appear, they stay
 
   // Track label count — only goes UP (once revealed, stays revealed)
@@ -152,7 +166,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [visibleCount, setVisibleCount] = useState(0);
   const maxSeenRef = useRef(0);
   const [pnlRevealed, setPnlRevealed] = useState(false);
-  const [counterRevealed, setCounterRevealed] = useState(false);
   const scrollFrameRef = useRef(0);
 
   useEffect(() => {
@@ -164,7 +177,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         setVisibleCount(count);
       }
       if (!pnlRevealed && pnlOpacity.get() > 0.3) setPnlRevealed(true);
-      if (!counterRevealed && counterOpacity.get() > 0.3) setCounterRevealed(true);
       scrollFrameRef.current = requestAnimationFrame(check);
     };
     // Delay first check to let framer-motion initialize scroll values
@@ -175,7 +187,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       clearTimeout(timeout);
       cancelAnimationFrame(scrollFrameRef.current);
     };
-  }, [labelProgress, pnlOpacity, counterOpacity, pnlRevealed, counterRevealed]);
+  }, [labelProgress, pnlOpacity, pnlRevealed]);
 
   const handleAdd = () => {
     const trimmed = userLabel.trim();
@@ -185,17 +197,17 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     setTotalCount(prev => { const n = prev + 1; localStorage.setItem('balabite-pile-count', String(n)); return n; });
   };
 
-  const mColor = pnl.margin > 4.5 ? 'text-green-700' : pnl.margin > 3.8 ? 'text-amber-700' : 'text-red-700';
+  const mColor = pnl.margin > 10 ? 'text-green-700' : pnl.margin > 6 ? 'text-amber-600' : 'text-red-700';
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '250vh' }}>
       {/* Sticky viewport — NO overflow-hidden so labels can extend beyond */}
       <div className="sticky top-0 h-screen bg-cream-100">
         <div className="h-full flex items-center px-4 sm:px-6 pt-20 pb-8 overflow-x-clip">
-          <div className="mx-auto flex max-w-[82rem] w-full flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div className="mx-auto flex max-w-[90rem] w-full flex-col lg:flex-row items-center gap-10 lg:gap-12">
 
-            {/* ── LEFT: Headline ── */}
-            <div className="flex-1 text-center lg:text-left lg:max-w-md">
+            {/* ── LEFT: Headline + Add yours ── */}
+            <div className="flex-1 text-center lg:text-left lg:max-w-lg lg:pl-4 xl:pl-12">
               <motion.p className="text-xs uppercase tracking-[0.2em] text-cream-500 mb-3"
                 variants={fadeUp} initial="hidden" animate="visible" custom={0}>
                 The reality
@@ -228,13 +240,36 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </span>
                 Live in 3 restaurants
               </motion.div>
+
+              {/* ── Add yours — under headline, always visible ── */}
+              <motion.div className="mt-8 w-full max-w-sm mx-auto lg:mx-0"
+                variants={fadeUp} initial="hidden" animate="visible" custom={5}>
+                <p className="text-sm text-cream-600 mb-2 lg:text-left text-center">
+                  Things on this person&apos;s plate:{' '}
+                  <span className="font-bold text-primary-900 text-base">{totalCount}</span>
+                </p>
+                <div className="flex gap-2">
+                  <input type="text" value={userLabel}
+                    onChange={(e) => setUserLabel(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                    placeholder="What's on yours?" maxLength={80}
+                    className="flex-1 rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm text-primary-900 placeholder:text-cream-400 focus:outline-none focus:border-cream-500 focus:ring-1 focus:ring-cream-500" />
+                  <button onClick={handleAdd}
+                    className="rounded-lg bg-primary-900 px-4 py-2 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97] whitespace-nowrap">
+                    Add yours
+                  </button>
+                </div>
+                <p className="text-[10px] text-cream-400 lg:text-left text-center mt-1.5">
+                  Every operator carries something different. Leave yours.
+                </p>
+              </motion.div>
             </div>
 
-            {/* ── RIGHT: Image + labels + P&L + counter ── */}
-            <div className="flex-1 flex flex-col items-center w-full lg:max-w-[520px]">
+            {/* ── RIGHT: Image + labels + P&L — pushed right ── */}
+            <div className="flex-[1.3] flex flex-col items-center w-full lg:max-w-[560px] lg:mr-0">
 
               {/* Image container — labels cluster around this */}
-              <div ref={imgRef} className="relative w-full max-w-[420px]"
+              <div ref={imgRef} className="relative w-full max-w-[440px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
                 {/* Wobbling image with soft edge blend */}
@@ -323,57 +358,39 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* P&L — once visible, stays visible. Bars react to wobble tilt */}
-              <div className={`mt-6 flex items-center justify-center gap-6 text-xs transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <span className="flex items-center gap-2 text-red-500/80">
-                  <span className="flex flex-col items-end gap-0.5">
-                    <span className="text-[9px] text-cream-500">Revenue</span>
-                    <span className="relative h-2 w-20 bg-cream-200 rounded-full overflow-hidden">
-                      <span className="absolute inset-y-0 left-0 bg-red-400 rounded-full transition-[width] duration-100"
-                        style={{ width: `${pnl.revW}%` }} />
-                    </span>
-                  </span>
-                  <span className="text-red-500 font-semibold text-sm">↓</span>
-                </span>
-                <span className="flex items-center gap-2 text-red-600/80">
-                  <span className="text-red-600 font-semibold text-sm">↑</span>
-                  <span className="flex flex-col items-start gap-0.5">
-                    <span className="text-[9px] text-cream-500">Costs</span>
-                    <span className="relative h-2 w-20 bg-cream-200 rounded-full overflow-hidden">
-                      <span className="absolute inset-y-0 left-0 bg-red-600 rounded-full transition-[width] duration-100"
-                        style={{ width: `${pnl.costW}%` }} />
-                    </span>
+              {/* P&L — margin % with revenue/cost bars that shift green↔red with tilt */}
+              <div className={`mt-6 flex items-center justify-center gap-4 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                {/* Revenue bar */}
+                <span className="flex flex-col items-end gap-0.5">
+                  <span className="text-[10px] text-cream-500 font-medium">Revenue</span>
+                  <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
+                    <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-75"
+                      style={{
+                        width: `${(pnl.rev / 90) * 100}%`,
+                        backgroundColor: pnl.margin > 10 ? '#22c55e' : pnl.margin > 6 ? '#eab308' : '#ef4444',
+                      }} />
                   </span>
                 </span>
-                <span className="flex flex-col items-center gap-0.5">
-                  <span className="text-[9px] text-cream-500">Margin</span>
-                  <span className={`font-bold text-lg tabular-nums ${mColor} transition-colors duration-300`}>
+                {/* Margin % — the hero number */}
+                <span className="flex flex-col items-center">
+                  <span className="text-[10px] text-cream-500 font-medium">Margin</span>
+                  <span className={`font-bold text-2xl tabular-nums leading-none ${mColor} transition-colors duration-150`}>
                     {pnl.margin}%
+                  </span>
+                </span>
+                {/* Costs bar */}
+                <span className="flex flex-col items-start gap-0.5">
+                  <span className="text-[10px] text-cream-500 font-medium">Costs</span>
+                  <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
+                    <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-75"
+                      style={{
+                        width: `${(pnl.costs / 90) * 100}%`,
+                        backgroundColor: pnl.margin > 10 ? '#22c55e' : pnl.margin > 6 ? '#eab308' : '#ef4444',
+                      }} />
                   </span>
                 </span>
               </div>
 
-              {/* Counter + Add yours — once visible, stays visible */}
-              <div className={`mt-5 w-full max-w-sm transition-all duration-700 ${counterRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <p className="text-center text-sm text-cream-600 mb-2">
-                  Things on this person&apos;s plate:{' '}
-                  <span className="font-bold text-primary-900 text-base">{totalCount}</span>
-                </p>
-                <div className="flex gap-2">
-                  <input type="text" value={userLabel}
-                    onChange={(e) => setUserLabel(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                    placeholder="What's on yours?" maxLength={80}
-                    className="flex-1 rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm text-primary-900 placeholder:text-cream-400 focus:outline-none focus:border-cream-500 focus:ring-1 focus:ring-cream-500" />
-                  <button onClick={handleAdd}
-                    className="rounded-lg bg-primary-900 px-4 py-2 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97] whitespace-nowrap">
-                    Add yours
-                  </button>
-                </div>
-                <p className="text-[10px] text-cream-400 text-center mt-1.5">
-                  Every operator carries something different. Leave yours.
-                </p>
-              </div>
             </div>
 
             {/* Mobile labels — below image, no scroll gating */}
