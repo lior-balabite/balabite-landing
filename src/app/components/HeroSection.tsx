@@ -78,7 +78,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [userLabels, setUserLabels] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(30);
   // P&L state — margin %, revenue bar fill, costs bar fill
-  const [pnl, setPnl] = useState({ margin: 12.2, revFill: 85, costFill: 40 });
+  // P&L state — sales & costs in $K behind the scenes, margin derived from gap
+  // Balanced: sales $85K, costs $80K → margin 5.9%
+  const [pnl, setPnl] = useState({ sales: 85, costs: 80 });
 
   useEffect(() => {
     const s = localStorage.getItem('balabite-pile-count');
@@ -131,37 +133,36 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
           `perspective(800px) rotate(${tiltZ}deg) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
       }
 
-      // ── P&L DRIVEN BY TILT DIRECTION ──
-      // tiltZ negative = leaning LEFT = revenue pressure (those labels are on the left)
-      // tiltZ positive = leaning RIGHT = cost pressure (those labels are on the right)
-      // The further the lean, the worse that side gets
+      // ── REALISTIC RESTAURANT P&L ──
+      // Behind the scenes: sales and costs in $K. Margin = (sales - costs) / sales.
+      // NRA 2025: avg independent does ~$85K/mo, costs ~$80K, margin ~5-6%.
+      //
+      // Left tilt = revenue pressure → sales drop (no-shows, bad reviews, empty tables)
+      //   Costs barely budge — rent, salaried staff, scheduled labor are FIXED
+      // Right tilt = cost pressure → costs spike (food prices, overtime, repairs)
+      //   Sales dip slightly (can't serve full capacity with broken equipment)
+      //
+      // The killer: when sales drop, costs as % of sales BALLOON even if absolute
+      // costs barely moved. That's the restaurant death spiral.
       if (now - lastP > 100) {
         lastP = now;
 
-        // Normalize tilt: -1 (full left) to +1 (full right)
-        const maxAngle = 8; // max possible tilt from sine + mouse
+        const maxAngle = 8;
         const normalizedTilt = Math.max(-1, Math.min(1, tiltZ / maxAngle));
-        const absTilt = Math.abs(normalizedTilt);
 
-        // Revenue: hurt by LEFT tilt (negative). Healthy at center/right.
-        // Range: 85% fill (good) → 45% fill (bad)
-        const leftPressure = Math.max(0, -normalizedTilt); // 0-1, only when tilting left
-        const revFill = 85 - leftPressure * 40 - absTilt * 5; // slight overall penalty too
+        const leftPressure = Math.max(0, -normalizedTilt);  // 0-1 when tilting left
+        const rightPressure = Math.max(0, normalizedTilt);   // 0-1 when tilting right
 
-        // Costs: hurt by RIGHT tilt (positive). Low at center/left.
-        // Range: 40% fill (good) → 80% fill (bad)
-        const rightPressure = Math.max(0, normalizedTilt); // 0-1, only when tilting right
-        const costFill = 40 + rightPressure * 40 + absTilt * 5;
+        // Sales: $85K balanced. Drops to ~$65K at full left tilt.
+        // Right tilt slightly hurts too (broken POS, can't seat full house)
+        const sales = 85 - leftPressure * 20 - rightPressure * 5;
 
-        // Margin: derived from the gap
-        // Balanced: ~12%. Max left tilt: ~3%. Max right tilt: ~3%.
-        const margin = 12.2 - leftPressure * 9 - rightPressure * 9 - absTilt * 0.5;
+        // Costs: $80K balanced. Rises to ~$92K at full right tilt.
+        // Left tilt barely moves absolute costs — but that's the point:
+        // $80K in costs on $65K revenue is a disaster even though costs didn't change.
+        const costs = 80 + rightPressure * 12 + leftPressure * 2;
 
-        setPnl({
-          margin: parseFloat(Math.max(1.0, margin).toFixed(1)),
-          revFill: Math.max(30, Math.min(90, revFill)),
-          costFill: Math.max(35, Math.min(85, costFill)),
-        });
+        setPnl({ sales, costs });
       }
 
       frameRef.current = requestAnimationFrame(tick);
@@ -211,7 +212,15 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     setTotalCount(prev => { const n = prev + 1; localStorage.setItem('balabite-pile-count', String(n)); return n; });
   };
 
-  const mColor = pnl.margin > 10 ? 'text-green-700' : pnl.margin > 5 ? 'text-amber-600' : 'text-red-700';
+  // Margin derived from the gap — not a separate formula
+  const margin = pnl.sales > 0 ? ((pnl.sales - pnl.costs) / pnl.sales) * 100 : 0;
+  const marginDisplay = parseFloat(margin.toFixed(1));
+  const mColor = margin > 4 ? 'text-green-700' : margin > 1.5 ? 'text-amber-600' : 'text-red-700';
+
+  // Bar fill: both on the same internal $100K scale so they're visually comparable
+  const maxScale = 100;
+  const salesFill = (pnl.sales / maxScale) * 100;
+  const costsFill = (pnl.costs / maxScale) * 100;
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '350vh' }}>
@@ -257,7 +266,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             </div>
 
             {/* ── RIGHT: Image + labels + P&L + Add yours — pushed right ── */}
-            <div className="flex-[1.4] flex flex-col items-center w-full lg:max-w-[580px]">
+            <div className="flex-[1.6] flex flex-col items-center lg:items-end w-full">
 
               {/* Image container — labels cluster around this */}
               <div ref={imgRef} className="relative w-full max-w-[440px]"
@@ -349,24 +358,24 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* P&L — margin % with directional revenue/cost bars */}
+              {/* P&L — sales & costs bars on same scale, margin derived from the gap */}
               <div className={`mt-6 flex items-center justify-center gap-4 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                {/* Revenue bar — shrinks when board leans left */}
+                {/* Sales bar — shrinks when board leans left */}
                 <span className="flex flex-col items-end gap-0.5">
-                  <span className="text-[10px] text-cream-500 font-medium">Revenue</span>
+                  <span className="text-[10px] text-cream-500 font-medium">Sales</span>
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
                     <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-200 ease-out"
                       style={{
-                        width: `${pnl.revFill}%`,
-                        backgroundColor: pnl.revFill > 75 ? '#22c55e' : pnl.revFill > 60 ? '#eab308' : '#ef4444',
+                        width: `${salesFill}%`,
+                        backgroundColor: margin > 4 ? '#22c55e' : margin > 1.5 ? '#eab308' : '#ef4444',
                       }} />
                   </span>
                 </span>
-                {/* Margin % — the hero number */}
+                {/* Margin % — derived from (sales - costs) / sales */}
                 <span className="flex flex-col items-center">
                   <span className="text-[10px] text-cream-500 font-medium">Margin</span>
                   <span className={`font-bold text-2xl tabular-nums leading-none ${mColor} transition-colors duration-200`}>
-                    {pnl.margin}%
+                    {marginDisplay}%
                   </span>
                 </span>
                 {/* Costs bar — grows when board leans right */}
@@ -375,8 +384,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
                     <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-200 ease-out"
                       style={{
-                        width: `${pnl.costFill}%`,
-                        backgroundColor: pnl.costFill < 50 ? '#22c55e' : pnl.costFill < 65 ? '#eab308' : '#ef4444',
+                        width: `${costsFill}%`,
+                        backgroundColor: margin > 4 ? '#22c55e' : margin > 1.5 ? '#eab308' : '#ef4444',
                       }} />
                   </span>
                 </span>
