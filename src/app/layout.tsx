@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'BalaBite.ai — The First AI Restaurant Partner',
+  title: 'Balabite — AI Restaurant Management That Works While You Sleep',
   description:
-    'BalaBite is the first AI that manages your menu, kitchen, team, and guests — so you don\'t have to. Put AI to work for your restaurant.',
+    'AI-powered restaurant management. Menu optimization, staff scheduling, cost control, guest experience — handled by AI brains that work while you sleep and brief you at sunrise.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
