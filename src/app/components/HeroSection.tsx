@@ -111,8 +111,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const frameRef = useRef(0);
   const extraWeightRef = useRef(0); // extra tilt from user clicks
 
-  // "Pile it on" state — labels scatter over the image at random positions
-  const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; x: number; y: number; rot: number }[]>([]);
+  // "Pile it on" state — labels go into the side columns
+  const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; side: 'left' | 'right' }[]>([]);
   const [pileCount, setPileCount] = useState(30);
   const usedIndicesRef = useRef<Set<number>>(new Set());
 
@@ -139,12 +139,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     usedIndicesRef.current.add(idx);
     const label = extraPool[idx];
 
-    // Random position scattered over the image (% based)
-    const x = 5 + Math.random() * 70;  // 5-75% from left
-    const y = 10 + Math.random() * 60; // 10-70% from top
-    const rot = -6 + Math.random() * 12;
-
-    setPiledLabels(prev => [...prev, { text: label.text, s: label.s, x, y, rot }]);
+    setPiledLabels(prev => [...prev, { text: label.text, s: label.s, side: label.side }]);
     setPileCount(prev => prev + 1);
     extraWeightRef.current = Math.min(10, extraWeightRef.current + 1);
   }, []);
@@ -239,19 +234,19 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const marginDisplay = parseFloat(margin.toFixed(1));
   const mColor = margin > 4 ? 'text-green-700' : margin > 1.5 ? 'text-amber-600' : 'text-red-700';
 
-  // Sales bar: show how sales compare to their healthy baseline ($85K)
-  // Full bar = $85K (healthy), shrinks as sales drop
+  // Sales bar: full = healthy baseline ($85K). Shrinks when revenue drops.
+  // GREEN when high (good), AMBER when dipping, RED when tanking.
   const salesFill = Math.max(10, (pnl.sales / 85) * 100);
-  // Sales color: green when near baseline, amber/red when dropping
-  const salesColor = pnl.sales > 82 ? '#22c55e' : pnl.sales > 78 ? '#eab308' : '#ef4444';
+  const salesColor = pnl.sales > 83 ? '#22c55e' : pnl.sales > 79 ? '#eab308' : '#ef4444';
 
-  // Costs bar: show how costs compare to their healthy baseline ($80K)
-  // Baseline = 80% full. GROWS past baseline when costs spike.
+  // Costs bar: baseline ~84% of $95K scale. GROWS when costs spike.
+  // GREEN when low (good), AMBER when creeping, RED when ballooning.
   const costsFill = Math.min(100, (pnl.costs / 95) * 100);
-  // Costs color: green when controlled, amber/red when ballooning
-  const costsColor = pnl.costs < 81 ? '#22c55e' : pnl.costs < 84 ? '#eab308' : '#ef4444';
+  const costsColor = pnl.costs < 81.5 ? '#22c55e' : pnl.costs < 83.5 ? '#eab308' : '#ef4444';
 
   const isPoolExhausted = piledLabels.length >= extraPool.length;
+  const piledLeft = piledLabels.filter(l => l.side === 'left');
+  const piledRight = piledLabels.filter(l => l.side === 'right');
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
@@ -319,19 +314,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
-                {/* Piled labels — scattered OVER the image */}
-                {piledLabels.map((label, i) => (
-                  <div key={`pile-${i}`}
-                    className={`absolute z-10 ${lc(label.s)} animate-pile-in shadow-lg`}
-                    style={{
-                      left: `${label.x}%`,
-                      top: `${label.y}%`,
-                      transform: `rotate(${label.rot}deg)`,
-                    }}>
-                    {label.text}
-                  </div>
-                ))}
-
                 {/* ── "+ Add another problem" — at the fulcrum ── */}
                 <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
                   <button
@@ -372,6 +354,13 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
+                  {piledLeft.map((label, i) => (
+                    <div key={`pile-l-${i}`}
+                      className={`${lc(label.s)} animate-pile-in`}
+                      style={{ transform: `rotate(${rots[(i + 7) % rots.length]})` }}>
+                      {label.text}
+                    </div>
+                  ))}
                 </div>
 
                 {/* RIGHT LABEL CLOUD — cost pressure. pt-14 clears navbar, max-h prevents overflow */}
@@ -395,6 +384,13 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
+                  {piledRight.map((label, i) => (
+                    <div key={`pile-r-${i}`}
+                      className={`${lc(label.s)} animate-pile-in`}
+                      style={{ transform: `rotate(${rots[(i + 3) % rots.length]})` }}>
+                      {label.text}
+                    </div>
+                  ))}
                 </div>
               </div>
 
