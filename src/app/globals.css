@@ -124,3 +124,15 @@ html, body, #__next {
 .animate-pile-in {
   animation: pile-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
+@keyframes nudge {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-2deg); }
+  40% { transform: rotate(2deg); }
+  60% { transform: rotate(-1deg); }
+  80% { transform: rotate(1deg); }
+}
+
+.animate-nudge {
+  animation: nudge 0.5s ease-in-out 1.5s 1;
+}

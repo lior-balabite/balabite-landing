@@ -115,7 +115,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; side: 'left' | 'right' }[]>([]);
   const [pileCount, setPileCount] = useState(30); // starts at 30 (initial labels)
   const usedIndicesRef = useRef<Set<number>>(new Set());
-  const [lastPiledSide, setLastPiledSide] = useState<'left' | 'right'>('left');
 
   // P&L state — sales & costs in $K behind the scenes
   const [pnl, setPnl] = useState({ sales: 85, costs: 80 });
@@ -144,8 +143,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
     setPiledLabels(prev => [...prev, label]);
     setPileCount(prev => prev + 1);
-    setLastPiledSide(label.side);
-
     // Increase wobble amplitude — each click adds persistent weight
     extraWeightRef.current = Math.min(12, extraWeightRef.current + 0.8);
   }, []);
@@ -313,8 +310,27 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
-                {/* LEFT LABEL CLOUD — revenue pressure */}
-                <div className="absolute top-0 right-full pr-4 hidden sm:flex flex-col gap-2 items-end w-[240px]">
+                {/* ── "+ Add another problem" — floating at the fulcrum of the balance board ── */}
+                <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                  <button
+                    onClick={handlePileOn}
+                    disabled={usedIndicesRef.current.size >= extraPool.length}
+                    className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
+                      Add another problem
+                    </span>
+                  </button>
+                  {piledLabels.length > 0 && (
+                    <span className="text-[9px] text-cream-400 tabular-nums bg-white/60 backdrop-blur-sm rounded-full px-2 py-0.5">
+                      {pileCount} on the plate
+                    </span>
+                  )}
+                </div>
+
+                {/* LEFT LABEL CLOUD — revenue pressure. pt-14 clears the navbar */}
+                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-2 items-end w-[240px]">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
@@ -344,8 +360,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   ))}
                 </div>
 
-                {/* RIGHT LABEL CLOUD — cost pressure */}
-                <div className="absolute top-0 left-full pl-4 hidden sm:flex flex-col gap-2 items-start w-[240px]">
+                {/* RIGHT LABEL CLOUD — cost pressure. pt-14 clears the navbar */}
+                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-2 items-start w-[240px]">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
@@ -406,25 +422,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </span>
               </div>
 
-              {/* ── PILE IT ON — the interactive moment ── */}
-              <div className={`mt-4 flex flex-col items-center gap-2 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <button
-                  onClick={handlePileOn}
-                  disabled={usedIndicesRef.current.size >= extraPool.length}
-                  className="group relative rounded-full border-2 border-dashed border-cream-400/60 px-5 py-2 text-sm text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/50 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="text-base leading-none transition-transform group-hover:rotate-12">+</span>
-                    Pile it on
-                  </span>
-                </button>
-                <p className="text-[10px] text-cream-400 tabular-nums">
-                  {pileCount} things on this plate
-                  {piledLabels.length > 0 && (
-                    <span className="text-red-400"> — you added {piledLabels.length}</span>
-                  )}
-                </p>
-              </div>
             </div>
 
             {/* Mobile labels */}
