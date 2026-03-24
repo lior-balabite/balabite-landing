@@ -73,6 +73,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const tiltElRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef(0);
+  const tiltValueRef = useRef(0); // expose tilt for P&L indicator
 
   const [userLabel, setUserLabel] = useState('');
   const [userLabels, setUserLabels] = useState<string[]>([]);
@@ -114,6 +115,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
           `perspective(800px) rotateY(${rY}deg) rotateX(${rX}deg) rotate(${rZ}deg)`;
       }
 
+      // Expose tilt for visual indicator
+      tiltValueRef.current = rY;
+
       if (now - lastP > 80) {
         lastP = now;
         const tilt = Math.max(-1, Math.min(1, rY / 6));
@@ -144,30 +148,34 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   // releaseOpacity removed — once things appear, they stay
 
   // Track label count — only goes UP (once revealed, stays revealed)
+  // Using RAF poll instead of on('change') for reliability on initial load
   const [visibleCount, setVisibleCount] = useState(0);
   const maxSeenRef = useRef(0);
+  const [pnlRevealed, setPnlRevealed] = useState(false);
+  const [counterRevealed, setCounterRevealed] = useState(false);
+  const scrollFrameRef = useRef(0);
+
   useEffect(() => {
-    const unsub = labelProgress.on('change', (v) => {
-      const count = Math.floor(Math.max(0, Math.min(15, v)));
+    const check = () => {
+      const lp = labelProgress.get();
+      const count = Math.floor(Math.max(0, Math.min(15, lp)));
       if (count > maxSeenRef.current) {
         maxSeenRef.current = count;
         setVisibleCount(count);
       }
-    });
-    return unsub;
-  }, [labelProgress]);
-
-  // Track if P&L and counter have been revealed (sticky — don't hide on scroll up)
-  const [pnlRevealed, setPnlRevealed] = useState(false);
-  const [counterRevealed, setCounterRevealed] = useState(false);
-  useEffect(() => {
-    const unsub = pnlOpacity.on('change', (v) => { if (v > 0.5) setPnlRevealed(true); });
-    return unsub;
-  }, [pnlOpacity]);
-  useEffect(() => {
-    const unsub = counterOpacity.on('change', (v) => { if (v > 0.5) setCounterRevealed(true); });
-    return unsub;
-  }, [counterOpacity]);
+      if (!pnlRevealed && pnlOpacity.get() > 0.3) setPnlRevealed(true);
+      if (!counterRevealed && counterOpacity.get() > 0.3) setCounterRevealed(true);
+      scrollFrameRef.current = requestAnimationFrame(check);
+    };
+    // Delay first check to let framer-motion initialize scroll values
+    const timeout = setTimeout(() => {
+      scrollFrameRef.current = requestAnimationFrame(check);
+    }, 100);
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(scrollFrameRef.current);
+    };
+  }, [labelProgress, pnlOpacity, counterOpacity, pnlRevealed, counterRevealed]);
 
   const handleAdd = () => {
     const trimmed = userLabel.trim();
@@ -183,8 +191,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '250vh' }}>
       {/* Sticky viewport — NO overflow-hidden so labels can extend beyond */}
       <div className="sticky top-0 h-screen bg-cream-100">
-        <div className="h-full flex items-center px-6 pt-20 pb-8 overflow-x-clip">
-          <div className="mx-auto flex max-w-[72rem] w-full flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <div className="h-full flex items-center px-4 sm:px-6 pt-20 pb-8 overflow-x-clip">
+          <div className="mx-auto flex max-w-[82rem] w-full flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
             {/* ── LEFT: Headline ── */}
             <div className="flex-1 text-center lg:text-left lg:max-w-md">
@@ -223,43 +231,55 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             </div>
 
             {/* ── RIGHT: Image + labels + P&L + counter ── */}
-            <div className="flex-1 flex flex-col items-center w-full lg:max-w-[480px]">
+            <div className="flex-1 flex flex-col items-center w-full lg:max-w-[520px]">
 
               {/* Image container — labels cluster around this */}
-              <div ref={imgRef} className="relative w-full max-w-[400px]"
+              <div ref={imgRef} className="relative w-full max-w-[420px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
-                {/* Wobbling image */}
+                {/* Wobbling image with soft edge blend */}
                 <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
                   <div ref={tiltElRef} style={{ transformOrigin: '50% 95%', willChange: 'transform' }}>
-                    <Image src="/illustrations/scenes/hero1.png"
-                      alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
-                      width={800} height={1400} className="w-full h-auto" priority />
+                    <div className="relative">
+                      <Image src="/illustrations/scenes/hero1.png"
+                        alt="A restaurant operator balancing on an unstable board, head buried under a towering pile of daily chaos"
+                        width={800} height={1400} className="w-full h-auto" priority />
+                      {/* Soft gradient blend into background */}
+                      <div className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background: `
+                            linear-gradient(to bottom, transparent 0%, transparent 85%, var(--cream-100, #FAF5EE) 100%),
+                            radial-gradient(ellipse at center, transparent 60%, var(--cream-100, #FAF5EE) 100%)
+                          `,
+                        }} />
+                    </div>
                   </div>
                 </motion.div>
 
                 {/* LEFT LABEL CLOUD — revenue pressure */}
-                <div className="absolute top-0 right-full pr-3 hidden sm:flex flex-col gap-2 items-end w-[220px]">
-                  {visibleCount > 0 && (
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500">
-                      Revenue pressure
-                    </p>
-                  )}
-                  {leftLabels.map((label, i) => (
-                    <div
-                      key={label.text}
-                      className={lc(label.s)}
-                      style={{
-                        transform: `rotate(${rots[i % rots.length]})`,
-                        opacity: i < visibleCount ? 1 : 0,
-                        maxHeight: i < visibleCount ? '40px' : '0px',
-                        marginBottom: i < visibleCount ? undefined : '-4px',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {label.text}
-                    </div>
-                  ))}
+                <div className="absolute top-0 right-full pr-4 hidden sm:flex flex-col gap-2 items-end w-[240px]">
+                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                    Revenue pressure
+                  </p>
+                  {leftLabels.map((label, i) => {
+                    const show = i < visibleCount;
+                    return (
+                      <div
+                        key={label.text}
+                        className={lc(label.s)}
+                        style={{
+                          transform: show ? `rotate(${rots[i % rots.length]}) translateX(0)` : `rotate(${rots[i % rots.length]}) translateX(20px)`,
+                          opacity: show ? 1 : 0,
+                          maxHeight: show ? '40px' : '0px',
+                          marginBottom: show ? undefined : '-4px',
+                          overflow: 'hidden',
+                          transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
+                        }}
+                      >
+                        {label.text}
+                      </div>
+                    );
+                  })}
                   {userLabels.filter((_, i) => i % 2 === 0).map((text, i) => (
                     <div key={`ul-${i}`}
                       className="whitespace-nowrap text-[10px] sm:text-xs px-2.5 py-1 border rounded-md shadow-lg bg-red-50 text-red-800 border-red-300 font-medium transition-all duration-500"
@@ -270,27 +290,29 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
 
                 {/* RIGHT LABEL CLOUD — cost pressure */}
-                <div className="absolute top-0 left-full pl-3 hidden sm:flex flex-col gap-2 items-start w-[220px]">
-                  {visibleCount > 0 && (
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500">
-                      Cost pressure
-                    </p>
-                  )}
-                  {rightLabels.map((label, i) => (
-                    <div
-                      key={label.text}
-                      className={lc(label.s)}
-                      style={{
-                        transform: `rotate(${rots[(i + 5) % rots.length]})`,
-                        opacity: i < visibleCount ? 1 : 0,
-                        maxHeight: i < visibleCount ? '40px' : '0px',
-                        marginBottom: i < visibleCount ? undefined : '-4px',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {label.text}
-                    </div>
-                  ))}
+                <div className="absolute top-0 left-full pl-4 hidden sm:flex flex-col gap-2 items-start w-[240px]">
+                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                    Cost pressure
+                  </p>
+                  {rightLabels.map((label, i) => {
+                    const show = i < visibleCount;
+                    return (
+                      <div
+                        key={label.text}
+                        className={lc(label.s)}
+                        style={{
+                          transform: show ? `rotate(${rots[(i + 5) % rots.length]}) translateX(0)` : `rotate(${rots[(i + 5) % rots.length]}) translateX(-20px)`,
+                          opacity: show ? 1 : 0,
+                          maxHeight: show ? '40px' : '0px',
+                          marginBottom: show ? undefined : '-4px',
+                          overflow: 'hidden',
+                          transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
+                        }}
+                      >
+                        {label.text}
+                      </div>
+                    );
+                  })}
                   {userLabels.filter((_, i) => i % 2 === 1).map((text, i) => (
                     <div key={`ur-${i}`}
                       className="whitespace-nowrap text-[10px] sm:text-xs px-2.5 py-1 border rounded-md shadow-lg bg-red-50 text-red-800 border-red-300 font-medium transition-all duration-500"
@@ -301,38 +323,38 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* P&L — once visible, stays visible */}
-              <div className={`mt-4 flex items-center justify-center gap-5 text-xs transition-opacity duration-700 ${pnlRevealed ? 'opacity-100' : 'opacity-0'}`}>
+              {/* P&L — once visible, stays visible. Bars react to wobble tilt */}
+              <div className={`mt-6 flex items-center justify-center gap-6 text-xs transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                 <span className="flex items-center gap-2 text-red-500/80">
                   <span className="flex flex-col items-end gap-0.5">
                     <span className="text-[9px] text-cream-500">Revenue</span>
-                    <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
-                      <span className="absolute inset-y-0 left-0 bg-red-400 rounded-full transition-[width] duration-150"
+                    <span className="relative h-2 w-20 bg-cream-200 rounded-full overflow-hidden">
+                      <span className="absolute inset-y-0 left-0 bg-red-400 rounded-full transition-[width] duration-100"
                         style={{ width: `${pnl.revW}%` }} />
                     </span>
                   </span>
-                  <span className="text-red-500 font-medium">↓</span>
+                  <span className="text-red-500 font-semibold text-sm">↓</span>
                 </span>
                 <span className="flex items-center gap-2 text-red-600/80">
-                  <span className="text-red-600 font-medium">↑</span>
+                  <span className="text-red-600 font-semibold text-sm">↑</span>
                   <span className="flex flex-col items-start gap-0.5">
                     <span className="text-[9px] text-cream-500">Costs</span>
-                    <span className="relative h-1.5 w-16 bg-cream-200 rounded-full overflow-hidden">
-                      <span className="absolute inset-y-0 left-0 bg-red-600 rounded-full transition-[width] duration-150"
+                    <span className="relative h-2 w-20 bg-cream-200 rounded-full overflow-hidden">
+                      <span className="absolute inset-y-0 left-0 bg-red-600 rounded-full transition-[width] duration-100"
                         style={{ width: `${pnl.costW}%` }} />
                     </span>
                   </span>
                 </span>
                 <span className="flex flex-col items-center gap-0.5">
                   <span className="text-[9px] text-cream-500">Margin</span>
-                  <span className={`font-bold text-base tabular-nums ${mColor} transition-colors duration-300`}>
+                  <span className={`font-bold text-lg tabular-nums ${mColor} transition-colors duration-300`}>
                     {pnl.margin}%
                   </span>
                 </span>
               </div>
 
               {/* Counter + Add yours — once visible, stays visible */}
-              <div className={`mt-5 w-full max-w-sm transition-opacity duration-700 ${counterRevealed ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`mt-5 w-full max-w-sm transition-all duration-700 ${counterRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                 <p className="text-center text-sm text-cream-600 mb-2">
                   Things on this person&apos;s plate:{' '}
                   <span className="font-bold text-primary-900 text-base">{totalCount}</span>

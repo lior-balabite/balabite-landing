@@ -57,12 +57,40 @@ Continuing from 2026-03-23 session. Hero image (hero1.png) generated via Runway 
 - The wow (wobble, labels, P&L) IS the brand. Built with code, not cash.
 - Image is the Purple Cow — no competitor has anything like it
 
-## Current Issues (to fix next)
-1. Scroll transition is laggy — needs smooth flow like Fig, not state-jumping
-2. Mouse tilt feels sticky/laggy — needs smoother easing or different approach
-3. P&L (margin/revenue/cost) needs smarter behavior — currently too simple
-4. Labels should flow in smoothly during scroll, not jump in batches
-5. Need to flow between phases, not snap between states
+## Current State (end of session)
+
+### What's working:
+- 3D wobble with ambient sine waves + mouse lerp tilt (direct DOM, no React re-render)
+- P&L bars synced to wobble tilt — revenue dips on left tilt, costs spike on right
+- Margin countdown 5.0% → 3.2% over 25 seconds with color shift green→amber→red
+- Labels revealed by scroll, stay once revealed (don't hide on scroll-up)
+- P&L and counter stay once revealed (sticky reveal)
+- Scroll container 250vh, sticky viewport
+- Labels in two columns adjacent to image edges (left=revenue, right=cost)
+- "Add yours" crowdsourced counter with localStorage persistence
+
+### What still needs work:
+1. Labels are in COLUMNS not a CLOUD — the roundtable said they should cluster/swarm around the image like Fig's items around the tower, not line up in neat lists
+2. The gap between hero section bottom and "You weren't alone" may still feel too large
+3. Mouse tilt works but the lerp factor (0.06) might need tuning — could feel too slow
+4. P&L bars are small — roundtable said margin number should be bigger, more impossible to ignore
+5. Mobile experience — labels only show 6 per side, no scroll reveal, no P&L
+6. The "Add yours" input needs to be tested with real users — does it actually get used?
+7. Headline "This is a ten-person job." — chosen by operator roundtable but not yet tested live
+8. Need to verify the scroll percentages work on different screen sizes/devices
+
+### Architecture:
+- HeroSection: sticky scroll sequence (250vh container, 100vh pinned viewport)
+- HatStack: the turn ("What if / You weren't alone") + briefing + Meet Balabite + character grid
+- WhatChanges: "The team you can't afford to hire"
+- Capabilities: "What you stop worrying about"
+
+### Competitive positioning:
+- Nory: "Profitability's secret ingredient" (product-first)
+- Owner: "You're losing sales online" (fear+fix)
+- Zavo: "The operating system for modern hospitality" (platform)
+- Restoke: "Run a restaurant you love again" (emotional but chef-centric)
+- Balabite: "This is a ten-person job." (talks to the PERSON, not the business — unclaimed territory)
 
 ## Files Changed
 - src/app/components/HeroSection.tsx — full rewrite (scroll sequence)
