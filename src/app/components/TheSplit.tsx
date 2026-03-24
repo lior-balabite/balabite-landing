@@ -398,7 +398,7 @@ export default function TheSplit() {
 
       {/* Split container */}
       <motion.div
-        className="relative mx-auto max-w-[80rem] px-4 sm:px-6"
+        className="relative mx-auto max-w-[92rem] px-3 sm:px-4"
         layout
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
