@@ -414,46 +414,50 @@ export default function TheSplit() {
             transition={{ duration: 0.3 }}
             className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 select-none"
           >
-            {/* ── LEFT LAYER: WITHOUT — clipped to divider position ── */}
+            {/* ── LEFT LAYER: WITHOUT — uses grid, content in col 1 only ── */}
             <div
-              className="absolute inset-0 bg-[#1a1a2e] text-white/90"
+              className="absolute inset-0"
               style={{ clipPath: `inset(0 ${100 - dividerPos}% 0 0)` }}
             >
-              {/* Content constrained to left half with right padding so divider never clips text */}
-              <div className="p-6 sm:p-8 md:p-10 pr-[calc(50%+2rem)]">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
-                <p className="text-sm text-white/40 italic mt-1 mb-6">{angle.leftSub}</p>
-                <div className="space-y-5">
-                  {angle.moments.map((m) => (
-                    <div key={`wo-${m.time}`} className="flex gap-4">
-                      <span className="text-[11px] font-mono text-red-400/60 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
-                        {m.time}
-                      </span>
-                      <p className="text-[13px] leading-relaxed text-white/70">{m.without}</p>
-                    </div>
-                  ))}
+              <div className="grid grid-cols-2 h-full">
+                <div className="bg-[#1a1a2e] text-white/90 p-6 sm:p-8 md:p-10">
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
+                  <p className="text-sm text-white/40 italic mt-1 mb-6">{angle.leftSub}</p>
+                  <div className="space-y-5">
+                    {angle.moments.map((m) => (
+                      <div key={`wo-${m.time}`} className="flex gap-4">
+                        <span className="text-[11px] font-mono text-red-400/60 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
+                          {m.time}
+                        </span>
+                        <p className="text-[13px] leading-relaxed text-white/70">{m.without}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                <div className="bg-[#1a1a2e]" />
               </div>
             </div>
 
-            {/* ── RIGHT LAYER: WITH BALABITE — clipped from divider position ── */}
+            {/* ── RIGHT LAYER: WITH BALABITE — uses grid, content in col 2 only ── */}
             <div
-              className="absolute inset-0 bg-[#FDF8F0]"
+              className="absolute inset-0"
               style={{ clipPath: `inset(0 0 0 ${dividerPos}%)` }}
             >
-              {/* Content constrained to right half with left padding */}
-              <div className="p-6 sm:p-8 md:p-10 pl-[calc(50%+2rem)]">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
-                <p className="text-sm text-cream-500 italic mt-1 mb-6">{angle.rightSub}</p>
-                <div className="space-y-5">
-                  {angle.moments.map((m) => (
-                    <div key={`wi-${m.time}`} className="flex gap-4">
-                      <span className="text-[11px] font-mono text-green-600/50 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
-                        {m.time}
-                      </span>
-                      <p className="text-[13px] leading-relaxed text-cream-700">{m.with}</p>
-                    </div>
-                  ))}
+              <div className="grid grid-cols-2 h-full">
+                <div className="bg-[#FDF8F0]" />
+                <div className="bg-[#FDF8F0] p-6 sm:p-8 md:p-10">
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
+                  <p className="text-sm text-cream-500 italic mt-1 mb-6">{angle.rightSub}</p>
+                  <div className="space-y-5">
+                    {angle.moments.map((m) => (
+                      <div key={`wi-${m.time}`} className="flex gap-4">
+                        <span className="text-[11px] font-mono text-green-600/50 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
+                          {m.time}
+                        </span>
+                        <p className="text-[13px] leading-relaxed text-cream-700">{m.with}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -477,17 +481,20 @@ export default function TheSplit() {
               </div>
             </div>
 
-            {/* Invisible sizing — ensures the container is tall enough for the longest content */}
-            <div className="invisible p-6 sm:p-8 md:p-10 pr-[calc(50%+2rem)]">
-              <div className="mb-8" />
-              <div className="space-y-5">
-                {angle.moments.map((m) => (
-                  <div key={`sz-${m.time}`} className="flex gap-4">
-                    <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
-                    <p className="text-[13px] leading-relaxed">{m.without.length > m.with.length ? m.without : m.with}</p>
-                  </div>
-                ))}
+            {/* Invisible sizing — grid col 1 with the longer text sets the height */}
+            <div className="invisible grid grid-cols-2">
+              <div className="p-6 sm:p-8 md:p-10">
+                <div className="mb-8" />
+                <div className="space-y-5">
+                  {angle.moments.map((m) => (
+                    <div key={`sz-${m.time}`} className="flex gap-4">
+                      <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
+                      <p className="text-[13px] leading-relaxed">{m.without.length > m.with.length ? m.without : m.with}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+              <div />
             </div>
           </motion.div>
         </AnimatePresence>
