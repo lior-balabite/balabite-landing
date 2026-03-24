@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { useI18n } from '../../i18n/I18nProvider';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
+import TheSplit from '../components/TheSplit';
 import HatStack from '../components/HatStack';
 import WhatChanges from '../components/WhatChanges';
 import Capabilities from '../components/Capabilities';
@@ -58,7 +59,10 @@ export default function LandingPage() {
       {/* Section 1: Hero — "Good morning, Chef." */}
       <HeroSection onCtaClick={scrollToCta} />
 
-      {/* Section 2: Problem + Breaking Point — hat stack → collapse */}
+      {/* Section 2: The Split — Without vs With BalaBite */}
+      <TheSplit />
+
+      {/* Section 3: Problem + Breaking Point — hat stack → collapse */}
       <HatStack />
 
       {/* === CREAM SECTIONS === */}
