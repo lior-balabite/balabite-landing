@@ -25,7 +25,7 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}
     >
-      <div className="mx-auto flex max-w-[80rem] items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-[90rem] items-center justify-between px-6 sm:px-10 lg:px-16 py-4">
         {/* Logo — SVG inline so we can control color */}
         <a href="/" className="flex items-center gap-2.5">
           <svg
