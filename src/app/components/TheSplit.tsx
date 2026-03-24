@@ -14,8 +14,7 @@ interface SplitAngle {
   tagline: string;
 }
 
-const angles: SplitAngle[] = [
-  // ── ORIGINAL 3 ANGLES ──
+const anglesUnsorted: SplitAngle[] = [
   {
     id: 'shift',
     tab: 'Your Day',
@@ -331,28 +330,28 @@ const angles: SplitAngle[] = [
   },
 ];
 
+// Tab order: emotional hook first, then broad, then specific, then life
+const tabOrder = ['emotional', 'shift', 'guests', 'menu-money', 'kitchen', 'greatest-hits', 'money', 'life'];
+const angles = tabOrder.map(id => anglesUnsorted.find(a => a.id === id)!);
+
 export default function TheSplit() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const splitRef = useRef<HTMLDivElement>(null);
   const [activeAngle, setActiveAngle] = useState(0);
   const [dividerPos, setDividerPos] = useState(50);
   const isDragging = useRef(false);
-
   const angle = angles[activeAngle];
 
   const handleMove = useCallback((clientX: number) => {
-    if (!isDragging.current || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
+    if (!isDragging.current || !splitRef.current) return;
+    const rect = splitRef.current.getBoundingClientRect();
     const pct = ((clientX - rect.left) / rect.width) * 100;
-    setDividerPos(Math.max(15, Math.min(85, pct)));
+    setDividerPos(Math.max(20, Math.min(80, pct)));
   }, []);
-
-  const handleMouseDown = useCallback(() => { isDragging.current = true; }, []);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => handleMove(e.clientX);
     const onTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
     const onUp = () => { isDragging.current = false; };
-
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     window.addEventListener('touchmove', onTouchMove, { passive: true });
@@ -399,8 +398,7 @@ export default function TheSplit() {
 
       {/* Split container */}
       <motion.div
-        ref={containerRef}
-        className="relative mx-auto max-w-[80rem] px-4 sm:px-6 select-none"
+        className="relative mx-auto max-w-[80rem] px-4 sm:px-6"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: '-60px' }}
@@ -409,57 +407,53 @@ export default function TheSplit() {
         <AnimatePresence mode="wait">
           <motion.div
             key={angle.id}
+            ref={splitRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50"
-            style={{ minHeight: '520px' }}
+            className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 select-none"
           >
-            {/* ── LEFT: WITHOUT ── */}
+            {/* ── LEFT LAYER: WITHOUT — clipped to divider position ── */}
             <div
               className="absolute inset-0 bg-[#1a1a2e] text-white/90"
               style={{ clipPath: `inset(0 ${100 - dividerPos}% 0 0)` }}
             >
-              <div className="h-full p-6 sm:p-8 md:p-10 max-w-[38rem]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
-                </div>
-                <p className="text-sm text-white/40 italic mb-8">{angle.leftSub}</p>
+              {/* Content constrained to left half with right padding so divider never clips text */}
+              <div className="p-6 sm:p-8 md:p-10 pr-[calc(50%+2rem)]">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
+                <p className="text-sm text-white/40 italic mt-1 mb-6">{angle.leftSub}</p>
                 <div className="space-y-5">
                   {angle.moments.map((m) => (
-                    <div key={`wo-${m.time}`} className="flex gap-3">
-                      <span className="text-xs font-mono text-red-400/60 whitespace-nowrap pt-0.5 w-20 shrink-0">
+                    <div key={`wo-${m.time}`} className="flex gap-4">
+                      <span className="text-[11px] font-mono text-red-400/60 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
                         {m.time}
                       </span>
-                      <p className="text-sm leading-relaxed text-white/70">{m.without}</p>
+                      <p className="text-[13px] leading-relaxed text-white/70">{m.without}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* ── RIGHT: WITH BALABITE ── */}
+            {/* ── RIGHT LAYER: WITH BALABITE — clipped from divider position ── */}
             <div
               className="absolute inset-0 bg-[#FDF8F0]"
               style={{ clipPath: `inset(0 0 0 ${dividerPos}%)` }}
             >
-              <div className="h-full p-6 sm:p-8 md:p-10 flex justify-end">
-                <div className="max-w-[38rem] w-full">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
-                  </div>
-                  <p className="text-sm text-cream-500 italic mb-8">{angle.rightSub}</p>
-                  <div className="space-y-5">
-                    {angle.moments.map((m) => (
-                      <div key={`wi-${m.time}`} className="flex gap-3">
-                        <span className="text-xs font-mono text-green-600/50 whitespace-nowrap pt-0.5 w-20 shrink-0">
-                          {m.time}
-                        </span>
-                        <p className="text-sm leading-relaxed text-cream-700">{m.with}</p>
-                      </div>
-                    ))}
-                  </div>
+              {/* Content constrained to right half with left padding */}
+              <div className="p-6 sm:p-8 md:p-10 pl-[calc(50%+2rem)]">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
+                <p className="text-sm text-cream-500 italic mt-1 mb-6">{angle.rightSub}</p>
+                <div className="space-y-5">
+                  {angle.moments.map((m) => (
+                    <div key={`wi-${m.time}`} className="flex gap-4">
+                      <span className="text-[11px] font-mono text-green-600/50 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
+                        {m.time}
+                      </span>
+                      <p className="text-[13px] leading-relaxed text-cream-700">{m.with}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -469,11 +463,11 @@ export default function TheSplit() {
               className="absolute top-0 bottom-0 z-10 flex items-center"
               style={{ left: `${dividerPos}%`, transform: 'translateX(-50%)' }}
             >
-              <div className="absolute inset-y-0 w-px bg-cream-400/40" />
+              <div className="absolute inset-y-0 w-px bg-white/30" />
               <div
                 className="relative w-10 h-10 rounded-full bg-white shadow-lg border border-cream-300 flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleMouseDown}
+                onMouseDown={() => { isDragging.current = true; }}
+                onTouchStart={() => { isDragging.current = true; }}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-cream-500">
                   <path d="M5 3L5 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -483,14 +477,14 @@ export default function TheSplit() {
               </div>
             </div>
 
-            {/* Invisible sizing content */}
-            <div className="invisible p-6 sm:p-8 md:p-10">
-              <div className="mb-10" />
+            {/* Invisible sizing — ensures the container is tall enough for the longest content */}
+            <div className="invisible p-6 sm:p-8 md:p-10 pr-[calc(50%+2rem)]">
+              <div className="mb-8" />
               <div className="space-y-5">
                 {angle.moments.map((m) => (
-                  <div key={`sz-${m.time}`} className="flex gap-3">
-                    <span className="w-20 shrink-0 text-xs">{m.time}</span>
-                    <p className="text-sm leading-relaxed">{m.without.length > m.with.length ? m.without : m.with}</p>
+                  <div key={`sz-${m.time}`} className="flex gap-4">
+                    <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
+                    <p className="text-[13px] leading-relaxed">{m.without.length > m.with.length ? m.without : m.with}</p>
                   </div>
                 ))}
               </div>

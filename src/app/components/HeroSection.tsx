@@ -290,8 +290,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
   // ── SCROLL-DRIVEN ──
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
-  const labelProgress = useTransform(scrollYProgress, [0.05, 0.4], [0, 15]);
-  const pnlOpacity = useTransform(scrollYProgress, [0.35, 0.45], [0, 1]);
+  // 220vh container: labels reveal 8%-55%, P&L at 50%-60%, leaves 40% for dwell
+  const labelProgress = useTransform(scrollYProgress, [0.08, 0.55], [0, 15]);
+  const pnlOpacity = useTransform(scrollYProgress, [0.50, 0.60], [0, 1]);
 
   const maxSeenRef = useRef(0);
   const [pnlRevealed, setPnlRevealed] = useState(false);
@@ -335,7 +336,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     nextPoolIdxRef.current.right >= rightLabelsAll.length;
 
   return (
-    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
+    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '220vh' }}>
       <div className="sticky top-0 h-screen bg-cream-100">
         <div className="h-full flex items-center px-6 sm:px-10 lg:px-16 pt-16 pb-8 overflow-x-clip">
           <div className="mx-auto flex max-w-[90rem] w-full flex-col lg:flex-row items-center gap-8 lg:gap-10">
