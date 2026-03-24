@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   onCtaClick: () => void;
@@ -56,7 +55,6 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
           </span>
         </a>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
           <button
             onClick={onCtaClick}
             className="hidden sm:block rounded-full bg-primary-900 text-cream-100 hover:bg-primary-800 px-5 py-2 text-sm font-semibold transition-all duration-200"
