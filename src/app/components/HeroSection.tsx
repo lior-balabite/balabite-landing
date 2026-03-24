@@ -111,9 +111,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const frameRef = useRef(0);
   const extraWeightRef = useRef(0); // extra tilt from user clicks
 
-  // "Pile it on" state
-  const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; side: 'left' | 'right' }[]>([]);
-  const [pileCount, setPileCount] = useState(30); // starts at 30 (initial labels)
+  // "Pile it on" state — labels scatter over the image at random positions
+  const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; x: number; y: number; rot: number }[]>([]);
+  const [pileCount, setPileCount] = useState(30);
   const usedIndicesRef = useRef<Set<number>>(new Set());
 
   // P&L state — sales & costs in $K behind the scenes
@@ -130,21 +130,23 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
   // ── PILE IT ON — click handler ──
   const handlePileOn = useCallback(() => {
-    // Find an unused label from the pool
     const available = extraPool
       .map((_, i) => i)
       .filter(i => !usedIndicesRef.current.has(i));
-
-    if (available.length === 0) return; // pool exhausted
+    if (available.length === 0) return;
 
     const idx = available[Math.floor(Math.random() * available.length)];
     usedIndicesRef.current.add(idx);
     const label = extraPool[idx];
 
-    setPiledLabels(prev => [...prev, label]);
+    // Random position scattered over the image (% based)
+    const x = 5 + Math.random() * 70;  // 5-75% from left
+    const y = 10 + Math.random() * 60; // 10-70% from top
+    const rot = -6 + Math.random() * 12;
+
+    setPiledLabels(prev => [...prev, { text: label.text, s: label.s, x, y, rot }]);
     setPileCount(prev => prev + 1);
-    // Increase wobble amplitude — each click adds persistent weight
-    extraWeightRef.current = Math.min(12, extraWeightRef.current + 0.8);
+    extraWeightRef.current = Math.min(10, extraWeightRef.current + 1);
   }, []);
 
   // ── WOBBLE + P&L LOOP ──
@@ -236,16 +238,23 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const margin = pnl.sales > 0 ? ((pnl.sales - pnl.costs) / pnl.sales) * 100 : 0;
   const marginDisplay = parseFloat(margin.toFixed(1));
   const mColor = margin > 4 ? 'text-green-700' : margin > 1.5 ? 'text-amber-600' : 'text-red-700';
-  const maxScale = 100;
-  const salesFill = (pnl.sales / maxScale) * 100;
-  const costsFill = (pnl.costs / maxScale) * 100;
 
-  // Extra labels split by side
-  const piledLeft = piledLabels.filter(l => l.side === 'left');
-  const piledRight = piledLabels.filter(l => l.side === 'right');
+  // Sales bar: show how sales compare to their healthy baseline ($85K)
+  // Full bar = $85K (healthy), shrinks as sales drop
+  const salesFill = Math.max(10, (pnl.sales / 85) * 100);
+  // Sales color: green when near baseline, amber/red when dropping
+  const salesColor = pnl.sales > 82 ? '#22c55e' : pnl.sales > 78 ? '#eab308' : '#ef4444';
+
+  // Costs bar: show how costs compare to their healthy baseline ($80K)
+  // Baseline = 80% full. GROWS past baseline when costs spike.
+  const costsFill = Math.min(100, (pnl.costs / 95) * 100);
+  // Costs color: green when controlled, amber/red when ballooning
+  const costsColor = pnl.costs < 81 ? '#22c55e' : pnl.costs < 84 ? '#eab308' : '#ef4444';
+
+  const isPoolExhausted = piledLabels.length >= extraPool.length;
 
   return (
-    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '350vh' }}>
+    <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
       <div className="sticky top-0 h-screen bg-cream-100">
         <div className="h-full flex items-center px-6 sm:px-10 lg:px-16 pt-16 pb-8 overflow-x-clip">
           <div className="mx-auto flex max-w-[90rem] w-full flex-col lg:flex-row items-center gap-8 lg:gap-10">
@@ -310,16 +319,29 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
-                {/* ── "+ Add another problem" — floating at the fulcrum of the balance board ── */}
-                <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                {/* Piled labels — scattered OVER the image */}
+                {piledLabels.map((label, i) => (
+                  <div key={`pile-${i}`}
+                    className={`absolute z-10 ${lc(label.s)} animate-pile-in shadow-lg`}
+                    style={{
+                      left: `${label.x}%`,
+                      top: `${label.y}%`,
+                      transform: `rotate(${label.rot}deg)`,
+                    }}>
+                    {label.text}
+                  </div>
+                ))}
+
+                {/* ── "+ Add another problem" — at the fulcrum ── */}
+                <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
                   <button
                     onClick={handlePileOn}
-                    disabled={usedIndicesRef.current.size >= extraPool.length}
+                    disabled={isPoolExhausted}
                     className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
                   >
                     <span className="inline-flex items-center gap-1">
                       <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
-                      Add another problem
+                      {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
                     </span>
                   </button>
                   {piledLabels.length > 0 && (
@@ -329,8 +351,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   )}
                 </div>
 
-                {/* LEFT LABEL CLOUD — revenue pressure. pt-14 clears the navbar */}
-                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-2 items-end w-[240px]">
+                {/* LEFT LABEL CLOUD — revenue pressure. pt-14 clears navbar, max-h prevents overflow */}
+                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-2 items-end w-[240px] max-h-[calc(100%-2rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
@@ -350,18 +372,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
-                  {/* User-piled labels */}
-                  {piledLeft.map((label, i) => (
-                    <div key={`pile-l-${i}`}
-                      className={`${lc(label.s)} animate-pile-in`}
-                      style={{ transform: `rotate(${rots[(i + 7) % rots.length]})` }}>
-                      {label.text}
-                    </div>
-                  ))}
                 </div>
 
-                {/* RIGHT LABEL CLOUD — cost pressure. pt-14 clears the navbar */}
-                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-2 items-start w-[240px]">
+                {/* RIGHT LABEL CLOUD — cost pressure. pt-14 clears navbar, max-h prevents overflow */}
+                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-2 items-start w-[240px] max-h-[calc(100%-2rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
@@ -381,27 +395,17 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
-                  {/* User-piled labels */}
-                  {piledRight.map((label, i) => (
-                    <div key={`pile-r-${i}`}
-                      className={`${lc(label.s)} animate-pile-in`}
-                      style={{ transform: `rotate(${rots[(i + 3) % rots.length]})` }}>
-                      {label.text}
-                    </div>
-                  ))}
                 </div>
               </div>
 
-              {/* P&L — sales & costs bars, margin derived from the gap */}
+              {/* P&L — sales shrinks (bad), costs grows (bad), margin = the truth */}
               <div className={`mt-6 flex items-center justify-center gap-4 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                {/* Sales: full = healthy $85K, shrinks when revenue drops */}
                 <span className="flex flex-col items-end gap-0.5">
                   <span className="text-[10px] text-cream-500 font-medium">Sales</span>
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
                     <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-200 ease-out"
-                      style={{
-                        width: `${salesFill}%`,
-                        backgroundColor: margin > 4 ? '#22c55e' : margin > 1.5 ? '#eab308' : '#ef4444',
-                      }} />
+                      style={{ width: `${salesFill}%`, backgroundColor: salesColor }} />
                   </span>
                 </span>
                 <span className="flex flex-col items-center">
@@ -410,14 +414,12 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                     {marginDisplay}%
                   </span>
                 </span>
+                {/* Costs: starts moderate, GROWS and turns red when costs spike */}
                 <span className="flex flex-col items-start gap-0.5">
                   <span className="text-[10px] text-cream-500 font-medium">Costs</span>
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
                     <span className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-200 ease-out"
-                      style={{
-                        width: `${costsFill}%`,
-                        backgroundColor: margin > 4 ? '#22c55e' : margin > 1.5 ? '#eab308' : '#ef4444',
-                      }} />
+                      style={{ width: `${costsFill}%`, backgroundColor: costsColor }} />
                   </span>
                 </span>
               </div>
