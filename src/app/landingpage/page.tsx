@@ -6,13 +6,8 @@ import { useI18n } from '../../i18n/I18nProvider';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import TheSplit from '../components/TheSplit';
-import HatStack from '../components/HatStack';
-import WhatChanges from '../components/WhatChanges';
-import Capabilities from '../components/Capabilities';
-import GuestShowcase from '../components/GuestShowcase';
-import ProductShowcase from '../components/ProductShowcase';
+import TheTeam from '../components/TheTeam';
 import HowItWorks from '../components/HowItWorks';
-import VenueTypes from '../components/VenueTypes';
 import SocialProof from '../components/SocialProof';
 import FinalCTA from '../components/FinalCTA';
 
@@ -62,45 +57,18 @@ export default function LandingPage() {
       {/* Section 2: The Split — Without vs With BalaBite */}
       <TheSplit />
 
-      {/* Section 3: Problem + Breaking Point — hat stack → collapse */}
-      <HatStack />
-
-      {/* === CREAM SECTIONS === */}
-
-      {/* Section 3: The Resolution — nine brains, one partner */}
-      <WhatChanges />
-
-      {/* Section 4: Capabilities — three pillars, outcome-first */}
+      {/* Section 3: The Team — 9 AI brains */}
       <div id="capabilities">
-        <Capabilities />
+        <TheTeam />
       </div>
 
-      {/* CTA 3/4 — after capabilities */}
-      <section className="py-12 px-6 bg-cream-100 text-center">
-        <button
-          onClick={scrollToCta}
-          className="rounded-full bg-primary-900 px-8 py-3.5 text-base font-semibold text-cream-100 transition-all duration-200 hover:bg-primary-800 active:scale-[0.97]"
-        >
-          Put AI to Work
-        </button>
-      </section>
-
-      {/* Section 5: Guest Experience */}
-      <GuestShowcase />
-
-      {/* Section 6: Product Showcase — Pulse Briefing */}
-      <ProductShowcase />
-
-      {/* Section 7: How It Works — 3 Steps */}
+      {/* Section 4: How It Works — 3 Steps */}
       <HowItWorks />
 
-      {/* Section 8: Venue Types */}
-      <VenueTypes />
-
-      {/* Section 9: Social Proof */}
+      {/* Section 5: Social Proof */}
       <SocialProof />
 
-      {/* Section 10: Final CTA + Footer */}
+      {/* Section 6: Final CTA + Footer */}
       <FinalCTA ref={ctaSectionRef} />
     </div>
   );
