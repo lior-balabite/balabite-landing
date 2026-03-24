@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 interface HeroSectionProps {
@@ -17,8 +17,8 @@ const fadeUp = {
   }),
 };
 
-/* ── SCROLL-REVEALED LABELS (15 per side) ── */
-const leftLabels = [
+/* ── ALL LABELS — initial 15 per side + 30 extras ── */
+const leftLabelsAll = [
   { text: '"Sorry, can\'t make it today"', s: 'sms' },
   { text: 'Where\'s Miguel?', s: 'sms' },
   { text: 'Yelp: 1 star', s: 'alert' },
@@ -34,9 +34,25 @@ const leftLabels = [
   { text: 'Missed another recital', s: 'note' },
   { text: 'DoorDash refund', s: 'alert' },
   { text: 'No one\'s closing tonight', s: 'sms' },
+  // Extras (from pool)
+  { text: 'Party of 12 no-showed', s: 'sms' },
+  { text: '"Food was cold"', s: 'alert' },
+  { text: 'Reservation cancelled (6)', s: 'ticket' },
+  { text: 'Uber Eats refund x3', s: 'alert' },
+  { text: 'Competitor opened next door', s: 'note' },
+  { text: '"We waited 45 minutes"', s: 'sms' },
+  { text: 'Wedding cancelled', s: 'sms' },
+  { text: 'Rainy week — dead floor', s: 'note' },
+  { text: 'Food blogger: "meh"', s: 'alert' },
+  { text: 'Catering gig fell through', s: 'sms' },
+  { text: '"Manager never came over"', s: 'sms' },
+  { text: 'Empty patio again', s: 'note' },
+  { text: 'Lost the private event', s: 'sms' },
+  { text: 'Regulars stopped coming', s: 'note' },
+  { text: 'Gift cards unredeemed', s: 'ticket' },
 ];
 
-const rightLabels = [
+const rightLabelsAll = [
   { text: 'PAST DUE', s: 'stamp' },
   { text: 'Rent due in 3 days', s: 'stamp' },
   { text: 'Insurance +22%', s: 'stamp' },
@@ -52,26 +68,28 @@ const rightLabels = [
   { text: 'Broke a case of wine', s: 'note' },
   { text: '2-top waiting 40 min', s: 'ticket' },
   { text: 'missed call (3)', s: 'note' },
-];
-
-/* ── EXTRA LABEL POOL — text flashes on click, weight persists ── */
-const extraPool = [
-  'Party of 12 no-showed', '"Food was cold"', 'Reservation cancelled (6)',
-  'Uber Eats refund x3', 'Competitor opened next door', '"We waited 45 minutes"',
-  'Wedding cancelled', 'Rainy week — dead floor', 'Food blogger: "meh"',
-  'Catering gig fell through', '"Manager never came over"', 'Empty patio again',
-  'Lost the private event', 'Regulars stopped coming', 'Gift cards unredeemed',
-  'Minimum wage +$2', 'Grease trap emergency', 'Walk-in compressor died',
-  'Overtime: 47 hours', 'Produce prices +18%', 'Plumbing backup',
-  'Hood vent inspection: FAIL', 'New POS system $4K', 'Workers comp claim',
-  'Linen service +25%', 'Fire suppression expired', 'Pest control emergency',
-  'Deep clean: $2,800', 'Fryer needs replacing', 'Credit card fees up',
+  // Extras (from pool)
+  { text: 'Minimum wage +$2', s: 'stamp' },
+  { text: 'Grease trap emergency', s: 'ticket' },
+  { text: 'Walk-in compressor died', s: 'ticket' },
+  { text: 'Overtime: 47 hours', s: 'stamp' },
+  { text: 'Produce prices +18%', s: 'alert' },
+  { text: 'Plumbing backup', s: 'ticket' },
+  { text: 'Hood vent inspection: FAIL', s: 'stamp' },
+  { text: 'New POS system $4K', s: 'alert' },
+  { text: 'Workers comp claim', s: 'stamp' },
+  { text: 'Linen service +25%', s: 'alert' },
+  { text: 'Fire suppression expired', s: 'stamp' },
+  { text: 'Pest control emergency', s: 'ticket' },
+  { text: 'Deep clean: $2,800', s: 'alert' },
+  { text: 'Fryer needs replacing', s: 'ticket' },
+  { text: 'Credit card fees up', s: 'alert' },
 ];
 
 const rots = ['-2.5deg', '1.8deg', '-1.2deg', '2.3deg', '-1.7deg', '1.1deg', '-2.8deg', '3.1deg', '-0.8deg', '2.6deg', '-2.1deg', '0.9deg', '-1.5deg', '2.4deg', '-1.3deg'];
 
 function lc(s: string) {
-  const b = 'whitespace-nowrap text-[10px] sm:text-xs px-2.5 py-1 border rounded-md shadow-sm transition-all duration-700 ease-out';
+  const b = 'whitespace-nowrap text-[10px] sm:text-xs px-2.5 py-1 border rounded-md shadow-sm';
   switch (s) {
     case 'stamp': return `${b} bg-red-50 text-red-700 border-red-300 font-bold uppercase tracking-wider shadow-md`;
     case 'sms': return `${b} bg-white text-primary-800 border-primary-200 rounded-xl italic`;
@@ -81,27 +99,82 @@ function lc(s: string) {
   }
 }
 
+// Flying label animation: starts at button position, flies to target slot
+const flyVariants = {
+  initial: (custom: { dx: number; dy: number }) => ({
+    x: custom.dx,
+    y: custom.dy,
+    scale: 1.1,
+    opacity: 0.9,
+  }),
+  animate: {
+    x: 0,
+    y: 0,
+    scale: 1,
+    opacity: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    transition: { duration: 0.2 },
+  },
+};
+
 export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
   const tiltElRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const rightColRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef(0);
   const extraWeightRef = useRef(0);
 
-  // Pile-on state: labels overlay on existing column labels
-  const [piledLabels, setPiledLabels] = useState<{
+  // Dynamic column capacity — measured on mount
+  const [maxLabels, setMaxLabels] = useState(13);
+
+  // Current visible labels per column (swappable)
+  const [leftSlots, setLeftSlots] = useState<{ text: string; s: string; key: number }[]>([]);
+  const [rightSlots, setRightSlots] = useState<{ text: string; s: string; key: number }[]>([]);
+  const nextPoolIdxRef = useRef({ left: 15, right: 15 }); // start after initial 15
+  const keyCounterRef = useRef(100);
+
+  // Flying label state: which slot is being swapped and the flight vector
+  const [flyingLabel, setFlyingLabel] = useState<{
     text: string; s: string; side: 'left' | 'right';
-    targetIdx: number; // which existing label to overlay on
-    offsetX: number; offsetY: number; // slight random offset for layered look
-  }[]>([]);
-  const [pileCount, setPileCount] = useState(30);
-  const [flashLabel, setFlashLabel] = useState<string | null>(null);
-  const [flashKey, setFlashKey] = useState(0);
-  const usedIndicesRef = useRef<Set<number>>(new Set());
-  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    slotIdx: number; dx: number; dy: number; key: number;
+  } | null>(null);
 
   const [pnl, setPnl] = useState({ sales: 85, costs: 80 });
+
+  // Measure column capacity on mount and resize
+  useEffect(() => {
+    const measure = () => {
+      if (leftColRef.current) {
+        const h = leftColRef.current.clientHeight;
+        const labelH = 28; // approx height per label + gap
+        setMaxLabels(Math.max(8, Math.floor(h / labelH)));
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  // Initialize slots when visibleCount or maxLabels changes
+  const [visibleCount, setVisibleCount] = useState(0);
+  const prevVisibleRef = useRef(0);
+
+  useEffect(() => {
+    if (visibleCount > prevVisibleRef.current) {
+      const count = Math.min(visibleCount, maxLabels);
+      setLeftSlots(leftLabelsAll.slice(0, count).map((l, i) => ({ ...l, key: i })));
+      setRightSlots(rightLabelsAll.slice(0, count).map((l, i) => ({ ...l, key: i })));
+      prevVisibleRef.current = visibleCount;
+    }
+  }, [visibleCount, maxLabels]);
 
   const onMM = useCallback((e: React.MouseEvent) => {
     if (!imgRef.current) return;
@@ -111,49 +184,59 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   }, []);
   const onML = useCallback(() => { mouseRef.current = { x: 0, y: 0 }; }, []);
 
-  // ── CLICK HANDLER: Flash & Sink ──
-  // Shows label text briefly, then sinks away. Weight persists.
+  // ── CLICK HANDLER: Pick a label, fly it to a random slot, swap ──
   const handlePileOn = useCallback(() => {
-    const available = extraPool
-      .map((_, i) => i)
-      .filter(i => !usedIndicesRef.current.has(i));
-    if (available.length === 0) return;
+    // Alternate sides, pick next from the pool
+    const side: 'left' | 'right' = nextPoolIdxRef.current.left <= nextPoolIdxRef.current.right ? 'left' : 'right';
+    const pool = side === 'left' ? leftLabelsAll : rightLabelsAll;
+    const poolIdx = nextPoolIdxRef.current[side];
+    if (poolIdx >= pool.length) return; // exhausted
 
-    const idx = available[Math.floor(Math.random() * available.length)];
-    usedIndicesRef.current.add(idx);
-    const text = extraPool[idx];
-    // First 15 in pool are revenue (left), last 15 are cost (right)
-    const side: 'left' | 'right' = idx < 15 ? 'left' : 'right';
+    const newLabel = pool[poolIdx];
+    nextPoolIdxRef.current[side] = poolIdx + 1;
 
-    // Pick a random existing label slot to overlay on (0-14)
-    const targetIdx = Math.floor(Math.random() * 15);
-    // Random offset so both old and new are partially visible
-    const offsetX = (side === 'left' ? -1 : 1) * (3 + Math.random() * 6);
-    const offsetY = 2 + Math.random() * 5;
+    // Pick a random visible slot to replace
+    const slots = side === 'left' ? leftSlots : rightSlots;
+    if (slots.length === 0) return;
+    const slotIdx = Math.floor(Math.random() * slots.length);
 
-    // Assign a visual style based on side
-    const s = side === 'left'
-      ? (['sms', 'alert', 'ticket', 'note'] as const)[idx % 4]
-      : (['stamp', 'alert', 'ticket', 'sms'] as const)[idx % 4];
+    // Calculate flight vector: from button to target slot
+    let dx = 0, dy = 0;
+    if (buttonRef.current) {
+      const btnRect = buttonRef.current.getBoundingClientRect();
+      const colRef = side === 'left' ? leftColRef.current : rightColRef.current;
+      if (colRef) {
+        const slotEls = colRef.querySelectorAll('[data-label-slot]');
+        const targetEl = slotEls[slotIdx];
+        if (targetEl) {
+          const targetRect = targetEl.getBoundingClientRect();
+          dx = btnRect.left + btnRect.width / 2 - (targetRect.left + targetRect.width / 2);
+          dy = btnRect.top + btnRect.height / 2 - (targetRect.top + targetRect.height / 2);
+        }
+      }
+    }
 
-    setPiledLabels(prev => [...prev, {
-      text, s, side, targetIdx, offsetX, offsetY,
-    }]);
+    const key = keyCounterRef.current++;
 
-    // Flash the label text briefly
-    setFlashLabel(text);
-    setFlashKey(prev => prev + 1);
-    setPileCount(prev => prev + 1);
+    // Start the flying animation
+    setFlyingLabel({ text: newLabel.text, s: newLabel.s, side, slotIdx, dx, dy, key });
+
+    // After flight completes, swap the slot content
+    setTimeout(() => {
+      if (side === 'left') {
+        setLeftSlots(prev => prev.map((slot, i) =>
+          i === slotIdx ? { text: newLabel.text, s: newLabel.s, key } : slot
+        ));
+      } else {
+        setRightSlots(prev => prev.map((slot, i) =>
+          i === slotIdx ? { text: newLabel.text, s: newLabel.s, key } : slot
+        ));
+      }
+      setFlyingLabel(null);
+    }, 500);
+
     extraWeightRef.current = Math.min(15, extraWeightRef.current + 1);
-
-    // Clear after animation completes
-    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
-    flashTimeoutRef.current = setTimeout(() => setFlashLabel(null), 2000);
-  }, []);
-
-  useEffect(() => {
-    return () => { if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current); };
-  }, []);
+  }, [leftSlots, rightSlots]);
 
   // ── WOBBLE + P&L LOOP ──
   useEffect(() => {
@@ -192,9 +275,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
         const weightSalesDrag = weight * 0.2;
         const weightCostsDrag = weight * 0.15;
-
-        // Tilt uses quadratic easing so small tilts barely affect P&L,
-        // only extreme tilts cause real damage
         const leftEased = leftPressure * leftPressure;
         const rightEased = rightPressure * rightPressure;
 
@@ -215,7 +295,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const labelProgress = useTransform(scrollYProgress, [0.05, 0.4], [0, 15]);
   const pnlOpacity = useTransform(scrollYProgress, [0.35, 0.45], [0, 1]);
 
-  const [visibleCount, setVisibleCount] = useState(0);
   const maxSeenRef = useRef(0);
   const [pnlRevealed, setPnlRevealed] = useState(false);
   const scrollFrameRef = useRef(0);
@@ -223,7 +302,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   useEffect(() => {
     const check = () => {
       const lp = labelProgress.get();
-      const count = Math.floor(Math.max(0, Math.min(15, lp)));
+      const count = Math.floor(Math.max(0, Math.min(maxLabels, lp)));
       if (count > maxSeenRef.current) {
         maxSeenRef.current = count;
         setVisibleCount(count);
@@ -238,7 +317,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       clearTimeout(timeout);
       cancelAnimationFrame(scrollFrameRef.current);
     };
-  }, [labelProgress, pnlOpacity, pnlRevealed]);
+  }, [labelProgress, pnlOpacity, pnlRevealed, maxLabels]);
 
   // Derived P&L
   const margin = pnl.sales > 0 ? ((pnl.sales - pnl.costs) / pnl.sales) * 100 : 0;
@@ -253,15 +332,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const costsFill = Math.max(12, Math.min(90, ((pnl.costs - costsMin) / (costsMax - costsMin)) * 100));
   const costsColor = pnl.costs < 81.5 ? '#22c55e' : pnl.costs < 83 ? '#eab308' : '#ef4444';
 
-  const isPoolExhausted = usedIndicesRef.current.size >= extraPool.length;
-
-  // Group piled labels by side and target slot index
-  const piledBySlot = { left: {} as Record<number, typeof piledLabels>, right: {} as Record<number, typeof piledLabels> };
-  piledLabels.forEach(l => {
-    const key = l.side;
-    if (!piledBySlot[key][l.targetIdx]) piledBySlot[key][l.targetIdx] = [];
-    piledBySlot[key][l.targetIdx].push(l);
-  });
+  const isPoolExhausted =
+    nextPoolIdxRef.current.left >= leftLabelsAll.length &&
+    nextPoolIdxRef.current.right >= rightLabelsAll.length;
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
@@ -305,10 +378,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
               </motion.div>
             </div>
 
-            {/* ── RIGHT: Image + labels + P&L + Flash interaction ── */}
+            {/* ── RIGHT: Image + labels + P&L ── */}
             <div className="flex-[1.4] flex flex-col items-center w-full lg:pr-4 xl:pr-8">
 
-              {/* Image container */}
               <div ref={imgRef} className="relative w-full max-w-[440px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
@@ -329,11 +401,12 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
-                {/* ── Button at the fulcrum of the balance board ── */}
+                {/* ── Button at the fulcrum ── */}
                 <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-20 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
                   <button
+                    ref={buttonRef}
                     onClick={handlePileOn}
-                    disabled={isPoolExhausted}
+                    disabled={isPoolExhausted || flyingLabel !== null}
                     className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
                   >
                     <span className="inline-flex items-center gap-1">
@@ -343,87 +416,74 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </button>
                 </div>
 
-                {/* LEFT LABEL CLOUD — scroll-revealed + overlaid piled labels */}
-                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-1.5 items-end w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
-                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                {/* LEFT LABEL CLOUD */}
+                <div ref={leftColRef} className="absolute top-0 right-full pr-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-end w-[240px] overflow-hidden">
+                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
-                  {leftLabels.map((label, i) => {
-                    const show = i < visibleCount;
-                    const overlays = piledBySlot.left[i] || [];
-                    return (
-                      <div key={label.text} className="relative"
-                        style={{
-                          opacity: show ? 1 : 0,
-                          maxHeight: show ? '40px' : '0px',
-                          marginBottom: show ? undefined : '-4px',
-                          overflow: show ? 'visible' : 'hidden',
-                          transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
-                          transition: 'opacity 0.7s, max-height 0.7s',
-                        }}>
-                        {/* Original label */}
-                        <div className={lc(label.s)}
-                          style={{ transform: `rotate(${rots[i % rots.length]})` }}>
-                          {label.text}
-                        </div>
-                        {/* Overlaid piled labels — offset so both are readable */}
-                        {overlays.map((ol, j) => (
-                          <div key={`ol-l-${i}-${j}`}
-                            className={`${lc(ol.s)} animate-pile-in absolute shadow-md`}
-                            style={{
-                              top: `${ol.offsetY + j * 3}px`,
-                              right: `${-ol.offsetX - j * 2}px`,
-                              transform: `rotate(${rots[(i + j + 7) % rots.length]})`,
-                              zIndex: j + 1,
-                            }}>
-                            {ol.text}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
+                  <AnimatePresence mode="popLayout">
+                    {leftSlots.map((label, i) => (
+                      <motion.div
+                        key={label.key}
+                        data-label-slot
+                        layout
+                        initial={label.key >= 100 ? { scale: 0.8, opacity: 0 } : false}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className={lc(label.s)}
+                        style={{ transform: `rotate(${rots[i % rots.length]})` }}
+                      >
+                        {label.text}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
 
-                {/* RIGHT LABEL CLOUD — scroll-revealed + overlaid piled labels */}
-                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-1.5 items-start w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
-                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                {/* RIGHT LABEL CLOUD */}
+                <div ref={rightColRef} className="absolute top-0 left-full pl-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-start w-[240px] overflow-hidden">
+                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
-                  {rightLabels.map((label, i) => {
-                    const show = i < visibleCount;
-                    const overlays = piledBySlot.right[i] || [];
-                    return (
-                      <div key={label.text} className="relative"
-                        style={{
-                          opacity: show ? 1 : 0,
-                          maxHeight: show ? '40px' : '0px',
-                          marginBottom: show ? undefined : '-4px',
-                          overflow: show ? 'visible' : 'hidden',
-                          transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
-                          transition: 'opacity 0.7s, max-height 0.7s',
-                        }}>
-                        {/* Original label */}
-                        <div className={lc(label.s)}
-                          style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}>
-                          {label.text}
-                        </div>
-                        {/* Overlaid piled labels */}
-                        {overlays.map((ol, j) => (
-                          <div key={`ol-r-${i}-${j}`}
-                            className={`${lc(ol.s)} animate-pile-in absolute shadow-md`}
-                            style={{
-                              top: `${ol.offsetY + j * 3}px`,
-                              left: `${ol.offsetX + j * 2}px`,
-                              transform: `rotate(${rots[(i + j + 3) % rots.length]})`,
-                              zIndex: j + 1,
-                            }}>
-                            {ol.text}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
+                  <AnimatePresence mode="popLayout">
+                    {rightSlots.map((label, i) => (
+                      <motion.div
+                        key={label.key}
+                        data-label-slot
+                        layout
+                        initial={label.key >= 100 ? { scale: 0.8, opacity: 0 } : false}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className={lc(label.s)}
+                        style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}
+                      >
+                        {label.text}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
+
+                {/* ── Flying label — animates from button to target slot ── */}
+                <AnimatePresence>
+                  {flyingLabel && (
+                    <motion.div
+                      key={flyingLabel.key}
+                      custom={{ dx: flyingLabel.dx, dy: flyingLabel.dy }}
+                      variants={flyVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className={`fixed z-50 ${lc(flyingLabel.s)} shadow-lg pointer-events-none`}
+                      style={{
+                        // Position at the target slot — the animation starts offset and flies TO here
+                        left: 0, top: 0,
+                      }}
+                    >
+                      {flyingLabel.text}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* P&L bars */}
@@ -450,37 +510,19 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </span>
               </div>
 
-              {/* ── Flash zone + counter (below P&L) ── */}
-              <div className={`mt-2 flex flex-col items-center transition-all duration-700 ${pnlRevealed ? 'opacity-100' : 'opacity-0'}`}>
-                {/* Flash: label text appears briefly then sinks */}
-                <div className="h-6 flex items-center justify-center">
-                  {flashLabel && (
-                    <span key={flashKey} className="text-xs font-medium text-red-700/80 animate-flash-sink">
-                      {flashLabel}
-                    </span>
-                  )}
-                </div>
-                {/* Counter */}
-                <p className="text-[10px] text-cream-400 tabular-nums">
-                  {pileCount} things on this plate
-                  {pileCount > 30 && (
-                    <span className="text-red-400/70"> — you added {pileCount - 30}</span>
-                  )}
-                </p>
-              </div>
             </div>
 
             {/* Mobile labels */}
             <div className="flex sm:hidden gap-3 w-full max-w-md mx-auto">
               <div className="flex-1 flex flex-col items-end gap-1.5">
                 <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Revenue</p>
-                {leftLabels.slice(0, 6).map((l, i) => (
+                {leftLabelsAll.slice(0, 6).map((l, i) => (
                   <div key={l.text} className={lc(l.s)} style={{ transform: `rotate(${rots[i]})` }}>{l.text}</div>
                 ))}
               </div>
               <div className="flex-1 flex flex-col items-start gap-1.5">
                 <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Costs</p>
-                {rightLabels.slice(0, 6).map((l, i) => (
+                {rightLabelsAll.slice(0, 6).map((l, i) => (
                   <div key={l.text} className={lc(l.s)} style={{ transform: `rotate(${rots[(i+5) % rots.length]})` }}>{l.text}</div>
                 ))}
               </div>
