@@ -168,11 +168,16 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         const leftPressure = Math.max(0, -normalizedTilt);
         const rightPressure = Math.max(0, normalizedTilt);
 
-        const weightSalesDrag = weight * 0.3;
-        const weightCostsDrag = weight * 0.2;
+        const weightSalesDrag = weight * 0.2;
+        const weightCostsDrag = weight * 0.15;
 
-        const sales = 85 - weightSalesDrag - leftPressure * 10 - rightPressure * 3;
-        const costs = 80 + weightCostsDrag + rightPressure * 7 + leftPressure * 1;
+        // Tilt uses quadratic easing so small tilts barely affect P&L,
+        // only extreme tilts cause real damage
+        const leftEased = leftPressure * leftPressure;
+        const rightEased = rightPressure * rightPressure;
+
+        const sales = 85 - weightSalesDrag - leftEased * 12 - rightEased * 4;
+        const costs = 80 + weightCostsDrag + rightEased * 9 + leftEased * 1.5;
 
         setPnl({ sales, costs });
       }
@@ -294,6 +299,20 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
+                {/* ── Button at the fulcrum of the balance board ── */}
+                <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-20 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+                  <button
+                    onClick={handlePileOn}
+                    disabled={isPoolExhausted}
+                    className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
+                      {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
+                    </span>
+                  </button>
+                </div>
+
                 {/* LEFT LABEL CLOUD — scroll-revealed only, static */}
                 <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-1.5 items-end w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
@@ -365,32 +384,16 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </span>
               </div>
 
-              {/* ── FLASH & SINK interaction ── */}
-              <div className={`mt-4 flex flex-col items-center gap-2 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                {/* The flash zone — label appears here briefly then sinks */}
-                <div className="h-7 flex items-center justify-center">
+              {/* ── Flash zone + counter (below P&L) ── */}
+              <div className={`mt-2 flex flex-col items-center transition-all duration-700 ${pnlRevealed ? 'opacity-100' : 'opacity-0'}`}>
+                {/* Flash: label text appears briefly then sinks */}
+                <div className="h-6 flex items-center justify-center">
                   {flashLabel && (
-                    <span
-                      key={flashKey}
-                      className="text-xs font-medium text-red-700/80 animate-flash-sink"
-                    >
+                    <span key={flashKey} className="text-xs font-medium text-red-700/80 animate-flash-sink">
                       {flashLabel}
                     </span>
                   )}
                 </div>
-
-                {/* The button */}
-                <button
-                  onClick={handlePileOn}
-                  disabled={isPoolExhausted}
-                  className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
-                >
-                  <span className="inline-flex items-center gap-1">
-                    <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
-                    {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
-                  </span>
-                </button>
-
                 {/* Counter */}
                 <p className="text-[10px] text-cream-400 tabular-nums">
                   {pileCount} things on this plate
