@@ -17,7 +17,7 @@ const fadeUp = {
   }),
 };
 
-/* ── INITIAL LABELS (scroll-revealed) ── */
+/* ── SCROLL-REVEALED LABELS (15 per side) ── */
 const leftLabels = [
   { text: '"Sorry, can\'t make it today"', s: 'sms' },
   { text: 'Where\'s Miguel?', s: 'sms' },
@@ -54,40 +54,18 @@ const rightLabels = [
   { text: 'missed call (3)', s: 'note' },
 ];
 
-/* ── EXTRA LABEL POOL — drawn from on "Pile it on" clicks ── */
-const extraPool: { text: string; s: string; side: 'left' | 'right' }[] = [
-  // Revenue pressure (left)
-  { text: 'Party of 12 no-showed', s: 'sms', side: 'left' },
-  { text: '"Food was cold"', s: 'alert', side: 'left' },
-  { text: 'Reservation cancelled (6)', s: 'ticket', side: 'left' },
-  { text: 'Uber Eats refund x3', s: 'alert', side: 'left' },
-  { text: 'Competitor opened next door', s: 'note', side: 'left' },
-  { text: '"We waited 45 minutes"', s: 'sms', side: 'left' },
-  { text: 'Wedding cancelled', s: 'sms', side: 'left' },
-  { text: 'Rainy week — dead floor', s: 'note', side: 'left' },
-  { text: 'Food blogger: "meh"', s: 'alert', side: 'left' },
-  { text: 'Catering gig fell through', s: 'sms', side: 'left' },
-  { text: '"Manager never came over"', s: 'sms', side: 'left' },
-  { text: 'Empty patio again', s: 'note', side: 'left' },
-  { text: 'Lost the private event', s: 'sms', side: 'left' },
-  { text: 'Regulars stopped coming', s: 'note', side: 'left' },
-  { text: 'Gift cards unredeemed', s: 'ticket', side: 'left' },
-  // Cost pressure (right)
-  { text: 'Minimum wage +$2', s: 'stamp', side: 'right' },
-  { text: 'Grease trap emergency', s: 'ticket', side: 'right' },
-  { text: 'Walk-in compressor died', s: 'ticket', side: 'right' },
-  { text: 'Overtime: 47 hours', s: 'stamp', side: 'right' },
-  { text: 'Produce prices +18%', s: 'alert', side: 'right' },
-  { text: 'Plumbing backup', s: 'ticket', side: 'right' },
-  { text: 'Hood vent inspection: FAIL', s: 'stamp', side: 'right' },
-  { text: 'New POS system $4K', s: 'alert', side: 'right' },
-  { text: 'Workers comp claim', s: 'stamp', side: 'right' },
-  { text: 'Linen service +25%', s: 'alert', side: 'right' },
-  { text: 'Fire suppression expired', s: 'stamp', side: 'right' },
-  { text: 'Pest control emergency', s: 'ticket', side: 'right' },
-  { text: 'Deep clean: $2,800', s: 'alert', side: 'right' },
-  { text: 'Fryer needs replacing', s: 'ticket', side: 'right' },
-  { text: 'Credit card fees up', s: 'alert', side: 'right' },
+/* ── EXTRA LABEL POOL — text flashes on click, weight persists ── */
+const extraPool = [
+  'Party of 12 no-showed', '"Food was cold"', 'Reservation cancelled (6)',
+  'Uber Eats refund x3', 'Competitor opened next door', '"We waited 45 minutes"',
+  'Wedding cancelled', 'Rainy week — dead floor', 'Food blogger: "meh"',
+  'Catering gig fell through', '"Manager never came over"', 'Empty patio again',
+  'Lost the private event', 'Regulars stopped coming', 'Gift cards unredeemed',
+  'Minimum wage +$2', 'Grease trap emergency', 'Walk-in compressor died',
+  'Overtime: 47 hours', 'Produce prices +18%', 'Plumbing backup',
+  'Hood vent inspection: FAIL', 'New POS system $4K', 'Workers comp claim',
+  'Linen service +25%', 'Fire suppression expired', 'Pest control emergency',
+  'Deep clean: $2,800', 'Fryer needs replacing', 'Credit card fees up',
 ];
 
 const rots = ['-2.5deg', '1.8deg', '-1.2deg', '2.3deg', '-1.7deg', '1.1deg', '-2.8deg', '3.1deg', '-0.8deg', '2.6deg', '-2.1deg', '0.9deg', '-1.5deg', '2.4deg', '-1.3deg'];
@@ -109,17 +87,17 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const tiltElRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef(0);
-  const extraWeightRef = useRef(0); // extra tilt from user clicks
+  const extraWeightRef = useRef(0);
 
-  // "Pile it on" state — labels go into the side columns
-  const [piledLabels, setPiledLabels] = useState<{ text: string; s: string; side: 'left' | 'right' }[]>([]);
+  // "Flash & Sink" state
   const [pileCount, setPileCount] = useState(30);
+  const [flashLabel, setFlashLabel] = useState<string | null>(null);
+  const [flashKey, setFlashKey] = useState(0); // forces re-render for animation reset
   const usedIndicesRef = useRef<Set<number>>(new Set());
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // P&L state — sales & costs in $K behind the scenes
   const [pnl, setPnl] = useState({ sales: 85, costs: 80 });
 
-  // Mouse tracking
   const onMM = useCallback((e: React.MouseEvent) => {
     if (!imgRef.current) return;
     const r = imgRef.current.getBoundingClientRect();
@@ -128,7 +106,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   }, []);
   const onML = useCallback(() => { mouseRef.current = { x: 0, y: 0 }; }, []);
 
-  // ── PILE IT ON — click handler ──
+  // ── CLICK HANDLER: Flash & Sink ──
+  // Shows label text briefly, then sinks away. Weight persists.
   const handlePileOn = useCallback(() => {
     const available = extraPool
       .map((_, i) => i)
@@ -137,11 +116,21 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
     const idx = available[Math.floor(Math.random() * available.length)];
     usedIndicesRef.current.add(idx);
-    const label = extraPool[idx];
+    const text = extraPool[idx];
 
-    setPiledLabels(prev => [...prev, { text: label.text, s: label.s, side: label.side }]);
+    // Flash the label
+    setFlashLabel(text);
+    setFlashKey(prev => prev + 1);
     setPileCount(prev => prev + 1);
-    extraWeightRef.current = Math.min(10, extraWeightRef.current + 1);
+    extraWeightRef.current = Math.min(15, extraWeightRef.current + 1);
+
+    // Clear after animation completes
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    flashTimeoutRef.current = setTimeout(() => setFlashLabel(null), 2000);
+  }, []);
+
+  useEffect(() => {
+    return () => { if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current); };
   }, []);
 
   // ── WOBBLE + P&L LOOP ──
@@ -157,9 +146,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       sm.x += (mouseRef.current.x - sm.x) * 0.03;
       sm.y += (mouseRef.current.y - sm.y) * 0.03;
 
-      // Slow seesaw wobble. Extra weight increases amplitude.
       const weight = extraWeightRef.current;
-      const baseAmplitude = 4.5 + weight * 0.15; // gets slightly wilder with more pile
+      const baseAmplitude = 4.5 + weight * 0.15;
       const primaryTilt = Math.sin(t * 0.8) * baseAmplitude;
       const secondaryTilt = Math.sin(t * 0.3 + 2) * 1.5;
       const mouseInfluence = sm.x * 2;
@@ -173,17 +161,13 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
           `perspective(800px) rotate(${tiltZ}deg) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
       }
 
-      // P&L: sales & costs move, margin = gap
-      // Extra weight makes the baseline worse (more chaos = harder to run profitably)
       if (now - lastP > 100) {
         lastP = now;
-
         const maxAngle = 8;
         const normalizedTilt = Math.max(-1, Math.min(1, tiltZ / maxAngle));
         const leftPressure = Math.max(0, -normalizedTilt);
         const rightPressure = Math.max(0, normalizedTilt);
 
-        // Extra weight erodes baseline: each piled label costs ~$0.3K in sales, ~$0.2K in costs
         const weightSalesDrag = weight * 0.3;
         const weightCostsDrag = weight * 0.2;
 
@@ -229,24 +213,20 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     };
   }, [labelProgress, pnlOpacity, pnlRevealed]);
 
-  // Derived P&L display
+  // Derived P&L
   const margin = pnl.sales > 0 ? ((pnl.sales - pnl.costs) / pnl.sales) * 100 : 0;
   const marginDisplay = parseFloat(margin.toFixed(1));
   const mColor = margin > 4 ? 'text-green-700' : margin > 1.5 ? 'text-amber-600' : 'text-red-700';
 
-  // Sales bar: full = healthy baseline ($85K). Shrinks when revenue drops.
-  // GREEN when high (good), AMBER when dipping, RED when tanking.
-  const salesFill = Math.max(10, (pnl.sales / 85) * 100);
+  const salesMin = 70, salesMax = 86;
+  const salesFill = Math.max(12, Math.min(90, ((pnl.sales - salesMin) / (salesMax - salesMin)) * 100));
   const salesColor = pnl.sales > 83 ? '#22c55e' : pnl.sales > 79 ? '#eab308' : '#ef4444';
 
-  // Costs bar: baseline ~84% of $95K scale. GROWS when costs spike.
-  // GREEN when low (good), AMBER when creeping, RED when ballooning.
-  const costsFill = Math.min(100, (pnl.costs / 95) * 100);
-  const costsColor = pnl.costs < 81.5 ? '#22c55e' : pnl.costs < 83.5 ? '#eab308' : '#ef4444';
+  const costsMin = 76, costsMax = 90;
+  const costsFill = Math.max(12, Math.min(90, ((pnl.costs - costsMin) / (costsMax - costsMin)) * 100));
+  const costsColor = pnl.costs < 81.5 ? '#22c55e' : pnl.costs < 83 ? '#eab308' : '#ef4444';
 
-  const isPoolExhausted = piledLabels.length >= extraPool.length;
-  const piledLeft = piledLabels.filter(l => l.side === 'left');
-  const piledRight = piledLabels.filter(l => l.side === 'right');
+  const isPoolExhausted = usedIndicesRef.current.size >= extraPool.length;
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
@@ -290,7 +270,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
               </motion.div>
             </div>
 
-            {/* ── RIGHT: Image + labels + P&L + Pile on ── */}
+            {/* ── RIGHT: Image + labels + P&L + Flash interaction ── */}
             <div className="flex-[1.4] flex flex-col items-center w-full lg:pr-4 xl:pr-8">
 
               {/* Image container */}
@@ -314,27 +294,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </div>
                 </motion.div>
 
-                {/* ── "+ Add another problem" — at the fulcrum ── */}
-                <div className={`absolute bottom-[3%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                  <button
-                    onClick={handlePileOn}
-                    disabled={isPoolExhausted}
-                    className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
-                      {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
-                    </span>
-                  </button>
-                  {piledLabels.length > 0 && (
-                    <span className="text-[9px] text-cream-400 tabular-nums bg-white/60 backdrop-blur-sm rounded-full px-2 py-0.5">
-                      {pileCount} on the plate
-                    </span>
-                  )}
-                </div>
-
-                {/* LEFT LABEL CLOUD — revenue pressure. pt-14 clears navbar, max-h prevents overflow */}
-                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-2 items-end w-[240px] max-h-[calc(100%-2rem)] overflow-hidden">
+                {/* LEFT LABEL CLOUD — scroll-revealed only, static */}
+                <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-1.5 items-end w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
@@ -345,7 +306,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         style={{
                           transform: show ? `rotate(${rots[i % rots.length]}) translateX(0)` : `rotate(${rots[i % rots.length]}) translateX(20px)`,
                           opacity: show ? 1 : 0,
-                          maxHeight: show ? '40px' : '0px',
+                          maxHeight: show ? '32px' : '0px',
                           marginBottom: show ? undefined : '-4px',
                           overflow: 'hidden',
                           transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
@@ -354,17 +315,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
-                  {piledLeft.map((label, i) => (
-                    <div key={`pile-l-${i}`}
-                      className={`${lc(label.s)} animate-pile-in`}
-                      style={{ transform: `rotate(${rots[(i + 7) % rots.length]})` }}>
-                      {label.text}
-                    </div>
-                  ))}
                 </div>
 
-                {/* RIGHT LABEL CLOUD — cost pressure. pt-14 clears navbar, max-h prevents overflow */}
-                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-2 items-start w-[240px] max-h-[calc(100%-2rem)] overflow-hidden">
+                {/* RIGHT LABEL CLOUD — scroll-revealed only, static */}
+                <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-1.5 items-start w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
@@ -375,7 +329,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         style={{
                           transform: show ? `rotate(${rots[(i + 5) % rots.length]}) translateX(0)` : `rotate(${rots[(i + 5) % rots.length]}) translateX(-20px)`,
                           opacity: show ? 1 : 0,
-                          maxHeight: show ? '40px' : '0px',
+                          maxHeight: show ? '32px' : '0px',
                           marginBottom: show ? undefined : '-4px',
                           overflow: 'hidden',
                           transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
@@ -384,19 +338,11 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                       </div>
                     );
                   })}
-                  {piledRight.map((label, i) => (
-                    <div key={`pile-r-${i}`}
-                      className={`${lc(label.s)} animate-pile-in`}
-                      style={{ transform: `rotate(${rots[(i + 3) % rots.length]})` }}>
-                      {label.text}
-                    </div>
-                  ))}
                 </div>
               </div>
 
-              {/* P&L — sales shrinks (bad), costs grows (bad), margin = the truth */}
+              {/* P&L bars */}
               <div className={`mt-6 flex items-center justify-center gap-4 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                {/* Sales: full = healthy $85K, shrinks when revenue drops */}
                 <span className="flex flex-col items-end gap-0.5">
                   <span className="text-[10px] text-cream-500 font-medium">Sales</span>
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
@@ -410,7 +356,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                     {marginDisplay}%
                   </span>
                 </span>
-                {/* Costs: starts moderate, GROWS and turns red when costs spike */}
                 <span className="flex flex-col items-start gap-0.5">
                   <span className="text-[10px] text-cream-500 font-medium">Costs</span>
                   <span className="relative h-2.5 w-20 bg-cream-200 rounded-full overflow-hidden">
@@ -420,6 +365,40 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </span>
               </div>
 
+              {/* ── FLASH & SINK interaction ── */}
+              <div className={`mt-4 flex flex-col items-center gap-2 transition-all duration-700 ${pnlRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                {/* The flash zone — label appears here briefly then sinks */}
+                <div className="h-7 flex items-center justify-center">
+                  {flashLabel && (
+                    <span
+                      key={flashKey}
+                      className="text-xs font-medium text-red-700/80 animate-flash-sink"
+                    >
+                      {flashLabel}
+                    </span>
+                  )}
+                </div>
+
+                {/* The button */}
+                <button
+                  onClick={handlePileOn}
+                  disabled={isPoolExhausted}
+                  className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
+                >
+                  <span className="inline-flex items-center gap-1">
+                    <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
+                    {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
+                  </span>
+                </button>
+
+                {/* Counter */}
+                <p className="text-[10px] text-cream-400 tabular-nums">
+                  {pileCount} things on this plate
+                  {pileCount > 30 && (
+                    <span className="text-red-400/70"> — you added {pileCount - 30}</span>
+                  )}
+                </p>
+              </div>
             </div>
 
             {/* Mobile labels */}
