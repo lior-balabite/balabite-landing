@@ -399,19 +399,21 @@ export default function TheSplit() {
       {/* Split container */}
       <motion.div
         className="relative mx-auto max-w-[80rem] px-4 sm:px-6"
+        layout
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.8, layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={angle.id}
             ref={splitRef}
+            layout
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25, layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
             className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 select-none"
           >
             {/* ── LEFT LAYER: WITHOUT — uses grid, content in col 1 only ── */}
@@ -481,20 +483,30 @@ export default function TheSplit() {
               </div>
             </div>
 
-            {/* Invisible sizing — grid col 1 with the longer text sets the height */}
-            <div className="invisible grid grid-cols-2">
+            {/* Invisible sizer — gives the container height from the current tab's longest side */}
+            <div className="invisible grid grid-cols-2" aria-hidden>
               <div className="p-6 sm:p-8 md:p-10">
                 <div className="mb-8" />
                 <div className="space-y-5">
                   {angle.moments.map((m) => (
-                    <div key={`sz-${m.time}`} className="flex gap-4">
+                    <div key={`szl-${m.time}`} className="flex gap-4">
                       <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
-                      <p className="text-[13px] leading-relaxed">{m.without.length > m.with.length ? m.without : m.with}</p>
+                      <p className="text-[13px] leading-relaxed">{m.without}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div />
+              <div className="p-6 sm:p-8 md:p-10">
+                <div className="mb-8" />
+                <div className="space-y-5">
+                  {angle.moments.map((m) => (
+                    <div key={`szr-${m.time}`} className="flex gap-4">
+                      <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
+                      <p className="text-[13px] leading-relaxed">{m.with}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
