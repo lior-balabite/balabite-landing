@@ -89,10 +89,15 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const frameRef = useRef(0);
   const extraWeightRef = useRef(0);
 
-  // "Flash & Sink" state
+  // Pile-on state: labels overlay on existing column labels
+  const [piledLabels, setPiledLabels] = useState<{
+    text: string; s: string; side: 'left' | 'right';
+    targetIdx: number; // which existing label to overlay on
+    offsetX: number; offsetY: number; // slight random offset for layered look
+  }[]>([]);
   const [pileCount, setPileCount] = useState(30);
   const [flashLabel, setFlashLabel] = useState<string | null>(null);
-  const [flashKey, setFlashKey] = useState(0); // forces re-render for animation reset
+  const [flashKey, setFlashKey] = useState(0);
   const usedIndicesRef = useRef<Set<number>>(new Set());
   const flashTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -117,8 +122,25 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
     const idx = available[Math.floor(Math.random() * available.length)];
     usedIndicesRef.current.add(idx);
     const text = extraPool[idx];
+    // First 15 in pool are revenue (left), last 15 are cost (right)
+    const side: 'left' | 'right' = idx < 15 ? 'left' : 'right';
 
-    // Flash the label
+    // Pick a random existing label slot to overlay on (0-14)
+    const targetIdx = Math.floor(Math.random() * 15);
+    // Random offset so both old and new are partially visible
+    const offsetX = (side === 'left' ? -1 : 1) * (3 + Math.random() * 6);
+    const offsetY = 2 + Math.random() * 5;
+
+    // Assign a visual style based on side
+    const s = side === 'left'
+      ? (['sms', 'alert', 'ticket', 'note'] as const)[idx % 4]
+      : (['stamp', 'alert', 'ticket', 'sms'] as const)[idx % 4];
+
+    setPiledLabels(prev => [...prev, {
+      text, s, side, targetIdx, offsetX, offsetY,
+    }]);
+
+    // Flash the label text briefly
     setFlashLabel(text);
     setFlashKey(prev => prev + 1);
     setPileCount(prev => prev + 1);
@@ -233,6 +255,14 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
   const isPoolExhausted = usedIndicesRef.current.size >= extraPool.length;
 
+  // Group piled labels by side and target slot index
+  const piledBySlot = { left: {} as Record<number, typeof piledLabels>, right: {} as Record<number, typeof piledLabels> };
+  piledLabels.forEach(l => {
+    const key = l.side;
+    if (!piledBySlot[key][l.targetIdx]) piledBySlot[key][l.targetIdx] = [];
+    piledBySlot[key][l.targetIdx].push(l);
+  });
+
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '300vh' }}>
       <div className="sticky top-0 h-screen bg-cream-100">
@@ -313,47 +343,83 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </button>
                 </div>
 
-                {/* LEFT LABEL CLOUD — scroll-revealed only, static */}
+                {/* LEFT LABEL CLOUD — scroll-revealed + overlaid piled labels */}
                 <div className="absolute top-0 right-full pr-4 pt-14 hidden sm:flex flex-col gap-1.5 items-end w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
                   {leftLabels.map((label, i) => {
                     const show = i < visibleCount;
+                    const overlays = piledBySlot.left[i] || [];
                     return (
-                      <div key={label.text} className={lc(label.s)}
+                      <div key={label.text} className="relative"
                         style={{
-                          transform: show ? `rotate(${rots[i % rots.length]}) translateX(0)` : `rotate(${rots[i % rots.length]}) translateX(20px)`,
                           opacity: show ? 1 : 0,
-                          maxHeight: show ? '32px' : '0px',
+                          maxHeight: show ? '40px' : '0px',
                           marginBottom: show ? undefined : '-4px',
-                          overflow: 'hidden',
+                          overflow: show ? 'visible' : 'hidden',
                           transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
+                          transition: 'opacity 0.7s, max-height 0.7s',
                         }}>
-                        {label.text}
+                        {/* Original label */}
+                        <div className={lc(label.s)}
+                          style={{ transform: `rotate(${rots[i % rots.length]})` }}>
+                          {label.text}
+                        </div>
+                        {/* Overlaid piled labels — offset so both are readable */}
+                        {overlays.map((ol, j) => (
+                          <div key={`ol-l-${i}-${j}`}
+                            className={`${lc(ol.s)} animate-pile-in absolute shadow-md`}
+                            style={{
+                              top: `${ol.offsetY + j * 3}px`,
+                              right: `${-ol.offsetX - j * 2}px`,
+                              transform: `rotate(${rots[(i + j + 7) % rots.length]})`,
+                              zIndex: j + 1,
+                            }}>
+                            {ol.text}
+                          </div>
+                        ))}
                       </div>
                     );
                   })}
                 </div>
 
-                {/* RIGHT LABEL CLOUD — scroll-revealed only, static */}
+                {/* RIGHT LABEL CLOUD — scroll-revealed + overlaid piled labels */}
                 <div className="absolute top-0 left-full pl-4 pt-14 hidden sm:flex flex-col gap-1.5 items-start w-[240px] max-h-[calc(100%-3rem)] overflow-hidden">
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
                   {rightLabels.map((label, i) => {
                     const show = i < visibleCount;
+                    const overlays = piledBySlot.right[i] || [];
                     return (
-                      <div key={label.text} className={lc(label.s)}
+                      <div key={label.text} className="relative"
                         style={{
-                          transform: show ? `rotate(${rots[(i + 5) % rots.length]}) translateX(0)` : `rotate(${rots[(i + 5) % rots.length]}) translateX(-20px)`,
                           opacity: show ? 1 : 0,
-                          maxHeight: show ? '32px' : '0px',
+                          maxHeight: show ? '40px' : '0px',
                           marginBottom: show ? undefined : '-4px',
-                          overflow: 'hidden',
+                          overflow: show ? 'visible' : 'hidden',
                           transitionDelay: show ? `${(i % 3) * 60}ms` : '0ms',
+                          transition: 'opacity 0.7s, max-height 0.7s',
                         }}>
-                        {label.text}
+                        {/* Original label */}
+                        <div className={lc(label.s)}
+                          style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}>
+                          {label.text}
+                        </div>
+                        {/* Overlaid piled labels */}
+                        {overlays.map((ol, j) => (
+                          <div key={`ol-r-${i}-${j}`}
+                            className={`${lc(ol.s)} animate-pile-in absolute shadow-md`}
+                            style={{
+                              top: `${ol.offsetY + j * 3}px`,
+                              left: `${ol.offsetX + j * 2}px`,
+                              transform: `rotate(${rots[(i + j + 3) % rots.length]})`,
+                              zIndex: j + 1,
+                            }}>
+                            {ol.text}
+                          </div>
+                        ))}
                       </div>
                     );
                   })}
