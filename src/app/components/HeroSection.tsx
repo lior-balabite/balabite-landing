@@ -99,27 +99,6 @@ function lc(s: string) {
   }
 }
 
-// Flying label animation: starts at button position, flies to target slot
-const flyVariants = {
-  initial: (custom: { dx: number; dy: number }) => ({
-    x: custom.dx,
-    y: custom.dy,
-    scale: 1.1,
-    opacity: 0.9,
-  }),
-  animate: {
-    x: 0,
-    y: 0,
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.9,
-    transition: { duration: 0.2 },
-  },
-};
 
 export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -135,17 +114,23 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   // Dynamic column capacity — measured on mount
   const [maxLabels, setMaxLabels] = useState(13);
 
-  // Current visible labels per column (swappable)
-  const [leftSlots, setLeftSlots] = useState<{ text: string; s: string; key: number }[]>([]);
-  const [rightSlots, setRightSlots] = useState<{ text: string; s: string; key: number }[]>([]);
-  const nextPoolIdxRef = useRef({ left: 15, right: 15 }); // start after initial 15
+  // Each slot has a bottom (original) label and optionally a top (piled) label
+  type Slot = { bottom: { text: string; s: string }; top?: { text: string; s: string } };
+  const [leftSlots, setLeftSlots] = useState<Slot[]>([]);
+  const [rightSlots, setRightSlots] = useState<Slot[]>([]);
+  const nextPoolIdxRef = useRef({ left: 15, right: 15 });
   const keyCounterRef = useRef(100);
 
-  // Flying label state: which slot is being swapped and the flight vector
+  // Flying label: spawns at button, arcs to target slot
   const [flyingLabel, setFlyingLabel] = useState<{
     text: string; s: string; side: 'left' | 'right';
-    slotIdx: number; dx: number; dy: number; key: number;
+    slotIdx: number; key: number;
+    // Absolute positions for the flight (relative to imgRef container)
+    startX: number; startY: number;
+    endX: number; endY: number;
   } | null>(null);
+  // Column nudge on impact
+  const [nudgeSide, setNudgeSide] = useState<'left' | 'right' | null>(null);
 
   const [pnl, setPnl] = useState({ sales: 85, costs: 80 });
 
@@ -170,8 +155,20 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   useEffect(() => {
     if (visibleCount > prevVisibleRef.current) {
       const count = Math.min(visibleCount, maxLabels);
-      setLeftSlots(leftLabelsAll.slice(0, count).map((l, i) => ({ ...l, key: i })));
-      setRightSlots(rightLabelsAll.slice(0, count).map((l, i) => ({ ...l, key: i })));
+      setLeftSlots(prev => {
+        const next = leftLabelsAll.slice(0, count).map((l, i) => ({
+          bottom: { text: l.text, s: l.s },
+          top: prev[i]?.top, // preserve any existing top label
+        }));
+        return next;
+      });
+      setRightSlots(prev => {
+        const next = rightLabelsAll.slice(0, count).map((l, i) => ({
+          bottom: { text: l.text, s: l.s },
+          top: prev[i]?.top,
+        }));
+        return next;
+      });
       prevVisibleRef.current = visibleCount;
     }
   }, [visibleCount, maxLabels]);
@@ -184,59 +181,60 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   }, []);
   const onML = useCallback(() => { mouseRef.current = { x: 0, y: 0 }; }, []);
 
-  // ── CLICK HANDLER: Pick a label, fly it to a random slot, swap ──
+  // ── CLICK HANDLER: Spawn label at button, arc-fly to slot, swap on land ──
   const handlePileOn = useCallback(() => {
-    // Alternate sides, pick next from the pool
+    if (flyingLabel) return; // one at a time
+
+    // Alternate sides
     const side: 'left' | 'right' = nextPoolIdxRef.current.left <= nextPoolIdxRef.current.right ? 'left' : 'right';
     const pool = side === 'left' ? leftLabelsAll : rightLabelsAll;
     const poolIdx = nextPoolIdxRef.current[side];
-    if (poolIdx >= pool.length) return; // exhausted
+    if (poolIdx >= pool.length) return;
 
     const newLabel = pool[poolIdx];
     nextPoolIdxRef.current[side] = poolIdx + 1;
 
-    // Pick a random visible slot to replace
     const slots = side === 'left' ? leftSlots : rightSlots;
     if (slots.length === 0) return;
-    const slotIdx = Math.floor(Math.random() * slots.length);
+    // Pick a slot that doesn't already have a top label (prefer empty slots)
+    const emptySlots = slots.map((s, i) => ({ s, i })).filter(({ s }) => !s.top);
+    const slotIdx = emptySlots.length > 0
+      ? emptySlots[Math.floor(Math.random() * emptySlots.length)].i
+      : Math.floor(Math.random() * slots.length);
 
-    // Calculate flight vector: from button to target slot
-    let dx = 0, dy = 0;
-    if (buttonRef.current) {
-      const btnRect = buttonRef.current.getBoundingClientRect();
-      const colRef = side === 'left' ? leftColRef.current : rightColRef.current;
-      if (colRef) {
-        const slotEls = colRef.querySelectorAll('[data-label-slot]');
-        const targetEl = slotEls[slotIdx];
-        if (targetEl) {
-          const targetRect = targetEl.getBoundingClientRect();
-          dx = btnRect.left + btnRect.width / 2 - (targetRect.left + targetRect.width / 2);
-          dy = btnRect.top + btnRect.height / 2 - (targetRect.top + targetRect.height / 2);
-        }
-      }
-    }
+    // Get positions relative to the viewport
+    const containerRect = imgRef.current?.getBoundingClientRect();
+    const btnRect = buttonRef.current?.getBoundingClientRect();
+    const colRef = side === 'left' ? leftColRef.current : rightColRef.current;
+    const slotEls = colRef?.querySelectorAll('[data-label-slot]');
+    const targetEl = slotEls?.[slotIdx];
+    const targetRect = targetEl?.getBoundingClientRect();
+
+    if (!containerRect || !btnRect || !targetRect) return;
+
+    // Positions relative to imgRef container
+    const startX = btnRect.left - containerRect.left + btnRect.width / 2;
+    const startY = btnRect.bottom - containerRect.top + 4; // just below button
+    const endX = targetRect.left - containerRect.left + targetRect.width / 2;
+    const endY = targetRect.top - containerRect.top + targetRect.height / 2;
 
     const key = keyCounterRef.current++;
 
-    // Start the flying animation
-    setFlyingLabel({ text: newLabel.text, s: newLabel.s, side, slotIdx, dx, dy, key });
+    setFlyingLabel({ text: newLabel.text, s: newLabel.s, side, slotIdx, key, startX, startY, endX, endY });
 
-    // After flight completes, swap the slot content
+    // At 520ms: label lands — add as top layer, nudge column
     setTimeout(() => {
-      if (side === 'left') {
-        setLeftSlots(prev => prev.map((slot, i) =>
-          i === slotIdx ? { text: newLabel.text, s: newLabel.s, key } : slot
-        ));
-      } else {
-        setRightSlots(prev => prev.map((slot, i) =>
-          i === slotIdx ? { text: newLabel.text, s: newLabel.s, key } : slot
-        ));
-      }
+      const setter = side === 'left' ? setLeftSlots : setRightSlots;
+      setter(prev => prev.map((slot, i) =>
+        i === slotIdx ? { ...slot, top: { text: newLabel.text, s: newLabel.s } } : slot
+      ));
       setFlyingLabel(null);
-    }, 500);
+      setNudgeSide(side);
+      setTimeout(() => setNudgeSide(null), 250);
+    }, 520);
 
     extraWeightRef.current = Math.min(15, extraWeightRef.current + 1);
-  }, [leftSlots, rightSlots]);
+  }, [leftSlots, rightSlots, flyingLabel]);
 
   // ── WOBBLE + P&L LOOP ──
   useEffect(() => {
@@ -416,68 +414,99 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </button>
                 </div>
 
-                {/* LEFT LABEL CLOUD */}
-                <div ref={leftColRef} className="absolute top-0 right-full pr-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-end w-[240px] overflow-hidden">
+                {/* LEFT LABEL CLOUD — layered slots: bottom (original) + top (piled), hover reveals bottom */}
+                <div ref={leftColRef} className="absolute top-0 right-full pr-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-end w-[240px] overflow-hidden transition-transform duration-200"
+                  style={{ transform: nudgeSide === 'left' ? 'translateX(-3px)' : 'translateX(0)' }}>
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
-                  <AnimatePresence mode="popLayout">
-                    {leftSlots.map((label, i) => (
-                      <motion.div
-                        key={label.key}
-                        data-label-slot
-                        layout
-                        initial={label.key >= 100 ? { scale: 0.8, opacity: 0 } : false}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        className={lc(label.s)}
-                        style={{ transform: `rotate(${rots[i % rots.length]})` }}
-                      >
-                        {label.text}
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {leftSlots.map((slot, i) => (
+                    <div key={i} data-label-slot className="relative group"
+                      style={{
+                        opacity: i < visibleCount ? 1 : 0,
+                        maxHeight: i < visibleCount ? '32px' : '0px',
+                        overflow: 'visible',
+                        transition: 'opacity 0.7s, max-height 0.7s',
+                        transitionDelay: `${(i % 3) * 60}ms`,
+                      }}>
+                      {/* Bottom label (original) — always visible, slightly peeking when top exists */}
+                      <div className={lc(slot.bottom.s)}
+                        style={{
+                          transform: `rotate(${rots[i % rots.length]})`,
+                          opacity: slot.top ? 0.5 : 1,
+                          transition: 'opacity 0.3s',
+                        }}>
+                        {slot.bottom.text}
+                      </div>
+                      {/* Top label (piled) — sits on top, lifts on hover to reveal bottom */}
+                      {slot.top && (
+                        <div className={`${lc(slot.top.s)} absolute inset-0 shadow-md transition-all duration-200 group-hover:-translate-y-2 group-hover:translate-x-1 group-hover:rotate-2 group-hover:shadow-lg`}
+                          style={{ transform: `rotate(${rots[(i + 7) % rots.length]})`, zIndex: 1 }}>
+                          {slot.top.text}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
-                {/* RIGHT LABEL CLOUD */}
-                <div ref={rightColRef} className="absolute top-0 left-full pl-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-start w-[240px] overflow-hidden">
+                {/* RIGHT LABEL CLOUD — layered slots */}
+                <div ref={rightColRef} className="absolute top-0 left-full pl-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-start w-[240px] overflow-hidden transition-transform duration-200"
+                  style={{ transform: nudgeSide === 'right' ? 'translateX(3px)' : 'translateX(0)' }}>
                   <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
-                  <AnimatePresence mode="popLayout">
-                    {rightSlots.map((label, i) => (
-                      <motion.div
-                        key={label.key}
-                        data-label-slot
-                        layout
-                        initial={label.key >= 100 ? { scale: 0.8, opacity: 0 } : false}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        className={lc(label.s)}
-                        style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}
-                      >
-                        {label.text}
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {rightSlots.map((slot, i) => (
+                    <div key={i} data-label-slot className="relative group"
+                      style={{
+                        opacity: i < visibleCount ? 1 : 0,
+                        maxHeight: i < visibleCount ? '32px' : '0px',
+                        overflow: 'visible',
+                        transition: 'opacity 0.7s, max-height 0.7s',
+                        transitionDelay: `${(i % 3) * 60}ms`,
+                      }}>
+                      {/* Bottom label (original) */}
+                      <div className={lc(slot.bottom.s)}
+                        style={{
+                          transform: `rotate(${rots[(i + 5) % rots.length]})`,
+                          opacity: slot.top ? 0.5 : 1,
+                          transition: 'opacity 0.3s',
+                        }}>
+                        {slot.bottom.text}
+                      </div>
+                      {/* Top label (piled) — lifts on hover */}
+                      {slot.top && (
+                        <div className={`${lc(slot.top.s)} absolute inset-0 shadow-md transition-all duration-200 group-hover:-translate-y-2 group-hover:-translate-x-1 group-hover:-rotate-2 group-hover:shadow-lg`}
+                          style={{ transform: `rotate(${rots[(i + 3) % rots.length]})`, zIndex: 1 }}>
+                          {slot.top.text}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
-                {/* ── Flying label — animates from button to target slot ── */}
+                {/* ── Flying label — spawns at button, arcs to target slot ── */}
                 <AnimatePresence>
                   {flyingLabel && (
                     <motion.div
                       key={flyingLabel.key}
-                      custom={{ dx: flyingLabel.dx, dy: flyingLabel.dy }}
-                      variants={flyVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      className={`fixed z-50 ${lc(flyingLabel.s)} shadow-lg pointer-events-none`}
-                      style={{
-                        // Position at the target slot — the animation starts offset and flies TO here
-                        left: 0, top: 0,
+                      className={`absolute z-50 ${lc(flyingLabel.s)} shadow-lg pointer-events-none`}
+                      style={{ translateX: '-50%', translateY: '-50%' }}
+                      initial={{
+                        left: flyingLabel.startX,
+                        top: flyingLabel.startY,
+                        scale: 0.6,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        left: [flyingLabel.startX, (flyingLabel.startX + flyingLabel.endX) / 2, flyingLabel.endX],
+                        top: [flyingLabel.startY, Math.min(flyingLabel.startY, flyingLabel.endY) - 40, flyingLabel.endY],
+                        scale: [0.6, 1.15, 1.05],
+                        opacity: [0, 1, 1],
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+                        times: [0, 0.25, 1],
                       }}
                     >
                       {flyingLabel.text}
