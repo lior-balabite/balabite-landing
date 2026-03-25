@@ -554,20 +554,15 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
             </div>
 
-            {/* Mobile labels */}
-            <div className="flex sm:hidden gap-3 w-full max-w-md mx-auto">
-              <div className="flex-1 flex flex-col items-end gap-1.5">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Revenue</p>
-                {leftLabelsAll.slice(0, 6).map((l, i) => (
-                  <div key={l.text} className={lc(l.s)} style={{ transform: `rotate(${rots[i]})` }}>{l.text}</div>
-                ))}
-              </div>
-              <div className="flex-1 flex flex-col items-start gap-1.5">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-red-400/50 mb-1">Costs</p>
-                {rightLabelsAll.slice(0, 6).map((l, i) => (
-                  <div key={l.text} className={lc(l.s)} style={{ transform: `rotate(${rots[(i+5) % rots.length]})` }}>{l.text}</div>
-                ))}
-              </div>
+            {/* Mobile labels — horizontal scroll strip below image */}
+            <div className="flex sm:hidden gap-2 w-full overflow-x-auto pb-2 -mt-2"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {[...leftLabelsAll.slice(0, 8), ...rightLabelsAll.slice(0, 8)].map((l, i) => (
+                <div key={l.text} className={`${lc(l.s)} shrink-0`}
+                  style={{ transform: `rotate(${rots[i % rots.length]})` }}>
+                  {l.text}
+                </div>
+              ))}
             </div>
 
           </div>
