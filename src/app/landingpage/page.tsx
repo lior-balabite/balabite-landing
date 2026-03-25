@@ -6,6 +6,8 @@ import { useI18n } from '../../i18n/I18nProvider';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import TheSplit from '../components/TheSplit';
+import TheTurn from '../components/TheTurn';
+import ProductReveal from '../components/ProductReveal';
 import TheTeam from '../components/TheTeam';
 import HowItWorks from '../components/HowItWorks';
 import SocialProof from '../components/SocialProof';
@@ -57,18 +59,24 @@ export default function LandingPage() {
       {/* Section 2: The Split — Without vs With BalaBite */}
       <TheSplit />
 
-      {/* Section 3: The Team — 9 AI brains */}
+      {/* Section 3: The Turn — "What if you weren't alone" pivot */}
+      <TheTurn />
+
+      {/* Section 4: Product Reveal — real UI screenshots */}
+      <ProductReveal />
+
+      {/* Section 5: The Team — AI brain characters */}
       <div id="capabilities">
         <TheTeam />
       </div>
 
-      {/* Section 4: How It Works — 3 Steps */}
+      {/* Section 6: How It Works — 3 Steps */}
       <HowItWorks />
 
-      {/* Section 5: Social Proof */}
+      {/* Section 7: Social Proof */}
       <SocialProof />
 
-      {/* Section 6: Final CTA + Footer */}
+      {/* Section 8: Final CTA + Footer */}
       <FinalCTA ref={ctaSectionRef} />
     </div>
   );

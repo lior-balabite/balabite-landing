@@ -89,10 +89,10 @@ function BrainCard({ brain }: { brain: typeof brains[0] }) {
       >
         {/* ── FRONT ── */}
         <div
-          className="rounded-2xl border border-cream-200 bg-white/80 backdrop-blur p-6 shadow-sm"
+          className="rounded-2xl border border-cream-200 bg-white/80 backdrop-blur p-6 shadow-sm flex flex-col h-[420px]"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="w-20 h-20 mx-auto mb-4">
+          <div className="w-20 h-20 mx-auto mb-5">
             <Image
               src={brain.image}
               alt={brain.name}
@@ -104,17 +104,17 @@ function BrainCard({ brain }: { brain: typeof brains[0] }) {
           <h3 className="text-sm font-bold text-primary-900 text-center mb-0.5">
             {brain.name}
           </h3>
-          <p className="text-[10px] text-cream-500 text-center uppercase tracking-wider mb-4">
+          <p className="text-[10px] text-cream-500 text-center uppercase tracking-wider mb-5">
             {brain.role}
           </p>
-          <blockquote className="text-[13px] leading-relaxed text-cream-700 italic border-l-2 border-amber-400 pl-3">
+          <blockquote className="text-[13px] leading-relaxed text-cream-700 italic border-l-2 border-amber-400 pl-3 flex-1">
             &ldquo;{brain.front}&rdquo;
           </blockquote>
         </div>
 
         {/* ── BACK ── */}
         <div
-          className="absolute inset-0 rounded-2xl border border-cream-200 bg-primary-900 p-6 shadow-sm flex flex-col"
+          className="absolute inset-0 rounded-2xl border border-cream-200 bg-primary-900 p-6 shadow-sm flex flex-col h-[420px]"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           <div className="w-16 h-16 mx-auto mb-3 opacity-60">
@@ -149,18 +149,17 @@ export default function TheTeam() {
     <section className="py-20 md:py-28 bg-cream-100 overflow-hidden">
       {/* Header */}
       <motion.div
-        className="text-center mb-12 md:mb-16 px-6"
+        className="text-center mb-14 md:mb-20 px-6"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900 mb-3">
-          Your dream team. Already hired.
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900 mb-4">
+          Meet the team that&apos;s already read your data.
         </h2>
-        <p className="text-base sm:text-lg text-cream-600 max-w-xl mx-auto">
-          They don&apos;t call in sick. They don&apos;t need health insurance.
-          They do need your POS login.
+        <p className="text-base sm:text-lg text-cream-600 max-w-2xl mx-auto">
+          AI brains &mdash; each one built for a job your restaurant needs done by morning.
         </p>
       </motion.div>
 
@@ -209,7 +208,7 @@ export default function TheTeam() {
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        One team. One notification. Every morning.
+        One team. One briefing. Every morning.
       </motion.p>
     </section>
   );
