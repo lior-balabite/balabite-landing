@@ -124,8 +124,34 @@ Continuing from hero iteration. Hero is finalized (tilt, P&L, labels, pile-on in
 - Test all scroll interactions on different screen sizes
 - Ensure hero P&L doesn't leak into THE SPLIT on any viewport
 
+## March 25 Updates
+
+### Major Decisions
+- THE TEAM section CUT from landing page (unanimous roundtable). Brain characters redeployed to about page/onboarding.
+- Product Reveal redesigned with 4 real jaw-drop moments from actual product capabilities
+- Closing headline: "Own it all. Without carrying it alone." / "Not watching your restaurant. Running it."
+- How It Works rebuilt as recipe-card style (Prep / Cook / Plate)
+- Voice rule: BalaBite is SINGULAR. Use "someone" or drop pronoun. Never "they."
+
+### Product Reveal — 4 Jaw-Drop Moments
+All sourced from actual BalaBite_ai product docs:
+1. The Pulse — morning briefing, 5 priority cards (from BOH Suite plan)
+2. Autonomous Discovery — finds patterns nobody asked for (from AI Brain vision)
+3. Curated Menu — 288 items → 6 personalized dishes (from Gen 4 roadmap)
+4. Menu Psychology — behavioral economics, anchoring, decoys (from Menu Arena)
+
+### Current Page Flow
+1. Hero → 2. Split → 3. Product Reveal → 4. How It Works → 5. Social Proof (needs rebuild) → 6. Final CTA (needs refinement)
+
+### Still To Do
+1. Rebuild Social Proof as THE PROOF — real restaurants, real numbers, field-report style
+2. Refine Final CTA — "What if tomorrow morning was different?" + personalization
+3. Consider THE GUT PUNCH (live timer) — optional, between proof and CTA
+4. Mobile responsive pass on all sections
+5. A/B test headlines: "Own it all. Without carrying it alone" vs "You own everything. Now it doesn't own you."
+
 ## Resume Instructions
 ```
 Resume from docs/sessions/2026-03-24_post-hero-iteration.md
 ```
-Fix the Split height issue first, then build THE TEAM section.
+Rebuild Social Proof next, then refine Final CTA.

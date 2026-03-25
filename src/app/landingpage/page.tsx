@@ -7,7 +7,6 @@ import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import TheSplit from '../components/TheSplit';
 import ProductReveal from '../components/ProductReveal';
-import TheTeam from '../components/TheTeam';
 import HowItWorks from '../components/HowItWorks';
 import SocialProof from '../components/SocialProof';
 import FinalCTA from '../components/FinalCTA';
@@ -61,18 +60,13 @@ export default function LandingPage() {
       {/* Section 3: Product Reveal — turn + 4 jaw-drop moments */}
       <ProductReveal />
 
-      {/* Section 5: The Team — AI brain characters */}
-      <div id="capabilities">
-        <TheTeam />
-      </div>
-
-      {/* Section 6: How It Works — 3 Steps */}
+      {/* Section 4: How It Works */}
       <HowItWorks />
 
-      {/* Section 7: Social Proof */}
+      {/* Section 5: Social Proof / Results */}
       <SocialProof />
 
-      {/* Section 8: Final CTA + Footer */}
+      {/* Section 6: Final CTA + Footer */}
       <FinalCTA ref={ctaSectionRef} />
     </div>
   );

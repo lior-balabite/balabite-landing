@@ -346,6 +346,28 @@ export default function ProductReveal() {
           </div>
         </motion.div>
 
+        {/* ── CLOSING — the headline that earns the CTA ── */}
+        <motion.div
+          className="text-center mt-24 md:mt-32"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7 }}
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900 mb-3">
+            Own it all. Without carrying it alone.
+          </h2>
+          <p className="text-lg text-cream-600 max-w-xl mx-auto mb-8">
+            Not watching your restaurant. Running it.
+          </p>
+          <button
+            onClick={() => document.getElementById('final-cta')?.scrollIntoView({ behavior: 'smooth' })}
+            className="rounded-full bg-primary-900 px-8 py-3.5 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97]"
+          >
+            Put AI to Work
+          </button>
+        </motion.div>
+
       </div>
     </section>
   );
