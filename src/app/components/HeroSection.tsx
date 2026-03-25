@@ -380,7 +380,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             {/* ── RIGHT: Image + labels + P&L ── */}
             <div className="flex-[1.4] flex flex-col items-center w-full lg:pr-4 xl:pr-8">
 
-              <div ref={imgRef} className="relative w-full max-w-[220px] sm:max-w-[300px] lg:max-w-[440px]"
+              <div ref={imgRef} className="relative w-full max-w-[260px] sm:max-w-[340px] lg:max-w-[440px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
                 <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
@@ -406,10 +406,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                     ref={buttonRef}
                     onClick={handlePileOn}
                     disabled={isPoolExhausted || flyingLabel !== null}
-                    className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-4 py-1.5 text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
+                    className="group rounded-full bg-white/80 backdrop-blur-sm border border-cream-300/80 shadow-sm px-2.5 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs text-cream-600 transition-all hover:border-red-400/60 hover:text-red-700 hover:bg-red-50/80 hover:shadow-md active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed animate-nudge"
                   >
                     <span className="inline-flex items-center gap-1">
-                      <span className="text-sm leading-none transition-transform group-hover:rotate-12">+</span>
+                      <span className="text-xs sm:text-sm leading-none transition-transform group-hover:rotate-12">+</span>
                       {isPoolExhausted ? 'Plate is full' : 'Add another problem'}
                     </span>
                   </button>
@@ -442,7 +442,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         </div>
                         {/* Top label — offset so bottom peeks. On hover, lifts up fully */}
                         {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg`}
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
                             style={{
                               top: '3px',
                               left: '-4px',
@@ -483,7 +483,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         </div>
                         {/* Top label — offset, lifts on hover */}
                         {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg`}
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
                             style={{
                               top: '3px',
                               right: '-4px',
