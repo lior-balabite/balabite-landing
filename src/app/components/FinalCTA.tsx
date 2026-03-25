@@ -128,7 +128,7 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
     'w-full bg-cream-50 border border-cream-300 rounded-lg px-4 py-3 text-cream-900 focus:outline-none focus:ring-2 focus:ring-primary-900 focus:border-transparent transition-colors appearance-none';
 
   return (
-    <section ref={ref} className="relative py-24 px-6 bg-cream-100">
+    <section ref={ref} id="final-cta" className="relative py-24 px-6 bg-cream-100">
       {/* Header */}
       <div className="max-w-[48rem] mx-auto text-center mb-16">
         <motion.h2
@@ -138,7 +138,7 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
           variants={fadeUp}
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-cream-900 leading-tight mb-4"
         >
-          Your team is ready.
+          What if tomorrow were different?
         </motion.h2>
         <motion.p
           initial="hidden"
@@ -147,7 +147,7 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
           variants={fadeUp}
           className="text-lg text-cream-600 max-w-[36rem] mx-auto"
         >
-          Not another dashboard. Not another app. A team that works while you sleep.
+          You&apos;ve seen what BalaBite does. The question is whether you want to keep carrying it alone.
         </motion.p>
       </div>
 
@@ -342,11 +342,14 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-cream-700 transition-colors">
+            <a href="/about" className="hover:text-cream-700 transition-colors">
               {t('cta.footer.about')}
             </a>
-            <a href="#" className="hover:text-cream-700 transition-colors">
+            <a href="/privacy" className="hover:text-cream-700 transition-colors">
               {t('cta.footer.privacy')}
+            </a>
+            <a href="mailto:hello@balabite.ai" className="hover:text-cream-700 transition-colors">
+              Contact
             </a>
           </div>
         </div>

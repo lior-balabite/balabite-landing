@@ -285,9 +285,9 @@ export default function ProductReveal() {
         >
           <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
             <div className="flex-1 text-center lg:text-left">
-              <p className="text-xs uppercase tracking-[0.2em] text-purple-500/70 mb-3">While you sleep</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-purple-500/70 mb-3">Discovered overnight</p>
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-900 mb-4">
-                Insights nobody asked for.
+                Patterns you&apos;d never spot. Already found.
               </h3>
               <p className="text-base text-cream-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
                 At 2 AM, BalaBite cross-references weather, staffing, ticket data, and guest behavior.
@@ -311,7 +311,7 @@ export default function ProductReveal() {
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-[0.2em] text-green-500/70 mb-3">For your guests</p>
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-900 mb-4">
-              288 items on your menu. Each guest sees 6.
+              Same menu. Every guest sees a different one.
             </h3>
             <p className="text-base text-cream-600 leading-relaxed max-w-2xl mx-auto">
               Allergies filtered. Kitchen load balanced. Personal history remembered.
