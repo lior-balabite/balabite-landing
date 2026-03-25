@@ -6,7 +6,6 @@ import { useI18n } from '../../i18n/I18nProvider';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import TheSplit from '../components/TheSplit';
-import TheTurn from '../components/TheTurn';
 import ProductReveal from '../components/ProductReveal';
 import TheTeam from '../components/TheTeam';
 import HowItWorks from '../components/HowItWorks';
@@ -59,10 +58,7 @@ export default function LandingPage() {
       {/* Section 2: The Split — Without vs With BalaBite */}
       <TheSplit />
 
-      {/* Section 3: The Turn — "What if you weren't alone" pivot */}
-      <TheTurn />
-
-      {/* Section 4: Product Reveal — real UI screenshots */}
+      {/* Section 3: Product Reveal — turn + 4 jaw-drop moments */}
       <ProductReveal />
 
       {/* Section 5: The Team — AI brain characters */}
