@@ -337,9 +337,9 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
   return (
     <div ref={containerRef} className="relative bg-cream-100" style={{ height: '220vh' }}>
-      <div className="sticky top-0 h-screen bg-cream-100">
-        <div className="h-full flex items-center px-6 sm:px-10 lg:px-16 pt-16 pb-8 overflow-x-clip">
-          <div className="mx-auto flex max-w-[90rem] w-full flex-col lg:flex-row items-center gap-8 lg:gap-10">
+      <div className="sticky top-0 min-h-screen lg:h-screen bg-cream-100">
+        <div className="min-h-full flex items-start lg:items-center px-4 sm:px-10 lg:px-16 pt-20 sm:pt-16 pb-6 overflow-x-clip">
+          <div className="mx-auto flex max-w-[90rem] w-full flex-col lg:flex-row items-center gap-4 sm:gap-8 lg:gap-10">
 
             {/* ── LEFT: Headline ── */}
             <div className="flex-1 text-center lg:text-left lg:max-w-lg">
@@ -347,16 +347,16 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 variants={fadeUp} initial="hidden" animate="visible" custom={0}>
                 The reality
               </motion.p>
-              <motion.h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-primary-900 sm:text-5xl md:text-[3.5rem]"
+              <motion.h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-primary-900 sm:text-4xl md:text-5xl lg:text-[3.5rem]"
                 variants={fadeUp} initial="hidden" animate="visible" custom={1}>
                 This is a ten-person job.
               </motion.h1>
-              <motion.p className="mt-5 text-base leading-relaxed text-cream-600 sm:text-lg"
+              <motion.p className="mt-3 sm:mt-5 text-sm leading-relaxed text-cream-600 sm:text-base lg:text-lg"
                 variants={fadeUp} initial="hidden" animate="visible" custom={2}>
                 You&apos;ve been doing it alone.<br />
                 <span className="text-primary-900 font-medium">AI changes that.</span>
               </motion.p>
-              <motion.div className="mt-8 flex gap-3 justify-center lg:justify-start"
+              <motion.div className="mt-4 sm:mt-8 flex gap-3 justify-center lg:justify-start"
                 variants={fadeUp} initial="hidden" animate="visible" custom={3}>
                 <button onClick={onCtaClick}
                   className="rounded-full bg-primary-900 px-7 py-3 text-sm font-semibold text-cream-100 transition-all hover:bg-primary-800 active:scale-[0.97]">
@@ -367,7 +367,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   See how
                 </button>
               </motion.div>
-              <motion.div className="mt-5 flex items-center gap-2.5 text-sm text-cream-500 justify-center lg:justify-start"
+              <motion.div className="mt-3 sm:mt-5 flex items-center gap-2.5 text-xs sm:text-sm text-cream-500 justify-center lg:justify-start"
                 variants={fadeUp} initial="hidden" animate="visible" custom={4}>
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
@@ -380,7 +380,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             {/* ── RIGHT: Image + labels + P&L ── */}
             <div className="flex-[1.4] flex flex-col items-center w-full lg:pr-4 xl:pr-8">
 
-              <div ref={imgRef} className="relative w-full max-w-[440px]"
+              <div ref={imgRef} className="relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[440px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
                 <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
@@ -554,11 +554,12 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
             </div>
 
-            {/* Mobile labels — horizontal scroll strip below image */}
-            <div className="flex sm:hidden gap-2 w-full overflow-x-auto pb-2 -mt-2"
+            {/* Mobile labels — horizontal scroll strip, always visible */}
+            <div className="flex sm:hidden gap-1.5 w-full overflow-x-auto py-2"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {[...leftLabelsAll.slice(0, 8), ...rightLabelsAll.slice(0, 8)].map((l, i) => (
-                <div key={l.text} className={`${lc(l.s)} shrink-0`}
+              {[...leftLabelsAll.slice(0, 6), ...rightLabelsAll.slice(0, 6)].map((l, i) => (
+                <div key={l.text}
+                  className="whitespace-nowrap text-[9px] px-2 py-0.5 border rounded shadow-sm shrink-0 bg-white/80 text-cream-700 border-cream-300"
                   style={{ transform: `rotate(${rots[i % rots.length]})` }}>
                   {l.text}
                 </div>
