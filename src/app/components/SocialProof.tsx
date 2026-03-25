@@ -116,7 +116,7 @@ export default function SocialProof() {
           >
             {metrics.map((metric) => (
               <motion.div key={metric.label} className="text-center" variants={fadeUp}>
-                <div className="text-5xl md:text-6xl font-bold text-cream-900 mb-2">
+                <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-cream-900 mb-2">
                   <Counter target={metric.value} suffix={metric.suffix} />
                 </div>
                 <div className="text-cream-500 text-sm uppercase tracking-wider">
@@ -213,7 +213,7 @@ export default function SocialProof() {
                 </button>
                 <div
                   className="overflow-hidden transition-all duration-300 ease-out"
-                  style={{ maxHeight: openFaq === i ? '200px' : '0px' }}
+                  style={{ maxHeight: openFaq === i ? '300px' : '0px' }}
                 >
                   <p className="px-5 pb-4 text-sm text-cream-600 leading-relaxed">
                     {faq.a}

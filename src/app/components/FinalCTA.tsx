@@ -153,7 +153,7 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
 
       {/* Form */}
       <div className="max-w-[32rem] mx-auto">
-        <div className="relative bg-white border border-cream-200 rounded-2xl p-8 shadow-sm">
+        <div className="relative bg-white border border-cream-200 rounded-2xl p-5 sm:p-8 shadow-sm">
           <AnimatePresence mode="wait">
             {/* Step 1: Pain Points */}
             {step === 'pain' && (

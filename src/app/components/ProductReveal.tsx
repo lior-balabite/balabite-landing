@@ -136,9 +136,9 @@ function CuratedMenuMockup() {
   ];
 
   return (
-    <div className="flex gap-6 items-start max-w-2xl mx-auto">
+    <div className="flex flex-col sm:flex-row gap-6 items-start max-w-2xl mx-auto">
       {/* Before: overwhelming menu */}
-      <div className="flex-1 relative">
+      <div className="flex-1 w-full relative">
         <p className="text-[10px] text-red-400/70 uppercase tracking-wider mb-2 text-center">Every guest sees this</p>
         <div className="bg-cream-200/50 rounded-xl p-3 border border-cream-300/50 max-h-[320px] overflow-hidden relative">
           <div className="space-y-1.5">
@@ -156,15 +156,21 @@ function CuratedMenuMockup() {
         <p className="text-center text-[11px] text-cream-500 mt-2">Average decision time: <span className="font-semibold text-red-600">8 minutes</span></p>
       </div>
 
-      {/* Arrow */}
-      <div className="flex items-center pt-16 text-cream-400">
+      {/* Arrow — hidden on mobile, visible on sm+ */}
+      <div className="hidden sm:flex items-center pt-16 text-cream-400 shrink-0">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
         </svg>
       </div>
+      {/* Mobile arrow */}
+      <div className="flex sm:hidden justify-center text-cream-400 -my-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 5v14" /><path d="m5 12 7 7 7-7" />
+        </svg>
+      </div>
 
       {/* After: curated 6 */}
-      <div className="flex-1">
+      <div className="flex-1 w-full">
         <p className="text-[10px] text-green-600/70 uppercase tracking-wider mb-2 text-center">Each guest sees this</p>
         <div className="bg-white rounded-xl p-3 border border-cream-200 shadow-sm">
           <p className="text-[9px] text-cream-400 mb-2">For you, Sarah \u2022 Gluten-free \u2022 Tuesday dinner</p>

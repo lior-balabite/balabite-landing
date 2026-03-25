@@ -338,6 +338,7 @@ export default function TheSplit() {
   const splitRef = useRef<HTMLDivElement>(null);
   const [activeAngle, setActiveAngle] = useState(0);
   const [dividerPos, setDividerPos] = useState(50);
+  const [mobileSide, setMobileSide] = useState<'without' | 'with'>('without');
   const isDragging = useRef(false);
   const angle = angles[activeAngle];
 
@@ -379,13 +380,14 @@ export default function TheSplit() {
         </h2>
       </motion.div>
 
-      {/* Angle tabs */}
-      <div className="flex justify-center gap-2 mb-8 md:mb-12 px-6">
+      {/* Angle tabs — horizontal scroll on mobile */}
+      <div className="flex gap-2 mb-8 md:mb-12 px-6 overflow-x-auto scrollbar-hide justify-start md:justify-center pb-2"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {angles.map((a, i) => (
           <button
             key={a.id}
-            onClick={() => { setActiveAngle(i); setDividerPos(50); }}
-            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
+            onClick={() => { setActiveAngle(i); setDividerPos(50); setMobileSide('without'); }}
+            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all whitespace-nowrap shrink-0 ${
               i === activeAngle
                 ? 'bg-primary-900 text-cream-100'
                 : 'bg-cream-200/60 text-cream-600 hover:bg-cream-200 hover:text-cream-800'
@@ -405,111 +407,163 @@ export default function TheSplit() {
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.8, layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={angle.id}
-            ref={splitRef}
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 select-none"
-          >
-            {/* ── LEFT LAYER: WITHOUT — uses grid, content in col 1 only ── */}
-            <div
-              className="absolute inset-0"
-              style={{ clipPath: `inset(0 ${100 - dividerPos}% 0 0)` }}
+        {/* ── MOBILE: Toggle between sides ── */}
+        <div className="lg:hidden">
+          {/* Mobile toggle */}
+          <div className="flex rounded-xl overflow-hidden border border-cream-200 mb-4">
+            <button
+              onClick={() => setMobileSide('without')}
+              className={`flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                mobileSide === 'without'
+                  ? 'bg-[#1a1a2e] text-red-400'
+                  : 'bg-cream-50 text-cream-500'
+              }`}
             >
-              <div className="grid grid-cols-2 h-full">
-                <div className="bg-[#1a1a2e] text-white/90 p-6 sm:p-8 md:p-10">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
-                  <p className="text-sm text-white/40 italic mt-1 mb-6">{angle.leftSub}</p>
+              Without
+            </button>
+            <button
+              onClick={() => setMobileSide('with')}
+              className={`flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                mobileSide === 'with'
+                  ? 'bg-[#FDF8F0] text-green-600 border-l border-cream-200'
+                  : 'bg-cream-50 text-cream-500 border-l border-cream-200'
+              }`}
+            >
+              With BalaBite
+            </button>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${angle.id}-${mobileSide}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 p-5 ${
+                mobileSide === 'without' ? 'bg-[#1a1a2e]' : 'bg-[#FDF8F0]'
+              }`}
+            >
+              <p className={`text-sm italic mt-1 mb-5 ${
+                mobileSide === 'without' ? 'text-white/40' : 'text-cream-500'
+              }`}>
+                {mobileSide === 'without' ? angle.leftSub : angle.rightSub}
+              </p>
+              <div className="space-y-4">
+                {angle.moments.map((m) => (
+                  <div key={`m-${mobileSide}-${m.time}`} className="flex gap-3">
+                    <span className={`text-[10px] font-mono whitespace-nowrap pt-0.5 min-w-[4.5rem] shrink-0 ${
+                      mobileSide === 'without' ? 'text-red-400/60' : 'text-green-600/50'
+                    }`}>
+                      {m.time}
+                    </span>
+                    <p className={`text-[12px] leading-relaxed ${
+                      mobileSide === 'without' ? 'text-white/70' : 'text-cream-700'
+                    }`}>
+                      {mobileSide === 'without' ? m.without : m.with}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* ── DESKTOP: Draggable divider split ── */}
+        <div className="hidden lg:block">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={angle.id}
+              ref={splitRef}
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
+              className="relative rounded-2xl overflow-hidden shadow-xl border border-cream-200/50 select-none"
+            >
+              {/* LEFT LAYER */}
+              <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - dividerPos}% 0 0)` }}>
+                <div className="grid grid-cols-2 h-full">
+                  <div className="bg-[#1a1a2e] text-white/90 p-8 md:p-10">
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400/80">Without</span>
+                    <p className="text-sm text-white/40 italic mt-1 mb-6">{angle.leftSub}</p>
+                    <div className="space-y-5">
+                      {angle.moments.map((m) => (
+                        <div key={`wo-${m.time}`} className="flex gap-4">
+                          <span className="text-[11px] font-mono text-red-400/60 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">{m.time}</span>
+                          <p className="text-[13px] leading-relaxed text-white/70">{m.without}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-[#1a1a2e]" />
+                </div>
+              </div>
+
+              {/* RIGHT LAYER */}
+              <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${dividerPos}%)` }}>
+                <div className="grid grid-cols-2 h-full">
+                  <div className="bg-[#FDF8F0]" />
+                  <div className="bg-[#FDF8F0] p-8 md:p-10">
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
+                    <p className="text-sm text-cream-500 italic mt-1 mb-6">{angle.rightSub}</p>
+                    <div className="space-y-5">
+                      {angle.moments.map((m) => (
+                        <div key={`wi-${m.time}`} className="flex gap-4">
+                          <span className="text-[11px] font-mono text-green-600/50 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">{m.time}</span>
+                          <p className="text-[13px] leading-relaxed text-cream-700">{m.with}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* DIVIDER */}
+              <div className="absolute top-0 bottom-0 z-10 flex items-center" style={{ left: `${dividerPos}%`, transform: 'translateX(-50%)' }}>
+                <div className="absolute inset-y-0 w-px bg-white/30" />
+                <div
+                  className="relative w-10 h-10 rounded-full bg-white shadow-lg border border-cream-300 flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
+                  onMouseDown={() => { isDragging.current = true; }}
+                  onTouchStart={() => { isDragging.current = true; }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-cream-500">
+                    <path d="M5 3L5 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M8 3L8 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M11 3L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Invisible sizer */}
+              <div className="invisible grid grid-cols-2" aria-hidden>
+                <div className="p-8 md:p-10">
+                  <div className="mb-8" />
                   <div className="space-y-5">
                     {angle.moments.map((m) => (
-                      <div key={`wo-${m.time}`} className="flex gap-4">
-                        <span className="text-[11px] font-mono text-red-400/60 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
-                          {m.time}
-                        </span>
-                        <p className="text-[13px] leading-relaxed text-white/70">{m.without}</p>
+                      <div key={`szl-${m.time}`} className="flex gap-4">
+                        <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
+                        <p className="text-[13px] leading-relaxed">{m.without}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-[#1a1a2e]" />
-              </div>
-            </div>
-
-            {/* ── RIGHT LAYER: WITH BALABITE — uses grid, content in col 2 only ── */}
-            <div
-              className="absolute inset-0"
-              style={{ clipPath: `inset(0 0 0 ${dividerPos}%)` }}
-            >
-              <div className="grid grid-cols-2 h-full">
-                <div className="bg-[#FDF8F0]" />
-                <div className="bg-[#FDF8F0] p-6 sm:p-8 md:p-10">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-green-600/80">With BalaBite</span>
-                  <p className="text-sm text-cream-500 italic mt-1 mb-6">{angle.rightSub}</p>
+                <div className="p-8 md:p-10">
+                  <div className="mb-8" />
                   <div className="space-y-5">
                     {angle.moments.map((m) => (
-                      <div key={`wi-${m.time}`} className="flex gap-4">
-                        <span className="text-[11px] font-mono text-green-600/50 whitespace-nowrap pt-0.5 min-w-[5.5rem] shrink-0">
-                          {m.time}
-                        </span>
-                        <p className="text-[13px] leading-relaxed text-cream-700">{m.with}</p>
+                      <div key={`szr-${m.time}`} className="flex gap-4">
+                        <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
+                        <p className="text-[13px] leading-relaxed">{m.with}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* ── DRAGGABLE DIVIDER ── */}
-            <div
-              className="absolute top-0 bottom-0 z-10 flex items-center"
-              style={{ left: `${dividerPos}%`, transform: 'translateX(-50%)' }}
-            >
-              <div className="absolute inset-y-0 w-px bg-white/30" />
-              <div
-                className="relative w-10 h-10 rounded-full bg-white shadow-lg border border-cream-300 flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
-                onMouseDown={() => { isDragging.current = true; }}
-                onTouchStart={() => { isDragging.current = true; }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-cream-500">
-                  <path d="M5 3L5 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M8 3L8 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M11 3L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Invisible sizer — gives the container height from the current tab's longest side */}
-            <div className="invisible grid grid-cols-2" aria-hidden>
-              <div className="p-6 sm:p-8 md:p-10">
-                <div className="mb-8" />
-                <div className="space-y-5">
-                  {angle.moments.map((m) => (
-                    <div key={`szl-${m.time}`} className="flex gap-4">
-                      <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
-                      <p className="text-[13px] leading-relaxed">{m.without}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="p-6 sm:p-8 md:p-10">
-                <div className="mb-8" />
-                <div className="space-y-5">
-                  {angle.moments.map((m) => (
-                    <div key={`szr-${m.time}`} className="flex gap-4">
-                      <span className="min-w-[5.5rem] shrink-0 text-[11px]">{m.time}</span>
-                      <p className="text-[13px] leading-relaxed">{m.with}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Tagline */}
