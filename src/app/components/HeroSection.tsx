@@ -89,7 +89,7 @@ const rightLabelsAll = [
 const rots = ['-2.5deg', '1.8deg', '-1.2deg', '2.3deg', '-1.7deg', '1.1deg', '-2.8deg', '3.1deg', '-0.8deg', '2.6deg', '-2.1deg', '0.9deg', '-1.5deg', '2.4deg', '-1.3deg'];
 
 function lc(s: string) {
-  const b = 'whitespace-nowrap text-[10px] sm:text-xs px-2.5 py-1 border rounded-md shadow-sm';
+  const b = 'whitespace-nowrap text-[7px] sm:text-[10px] lg:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 border rounded-md shadow-sm';
   switch (s) {
     case 'stamp': return `${b} bg-red-50 text-red-700 border-red-300 font-bold uppercase tracking-wider shadow-md`;
     case 'sms': return `${b} bg-white text-primary-800 border-primary-200 rounded-xl italic`;
@@ -380,7 +380,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             {/* ── RIGHT: Image + labels + P&L ── */}
             <div className="flex-[1.4] flex flex-col items-center w-full lg:pr-4 xl:pr-8">
 
-              <div ref={imgRef} className="relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[440px]"
+              <div ref={imgRef} className="relative w-full max-w-[220px] sm:max-w-[300px] lg:max-w-[440px]"
                 onMouseMove={onMM} onMouseLeave={onML}>
 
                 <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
@@ -415,10 +415,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </button>
                 </div>
 
-                {/* LEFT LABEL CLOUD — layered slots: hover lifts top to reveal bottom */}
-                <div ref={leftColRef} className="absolute top-0 right-full pr-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-end w-[240px] transition-transform duration-200"
+                {/* LEFT LABEL CLOUD — visible on all screens, tiny on mobile */}
+                <div ref={leftColRef} className="absolute top-0 right-full pr-1 sm:pr-4 pt-10 sm:pt-14 bottom-8 flex flex-col gap-1 sm:gap-1.5 items-end w-[90px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'left' ? 'translateX(-3px)' : 'translateX(0)' }}>
-                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                  <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
                   </p>
                   {leftSlots.map((slot, i) => {
@@ -456,10 +456,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   })}
                 </div>
 
-                {/* RIGHT LABEL CLOUD — layered slots */}
-                <div ref={rightColRef} className="absolute top-0 left-full pl-4 pt-14 bottom-8 hidden sm:flex flex-col gap-1.5 items-start w-[240px] transition-transform duration-200"
+                {/* RIGHT LABEL CLOUD — visible on all screens, tiny on mobile */}
+                <div ref={rightColRef} className="absolute top-0 left-full pl-1 sm:pl-4 pt-10 sm:pt-14 bottom-8 flex flex-col gap-1 sm:gap-1.5 items-start w-[90px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'right' ? 'translateX(3px)' : 'translateX(0)' }}>
-                  <p className={`text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                  <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
                   </p>
                   {rightSlots.map((slot, i) => {
@@ -554,17 +554,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
             </div>
 
-            {/* Mobile labels — horizontal scroll strip, always visible */}
-            <div className="flex sm:hidden gap-1.5 w-full overflow-x-auto py-2"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {[...leftLabelsAll.slice(0, 6), ...rightLabelsAll.slice(0, 6)].map((l, i) => (
-                <div key={l.text}
-                  className="whitespace-nowrap text-[9px] px-2 py-0.5 border rounded shadow-sm shrink-0 bg-white/80 text-cream-700 border-cream-300"
-                  style={{ transform: `rotate(${rots[i % rots.length]})` }}>
-                  {l.text}
-                </div>
-              ))}
-            </div>
 
           </div>
         </div>
