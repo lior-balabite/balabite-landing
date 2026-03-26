@@ -162,13 +162,53 @@ All sourced from actual BalaBite_ai product docs:
 - Overlay labels hidden on mobile (no hover), red dot indicator instead
 - Label text wraps on mobile (removed whitespace-nowrap below sm:)
 
-### Still To Do (Mobile)
-- Flip card interaction for piled labels on mobile (tap to flip between original and added problem)
-- Test on actual devices (375px iPhone, Android)
-- Some labels may still clip on very narrow screens
+### Mobile Flip Cards (DONE)
+- Labels with added problems have a pulsing red dot on mobile
+- Tap to flip — front (original) fades out, back (added problem) fades in
+- Container sizes to whichever text is visible (no clipping)
+- Desktop unchanged (hover-to-lift behavior)
+- Navbar shrunk on mobile (smaller logo, text, padding)
+- Labels overlap image edge slightly (right-[90%]/left-[90%]) for better visibility
+- Label text wraps on mobile (text-[6px], no whitespace-nowrap)
+
+### Current Page Flow (as of March 26)
+1. **Hero** — balance board, tilt, P&L, pile-on, flip cards on mobile
+2. **The Split** — 8 tabs, Without vs With (toggle on mobile, divider on desktop)
+3. **Product Reveal** — turn + 4 moments (Pulse, Discovery, Curated Menu, Psychology) + closing CTA
+4. **How It Works** — recipe cards (Prep/Cook/Plate + Step 4 CTA)
+5. **Social Proof** — metrics, integrations, testimonial placeholder, pricing signal, FAQ
+6. **Final CTA** — "What if tomorrow were different?" + multi-step form
+
+### What's Left Before Next Website Session
+1. [ ] Get real testimonial from Miami Squeeze
+2. [ ] Take product screenshots (Menu Arena, Pulse, AI Waiter)
+3. [ ] Record 60-90 sec video walkthrough
+4. [ ] Create /about page (founder story)
+5. [ ] Create /privacy and /terms pages
+6. [ ] Create /pricing page
+7. [ ] Test on real mobile devices
+8. [ ] Final headline for THE TEAM section (if it comes back — currently cut)
+9. [ ] OG image for social sharing
+10. [ ] Consider THE GUT PUNCH section (live timer)
+
+### Competitor Analysis & V2 Plan
+- Full competitor analysis saved: `docs/competitor-analysis-2026-03-25.md`
+- Website V2 plan saved: `docs/website-v2-plan.md`
+- Covers: Owner.com, Nory, Restoke, MRGN, ZavoPay, MarginEdge, xtraCHEF, Lineup.ai, ClearCOGS, Supy
+
+### Key Docs Created This Session
+- `docs/competitor-analysis-2026-03-25.md` — full competitive landscape
+- `docs/website-v2-plan.md` — landing page changes + additional pages needed
+- `docs/sessions/2026-03-24_post-hero-iteration.md` — this file
 
 ## Resume Instructions
 ```
 Resume from docs/sessions/2026-03-24_post-hero-iteration.md
 ```
-Next: test mobile on real device, then focus on app V1. Come back to website 1-2 weeks before meetings.
+Focus: finish app V1 first. Come back to website 1-2 weeks before meetings to:
+- Add real screenshots + video
+- Get testimonials
+- Build /about, /privacy, /pricing pages
+- Final mobile polish pass
+- Consider adding THE TEAM back (about page or embedded)
+- Deploy to production
