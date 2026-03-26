@@ -442,28 +442,52 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                           transitionDelay: `${(i % 3) * 60}ms`,
                           cursor: slot.top ? 'pointer' : undefined,
                         }}>
-                        {/* On mobile: show original OR added (flipped). On desktop: original with hover overlay */}
-                        <div className={`${lc(showTop ? slot.top!.s : slot.bottom.s)} ${slot.top && !isFlipped ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-all duration-200`}
-                          style={{
-                            transform: `rotate(${rots[i % rots.length]})`,
-                          }}>
-                          <span className="sm:hidden">{showTop ? slot.top!.text : slot.bottom.text}</span>
-                          <span className="hidden sm:inline">{slot.bottom.text}</span>
-                        </div>
-                        {/* Desktop only: overlay label with hover lift */}
-                        {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                            style={{
-                              top: '3px',
-                              left: '-4px',
-                              transform: `rotate(${rots[(i + 7) % rots.length]})`,
-                            }}>
-                            {slot.top.text}
+                        {/* Mobile: 3D flip card */}
+                        {slot.top ? (
+                          <>
+                            {/* Flip container — mobile only */}
+                            <div className="sm:hidden" style={{ perspective: '300px' }}>
+                              <div className="transition-transform duration-300 ease-out" style={{
+                                transformStyle: 'preserve-3d',
+                                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                              }}>
+                                {/* Front: original label */}
+                                <div className={lc(slot.bottom.s)} style={{
+                                  backfaceVisibility: 'hidden',
+                                  transform: `rotate(${rots[i % rots.length]})`,
+                                }}>
+                                  {slot.bottom.text}
+                                </div>
+                                {/* Back: added label */}
+                                <div className={`${lc(slot.top.s)} absolute inset-0`} style={{
+                                  backfaceVisibility: 'hidden',
+                                  transform: `rotateY(180deg) rotate(${rots[(i + 7) % rots.length]})`,
+                                }}>
+                                  {slot.top.text}
+                                </div>
+                              </div>
+                            </div>
+                            {/* Desktop: original label (always visible) */}
+                            <div className={`${lc(slot.bottom.s)} hidden sm:block sm:opacity-40 sm:group-hover:opacity-100 transition-opacity`}
+                              style={{ transform: `rotate(${rots[i % rots.length]})` }}>
+                              {slot.bottom.text}
+                            </div>
+                            {/* Desktop: overlay label with hover lift */}
+                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                              style={{ top: '3px', left: '-4px', transform: `rotate(${rots[(i + 7) % rots.length]})` }}>
+                              {slot.top.text}
+                            </div>
+                            {/* Mobile: pulsing dot when not flipped */}
+                            {!isFlipped && (
+                              <div className="sm:hidden absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
+                            )}
+                          </>
+                        ) : (
+                          /* No overlay — just the original label */
+                          <div className={lc(slot.bottom.s)}
+                            style={{ transform: `rotate(${rots[i % rots.length]})` }}>
+                            {slot.bottom.text}
                           </div>
-                        )}
-                        {/* Mobile: dot indicator when has added problem and not flipped */}
-                        {slot.top && !isFlipped && (
-                          <div className="sm:hidden absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
                         )}
                       </div>
                     );
@@ -495,25 +519,47 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                           transitionDelay: `${(i % 3) * 60}ms`,
                           cursor: slot.top ? 'pointer' : undefined,
                         }}>
-                        <div className={`${lc(showTop ? slot.top!.s : slot.bottom.s)} ${slot.top && !isFlipped ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-all duration-200`}
-                          style={{
-                            transform: `rotate(${rots[(i + 5) % rots.length]})`,
-                          }}>
-                          <span className="sm:hidden">{showTop ? slot.top!.text : slot.bottom.text}</span>
-                          <span className="hidden sm:inline">{slot.bottom.text}</span>
-                        </div>
-                        {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                            style={{
-                              top: '3px',
-                              right: '-4px',
-                              transform: `rotate(${rots[(i + 3) % rots.length]})`,
-                            }}>
-                            {slot.top.text}
+                        {slot.top ? (
+                          <>
+                            {/* Mobile: 3D flip card */}
+                            <div className="sm:hidden" style={{ perspective: '300px' }}>
+                              <div className="transition-transform duration-300 ease-out" style={{
+                                transformStyle: 'preserve-3d',
+                                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                              }}>
+                                <div className={lc(slot.bottom.s)} style={{
+                                  backfaceVisibility: 'hidden',
+                                  transform: `rotate(${rots[(i + 5) % rots.length]})`,
+                                }}>
+                                  {slot.bottom.text}
+                                </div>
+                                <div className={`${lc(slot.top.s)} absolute inset-0`} style={{
+                                  backfaceVisibility: 'hidden',
+                                  transform: `rotateY(180deg) rotate(${rots[(i + 3) % rots.length]})`,
+                                }}>
+                                  {slot.top.text}
+                                </div>
+                              </div>
+                            </div>
+                            {/* Desktop: original */}
+                            <div className={`${lc(slot.bottom.s)} hidden sm:block sm:opacity-40 sm:group-hover:opacity-100 transition-opacity`}
+                              style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}>
+                              {slot.bottom.text}
+                            </div>
+                            {/* Desktop: overlay */}
+                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                              style={{ top: '3px', right: '-4px', transform: `rotate(${rots[(i + 3) % rots.length]})` }}>
+                              {slot.top.text}
+                            </div>
+                            {!isFlipped && (
+                              <div className="sm:hidden absolute -top-0.5 -left-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
+                            )}
+                          </>
+                        ) : (
+                          <div className={lc(slot.bottom.s)}
+                            style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}>
+                            {slot.bottom.text}
                           </div>
-                        )}
-                        {slot.top && !isFlipped && (
-                          <div className="sm:hidden absolute -top-0.5 -left-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
                         )}
                       </div>
                     );
