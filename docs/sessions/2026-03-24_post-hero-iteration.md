@@ -150,8 +150,25 @@ All sourced from actual BalaBite_ai product docs:
 4. Mobile responsive pass on all sections
 5. A/B test headlines: "Own it all. Without carrying it alone" vs "You own everything. Now it doesn't own you."
 
+## March 26 Updates
+
+### Mobile Responsive Pass
+- TheSplit: toggle between sides on mobile (no draggable divider), horizontal scroll tabs
+- ProductReveal: curated menu stacks vertically, arrow becomes down-arrow
+- SocialProof: text sizing scaled, FAQ max-height increased
+- FinalCTA: form padding responsive
+- Hero: image constrained, labels on sides (tiny, wrapping), navbar smaller
+- Labels overlap image edge slightly on mobile (right-[90%]/left-[90%])
+- Overlay labels hidden on mobile (no hover), red dot indicator instead
+- Label text wraps on mobile (removed whitespace-nowrap below sm:)
+
+### Still To Do (Mobile)
+- Flip card interaction for piled labels on mobile (tap to flip between original and added problem)
+- Test on actual devices (375px iPhone, Android)
+- Some labels may still clip on very narrow screens
+
 ## Resume Instructions
 ```
 Resume from docs/sessions/2026-03-24_post-hero-iteration.md
 ```
-Rebuild Social Proof next, then refine Final CTA.
+Next: test mobile on real device, then focus on app V1. Come back to website 1-2 weeks before meetings.

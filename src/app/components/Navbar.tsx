@@ -24,14 +24,14 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}
     >
-      <div className="mx-auto flex max-w-[90rem] items-center justify-between px-6 sm:px-10 lg:px-16 py-4">
+      <div className="mx-auto flex max-w-[90rem] items-center justify-between px-4 sm:px-10 lg:px-16 py-2 sm:py-4">
         {/* Logo — SVG inline so we can control color */}
-        <a href="/" className="flex items-center gap-2.5">
+        <a href="/" className="flex items-center gap-1.5 sm:gap-2.5">
           <svg
-            width="36"
-            height="40"
+            width="24"
+            height="28"
             viewBox="0 0 236 324"
-            className="text-primary-900"
+            className="text-primary-900 sm:w-9 sm:h-10"
             aria-label="BalaBite"
           >
             <path
@@ -50,7 +50,7 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
               d="M431.205 758.727C445.378 757.47 457.921 767.852 459.33 782.006C460.739 796.159 450.488 808.809 436.345 810.368C427.062 811.392 417.944 807.351 412.469 799.786C406.994 792.222 406.007 782.3 409.883 773.806C413.759 765.311 421.902 759.553 431.205 758.727Z"
             />
           </svg>
-          <span className="font-bold text-primary-900 text-lg tracking-tight">
+          <span className="font-bold text-primary-900 text-sm sm:text-lg tracking-tight">
             balabite
           </span>
         </a>

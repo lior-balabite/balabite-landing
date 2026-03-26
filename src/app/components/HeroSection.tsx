@@ -416,7 +416,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
 
                 {/* LEFT LABEL CLOUD — visible on all screens, tiny on mobile */}
-                <div ref={leftColRef} className="absolute top-0 right-full pr-0.5 sm:pr-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-end w-[70px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
+                <div ref={leftColRef} className="absolute top-0 right-[90%] sm:right-full pr-0 sm:pr-4 pt-6 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-end w-[80px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'left' ? 'translateX(-3px)' : 'translateX(0)' }}>
                   <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
@@ -458,7 +458,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
 
                 {/* RIGHT LABEL CLOUD — visible on all screens, tiny on mobile */}
-                <div ref={rightColRef} className="absolute top-0 left-full pl-0.5 sm:pl-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-start w-[70px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
+                <div ref={rightColRef} className="absolute top-0 left-[90%] sm:left-full pl-0 sm:pl-4 pt-6 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-start w-[80px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'right' ? 'translateX(3px)' : 'translateX(0)' }}>
                   <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
