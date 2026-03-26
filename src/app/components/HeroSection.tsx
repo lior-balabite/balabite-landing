@@ -89,7 +89,7 @@ const rightLabelsAll = [
 const rots = ['-2.5deg', '1.8deg', '-1.2deg', '2.3deg', '-1.7deg', '1.1deg', '-2.8deg', '3.1deg', '-0.8deg', '2.6deg', '-2.1deg', '0.9deg', '-1.5deg', '2.4deg', '-1.3deg'];
 
 function lc(s: string) {
-  const b = 'whitespace-nowrap text-[7px] sm:text-[10px] lg:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 border rounded-md shadow-sm';
+  const b = 'text-[6px] sm:text-[10px] lg:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 border rounded-md shadow-sm leading-tight sm:whitespace-nowrap';
   switch (s) {
     case 'stamp': return `${b} bg-red-50 text-red-700 border-red-300 font-bold uppercase tracking-wider shadow-md`;
     case 'sms': return `${b} bg-white text-primary-800 border-primary-200 rounded-xl italic`;
@@ -416,7 +416,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
 
                 {/* LEFT LABEL CLOUD — visible on all screens, tiny on mobile */}
-                <div ref={leftColRef} className="absolute top-0 right-full pr-0.5 sm:pr-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-end w-[70px] sm:w-[180px] lg:w-[240px] overflow-hidden transition-transform duration-200"
+                <div ref={leftColRef} className="absolute top-0 right-full pr-0.5 sm:pr-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-end w-[70px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'left' ? 'translateX(-3px)' : 'translateX(0)' }}>
                   <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 mr-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Revenue pressure
@@ -440,14 +440,17 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         </div>
                         {/* Top label — offset so bottom peeks. On hover, lifts up fully */}
                         {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                            style={{
-                              top: '3px',
-                              left: '-4px',
-                              transform: `rotate(${rots[(i + 7) % rots.length]})`,
-                            }}>
-                            {slot.top.text}
-                          </div>
+                          <>
+                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                              style={{
+                                top: '3px',
+                                left: '-4px',
+                                transform: `rotate(${rots[(i + 7) % rots.length]})`,
+                              }}>
+                              {slot.top.text}
+                            </div>
+                            <div className="sm:hidden absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10" />
+                          </>
                         )}
                       </div>
                     );
@@ -455,7 +458,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 </div>
 
                 {/* RIGHT LABEL CLOUD — visible on all screens, tiny on mobile */}
-                <div ref={rightColRef} className="absolute top-0 left-full pl-0.5 sm:pl-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-start w-[70px] sm:w-[180px] lg:w-[240px] overflow-hidden transition-transform duration-200"
+                <div ref={rightColRef} className="absolute top-0 left-full pl-0.5 sm:pl-4 pt-8 sm:pt-14 bottom-8 flex flex-col gap-0.5 sm:gap-1.5 items-start w-[70px] sm:w-[180px] lg:w-[240px] transition-transform duration-200"
                   style={{ transform: nudgeSide === 'right' ? 'translateX(3px)' : 'translateX(0)' }}>
                   <p className={`hidden sm:block text-[10px] uppercase tracking-[0.25em] text-red-400/50 mb-0.5 ml-1 transition-opacity duration-500 flex-shrink-0 ${visibleCount > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     Cost pressure
@@ -479,14 +482,17 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                         </div>
                         {/* Top label — offset, lifts on hover */}
                         {slot.top && (
-                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                            style={{
-                              top: '3px',
-                              right: '-4px',
-                              transform: `rotate(${rots[(i + 3) % rots.length]})`,
-                            }}>
-                            {slot.top.text}
-                          </div>
+                          <>
+                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                              style={{
+                                top: '3px',
+                                right: '-4px',
+                                transform: `rotate(${rots[(i + 3) % rots.length]})`,
+                              }}>
+                              {slot.top.text}
+                            </div>
+                            <div className="sm:hidden absolute -top-0.5 -left-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10" />
+                          </>
                         )}
                       </div>
                     );
