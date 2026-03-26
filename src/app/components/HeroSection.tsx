@@ -113,6 +113,8 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
   // Dynamic column capacity — measured on mount
   const [maxLabels, setMaxLabels] = useState(13);
+  // Mobile flip state — tracks which slots are showing the "top" (added) label
+  const [flippedSlots, setFlippedSlots] = useState<Set<string>>(new Set());
 
   // Each slot has a bottom (original) label and optionally a top (piled) label
   type Slot = { bottom: { text: string; s: string }; top?: { text: string; s: string } };
@@ -423,34 +425,45 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </p>
                   {leftSlots.map((slot, i) => {
                     const show = i < visibleCount;
+                    const slotKey = `l-${i}`;
+                    const isFlipped = flippedSlots.has(slotKey);
+                    const showTop = slot.top && isFlipped;
                     return (
                       <div key={i} data-label-slot className="relative group"
+                        onClick={slot.top ? () => setFlippedSlots(prev => {
+                          const next = new Set(prev);
+                          next.has(slotKey) ? next.delete(slotKey) : next.add(slotKey);
+                          return next;
+                        }) : undefined}
                         style={{
                           opacity: show ? 1 : 0,
                           maxHeight: show ? '40px' : '0px',
                           transition: 'opacity 0.7s, max-height 0.7s',
                           transitionDelay: `${(i % 3) * 60}ms`,
+                          cursor: slot.top ? 'pointer' : undefined,
                         }}>
-                        {/* Bottom label — dims when covered on desktop only, full on mobile */}
-                        <div className={`${lc(slot.bottom.s)} ${slot.top ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-opacity`}
+                        {/* On mobile: show original OR added (flipped). On desktop: original with hover overlay */}
+                        <div className={`${lc(showTop ? slot.top!.s : slot.bottom.s)} ${slot.top && !isFlipped ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-all duration-200`}
                           style={{
                             transform: `rotate(${rots[i % rots.length]})`,
                           }}>
-                          {slot.bottom.text}
+                          <span className="sm:hidden">{showTop ? slot.top!.text : slot.bottom.text}</span>
+                          <span className="hidden sm:inline">{slot.bottom.text}</span>
                         </div>
-                        {/* Top label — offset so bottom peeks. On hover, lifts up fully */}
+                        {/* Desktop only: overlay label with hover lift */}
                         {slot.top && (
-                          <>
-                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                              style={{
-                                top: '3px',
-                                left: '-4px',
-                                transform: `rotate(${rots[(i + 7) % rots.length]})`,
-                              }}>
-                              {slot.top.text}
-                            </div>
-                            <div className="sm:hidden absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10" />
-                          </>
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                            style={{
+                              top: '3px',
+                              left: '-4px',
+                              transform: `rotate(${rots[(i + 7) % rots.length]})`,
+                            }}>
+                            {slot.top.text}
+                          </div>
+                        )}
+                        {/* Mobile: dot indicator when has added problem and not flipped */}
+                        {slot.top && !isFlipped && (
+                          <div className="sm:hidden absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
                         )}
                       </div>
                     );
@@ -465,34 +478,42 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   </p>
                   {rightSlots.map((slot, i) => {
                     const show = i < visibleCount;
+                    const slotKey = `r-${i}`;
+                    const isFlipped = flippedSlots.has(slotKey);
+                    const showTop = slot.top && isFlipped;
                     return (
                       <div key={i} data-label-slot className="relative group"
+                        onClick={slot.top ? () => setFlippedSlots(prev => {
+                          const next = new Set(prev);
+                          next.has(slotKey) ? next.delete(slotKey) : next.add(slotKey);
+                          return next;
+                        }) : undefined}
                         style={{
                           opacity: show ? 1 : 0,
                           maxHeight: show ? '40px' : '0px',
                           transition: 'opacity 0.7s, max-height 0.7s',
                           transitionDelay: `${(i % 3) * 60}ms`,
+                          cursor: slot.top ? 'pointer' : undefined,
                         }}>
-                        {/* Bottom label — dims when covered on desktop only */}
-                        <div className={`${lc(slot.bottom.s)} ${slot.top ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-opacity`}
+                        <div className={`${lc(showTop ? slot.top!.s : slot.bottom.s)} ${slot.top && !isFlipped ? 'sm:opacity-40 sm:group-hover:opacity-100' : ''} transition-all duration-200`}
                           style={{
                             transform: `rotate(${rots[(i + 5) % rots.length]})`,
                           }}>
-                          {slot.bottom.text}
+                          <span className="sm:hidden">{showTop ? slot.top!.text : slot.bottom.text}</span>
+                          <span className="hidden sm:inline">{slot.bottom.text}</span>
                         </div>
-                        {/* Top label — offset, lifts on hover */}
                         {slot.top && (
-                          <>
-                            <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
-                              style={{
-                                top: '3px',
-                                right: '-4px',
-                                transform: `rotate(${rots[(i + 3) % rots.length]})`,
-                              }}>
-                              {slot.top.text}
-                            </div>
-                            <div className="sm:hidden absolute -top-0.5 -left-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10" />
-                          </>
+                          <div className={`${lc(slot.top.s)} absolute shadow-md z-10 transition-all duration-200 ease-out group-hover:-translate-y-[110%] group-hover:shadow-lg hidden sm:block`}
+                            style={{
+                              top: '3px',
+                              right: '-4px',
+                              transform: `rotate(${rots[(i + 3) % rots.length]})`,
+                            }}>
+                            {slot.top.text}
+                          </div>
+                        )}
+                        {slot.top && !isFlipped && (
+                          <div className="sm:hidden absolute -top-0.5 -left-0.5 w-1.5 h-1.5 rounded-full bg-red-400 z-10 animate-pulse" />
                         )}
                       </div>
                     );
