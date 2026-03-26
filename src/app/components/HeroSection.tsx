@@ -447,13 +447,12 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                           <>
                             {/* Flip container — mobile only */}
                             <div className="sm:hidden relative">
-                              {/* Front: original — visible when not flipped */}
-                              <div className={`${lc(slot.bottom.s)} transition-all duration-300 ${isFlipped ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}
+                              {/* Both in flow — container sizes to the larger one */}
+                              <div className={`${lc(slot.bottom.s)} transition-all duration-300 ${isFlipped ? 'opacity-0 absolute inset-0' : 'opacity-100'}`}
                                 style={{ transform: `rotate(${rots[i % rots.length]})` }}>
                                 {slot.bottom.text}
                               </div>
-                              {/* Back: added — visible when flipped, positioned to take its own space */}
-                              <div className={`${lc(slot.top!.s)} absolute top-0 left-0 transition-all duration-300 ${isFlipped ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+                              <div className={`${lc(slot.top!.s)} transition-all duration-300 ${isFlipped ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
                                 style={{ transform: `rotate(${rots[(i + 7) % rots.length]})` }}>
                                 {slot.top!.text}
                               </div>
@@ -514,11 +513,11 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                           <>
                             {/* Mobile: flip card */}
                             <div className="sm:hidden relative">
-                              <div className={`${lc(slot.bottom.s)} transition-all duration-300 ${isFlipped ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}
+                              <div className={`${lc(slot.bottom.s)} transition-all duration-300 ${isFlipped ? 'opacity-0 absolute inset-0' : 'opacity-100'}`}
                                 style={{ transform: `rotate(${rots[(i + 5) % rots.length]})` }}>
                                 {slot.bottom.text}
                               </div>
-                              <div className={`${lc(slot.top!.s)} absolute top-0 right-0 transition-all duration-300 ${isFlipped ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+                              <div className={`${lc(slot.top!.s)} transition-all duration-300 ${isFlipped ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
                                 style={{ transform: `rotate(${rots[(i + 3) % rots.length]})` }}>
                                 {slot.top!.text}
                               </div>
