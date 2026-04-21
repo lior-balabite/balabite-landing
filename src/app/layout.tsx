@@ -1,7 +1,8 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import { I18nProvider } from '../i18n/I18nProvider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -10,25 +11,40 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'BalaBite.ai - Your Best Waiter, At Every Table',
-  description: 'AI-powered digital waiter system revolutionizing restaurant service with personal care',
+  title: 'Balabite — AI Restaurant Management That Works While You Sleep',
+  description:
+    'AI-powered restaurant management. Menu optimization, staff scheduling, cost control, guest experience — handled by AI brains that work while you sleep and brief you at sunrise.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    apple: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
+    apple: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
     other: [
       {
         rel: 'mask-icon',
         url: '/favicon.svg',
-        color: '#F59E0B'
+        color: '#F59E0B',
       },
     ],
   },
   manifest: '/site.webmanifest',
+  openGraph: {
+    title: 'BalaBite.ai — The First AI Restaurant Partner',
+    description:
+      'You run the restaurant. Your AI partner runs the rest. Menu, kitchen, team, and guests — managed by AI.',
+    type: 'website',
+    siteName: 'BalaBite.ai',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BalaBite.ai — The First AI Restaurant Partner',
+    description:
+      'You run the restaurant. Your AI partner runs the rest.',
+  },
+};
+
+export const viewport: Viewport = {
   themeColor: '#0F172A',
 };
 
@@ -39,10 +55,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`bg-primary-900 h-full ${inter.variable}`}>
-      <body
-        className="antialiased min-h-screen bg-primary-900 text-primary-100"
-      >
-        {children}
+      <body className="antialiased min-h-screen bg-primary-900 text-primary-100">
+        <I18nProvider>{children}</I18nProvider>
         <Analytics />
       </body>
     </html>

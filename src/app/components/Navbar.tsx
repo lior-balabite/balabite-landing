@@ -1,0 +1,68 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+interface NavbarProps {
+  onCtaClick: () => void;
+}
+
+export default function Navbar({ onCtaClick }: NavbarProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // On cream bg throughout since hero is now cream
+  const bgClass = !isScrolled
+    ? 'bg-transparent'
+    : 'bg-cream-100/80 backdrop-blur-lg shadow-lg shadow-black/5';
+
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}
+    >
+      <div className="mx-auto flex max-w-[90rem] items-center justify-between px-4 sm:px-10 lg:px-16 py-2 sm:py-4">
+        {/* Logo — SVG inline so we can control color */}
+        <a href="/" className="flex items-center gap-1.5 sm:gap-2.5">
+          <svg
+            width="28"
+            height="34"
+            viewBox="0 0 314 430"
+            className="text-primary-900 sm:w-10 sm:h-12"
+            aria-label="BalaBite"
+          >
+            <path
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="12"
+              strokeLinejoin="round"
+              transform="scale(0.363426 0.363176)"
+              d="M442.712 291.038C512.189 288.202 557.194 360.141 564.257 422.025C569.026 463.803 562.601 509.771 535.372 543.034C524.452 556.374 509.789 569.683 491.629 571.441C451.791 574.635 437.053 533.275 424.053 503.666C418.021 489.927 409.51 473.109 399.033 461.926C398.119 460.951 396.799 461.383 395.733 461.634C390.742 465.414 387.162 474.475 384.54 480.125C369.602 512.313 357.122 546.216 344.819 579.497C327.438 626.516 304.235 688.687 298.661 738.081C295.785 763.564 296.874 790.17 305.826 814.425C314.723 838.531 333.745 866.181 357.778 877.026C374.457 884.552 392.459 882.903 409.17 876.557C437.768 865.697 458.452 842.497 470.803 814.953C477.79 799.373 481.801 783.277 483.468 766.309C487.192 728.394 477.123 699.497 463.241 664.928C461.185 659.808 458.519 654.933 456.588 649.776C455.835 647.768 455.1 645.584 456.15 643.539C456.807 642.26 458.05 641.441 459.442 641.144C461.176 640.774 463.036 641.297 464.44 642.342C469.466 646.086 485.645 693.334 488.342 702.403C490.263 708.79 491.781 715.292 492.887 721.869C500.624 765.676 490.395 810.754 464.505 846.935C441.719 878.286 399.525 901.271 360.291 889.423C334.768 881.715 313.447 855.401 301.835 832.275C271.201 771.269 292.148 700.681 312.186 639.837C325.873 598.758 340.76 558.088 356.826 517.879C364.253 499.38 371.258 479.691 381.299 462.467C383.851 458.089 387.467 452.217 392.25 449.992C411.675 440.96 437.051 507.22 443.52 521.092C446.587 527.67 449.96 534.15 454.077 540.14C459.582 548.15 466.636 555.453 475.893 558.971C484.465 562.229 492.997 561.302 501.247 557.592C522.131 548.201 537.922 523.512 545.698 502.741C556.458 473.996 557.364 434.929 550.554 405.236C548.044 394.292 544.156 383.78 539.482 373.584C526.086 344.358 506.122 318.202 475.088 306.791C418.929 286.142 362.915 329.776 332.881 373.639C327.181 381.962 321.863 390.698 317.567 399.836C315.608 404.005 314.429 408.717 312.083 412.664C311.177 414.187 310.253 415.085 308.648 415.823C305.768 416.074 302.395 414.064 301.644 411.351C301.699 407.732 304.273 402.817 305.834 399.427C315.107 379.361 327.381 360.823 342.235 344.449C368.55 315.018 402.562 293.312 442.712 291.038Z"
+            />
+            <path
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="8"
+              transform="scale(0.363426 0.363176)"
+              d="M562.38 593.444C570.134 592.688 577.043 598.332 577.848 606.079C578.652 613.825 573.05 620.768 565.306 621.62C557.493 622.48 550.473 616.819 549.662 609.004C548.85 601.189 554.557 594.206 562.38 593.444Z"
+            />
+          </svg>
+          <span className="font-bold text-primary-900 text-sm sm:text-lg tracking-tight">
+            balabite
+          </span>
+        </a>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onCtaClick}
+            className="hidden sm:block rounded-full bg-primary-900 text-cream-100 hover:bg-primary-800 px-5 py-2 text-sm font-semibold transition-all duration-200"
+          >
+            Put AI to Work
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}

@@ -1,6 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Container / max-width sizes (matching Tailwind 3 defaults) */
+  --container-sm: 24rem;    /* 384px */
+  --container-md: 28rem;    /* 448px */
+  --container-lg: 32rem;    /* 512px */
+  --container-xl: 36rem;    /* 576px */
+  --container-2xl: 42rem;   /* 672px */
+  --container-3xl: 48rem;   /* 768px */
+  --container-4xl: 56rem;   /* 896px */
+  --container-5xl: 64rem;   /* 1024px */
+  --container-6xl: 72rem;   /* 1152px */
+  --container-7xl: 80rem;   /* 1280px */
+
+  /* Primary (Slate) — used for dark sections (hero, problem) */
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-200: #e2e8f0;
+  --color-primary-300: #cbd5e1;
+  --color-primary-400: #94a3b8;
+  --color-primary-500: #64748b;
+  --color-primary-600: #475569;
+  --color-primary-700: #334155;
+  --color-primary-800: #1e293b;
+  --color-primary-900: #0f172a;
+  --color-primary-950: #020617;
+
+  /* Cream — used for light/solution sections */
+  --color-cream-50: #FFFDF9;
+  --color-cream-100: #FAF5EE;
+  --color-cream-200: #F0E8DB;
+  --color-cream-300: #E0D5C4;
+  --color-cream-400: #C4B5A0;
+  --color-cream-500: #A89880;
+  --color-cream-600: #8C7B64;
+  --color-cream-700: #6B5D4A;
+  --color-cream-800: #4A3F33;
+  --color-cream-900: #2D2620;
+
+  /* Accent (Amber) */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+  --color-accent-950: #451a03;
+}
 
 :root {
   --background: rgb(9, 9, 11);
@@ -17,13 +71,12 @@ html, body, #__next {
   color: var(--foreground);
 }
 
-/* Base styles */
 @layer base {
   body {
     @apply bg-primary-900 text-primary-100;
     font-family: var(--font-inter);
   }
-  
+
   code, pre {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
@@ -34,18 +87,63 @@ html, body, #__next {
   .card {
     @apply bg-primary-800/80 backdrop-blur-md rounded-xl shadow-md p-6;
   }
-  
+
   .btn-primary {
     @apply bg-accent-500 hover:bg-accent-600 text-white px-4 py-2 rounded-lg transition-colors;
   }
-  
+
   .btn-secondary {
     @apply bg-primary-700 hover:bg-primary-600 text-primary-100 px-4 py-2 rounded-lg transition-colors;
   }
 }
 
-* {
-  margin: 0;
-  padding: 0;
+/* box-sizing only — margin/padding resets are handled by Tailwind 4's preflight */
+*, *::before, *::after {
   box-sizing: border-box;
+}
+
+/* Balance board wobble — 3D perspective rock from the cylinder base */
+@keyframes hat-wobble {
+  0%, 100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) rotate(0deg); }
+  20%      { transform: perspective(800px) rotateY(2deg) rotateX(-0.5deg) rotate(0.6deg); }
+  50%      { transform: perspective(800px) rotateY(-2.5deg) rotateX(0.3deg) rotate(-0.8deg); }
+  75%      { transform: perspective(800px) rotateY(1.5deg) rotateX(-0.2deg) rotate(0.4deg); }
+}
+
+.animate-hat-wobble {
+  animation: hat-wobble 5s ease-in-out infinite;
+  transform-origin: 50% 95%;
+}
+
+@keyframes pile-in {
+  0% { opacity: 0; max-height: 0; transform: scale(0.8) translateY(-8px); }
+  50% { opacity: 1; max-height: 40px; transform: scale(1.05) translateY(0); }
+  100% { opacity: 1; max-height: 40px; transform: scale(1) translateY(0); }
+}
+
+.animate-pile-in {
+  animation: pile-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes flash-sink {
+  0% { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  10% { opacity: 1; transform: translateY(0) scale(1); }
+  70% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+
+.animate-flash-sink {
+  animation: flash-sink 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-2deg); }
+  40% { transform: rotate(2deg); }
+  60% { transform: rotate(-1deg); }
+  80% { transform: rotate(1deg); }
+}
+
+.animate-nudge {
+  animation: nudge 0.5s ease-in-out 1.5s 1;
 }

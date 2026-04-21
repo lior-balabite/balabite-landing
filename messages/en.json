@@ -1,0 +1,21 @@
+{
+  "navigation": {
+    "features": "Features",
+    "about": "About",
+    "howItWorks": "How It Works",
+    "insights": "Insights",
+    "faq": "FAQ",
+    "joinWaitlist": "Join Waitlist"
+  },
+  "hero": {
+    "title": "Your Best Waiter, At Every Table",
+    "subtitle": "The AI-powered digital waiter system revolutionizing restaurant service experience.",
+    "cta": "Join Waitlist ({count}+ restaurants)",
+    "ctaSubtext": "Be among the first to transform your restaurant with AI"
+  },
+  "waitlist": {
+    "title": "Join Our Waitlist",
+    "subtitle": "Be among the first restaurants to experience the future of dining service."
+  }
+}
+

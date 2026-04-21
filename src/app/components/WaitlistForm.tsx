@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { useI18n } from '../../i18n/I18nProvider';
 
 interface WaitlistFormData {
   restaurantName: string;
@@ -28,6 +29,7 @@ interface WaitlistFormProps {
 }
 
 export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
+  const { t, locale } = useI18n();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [formData, setFormData] = useState<WaitlistFormData>({
@@ -47,39 +49,39 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
     // Restaurant name validation
     if (formData.restaurantName.trim().length < 2) {
-      newErrors.restaurantName = 'Restaurant name must be at least 2 characters';
+      newErrors.restaurantName = t('waitlist.form.validation.restaurantNameRequired');
       isValid = false;
     }
 
     // Owner name validation
     if (formData.ownerName.trim().length < 2) {
-      newErrors.ownerName = 'Owner name must be at least 2 characters';
+      newErrors.ownerName = t('waitlist.form.validation.ownerNameRequired');
       isValid = false;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('waitlist.form.validation.emailInvalid');
       isValid = false;
     }
 
     // Phone validation (allow various formats but ensure it's a valid number)
     const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
     if (!phoneRegex.test(formData.phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = t('waitlist.form.validation.phoneInvalid');
       isValid = false;
     }
 
     // Restaurant type validation
     if (!formData.restaurantType) {
-      newErrors.restaurantType = 'Please select a restaurant type';
+      newErrors.restaurantType = t('waitlist.form.validation.restaurantTypeRequired');
       isValid = false;
     }
 
     // Location validation
     if (formData.location.trim().length < 2) {
-      newErrors.location = 'Please enter a valid location';
+      newErrors.location = t('waitlist.form.validation.locationRequired');
       isValid = false;
     }
 
@@ -113,7 +115,7 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
     // Validate form before submitting
     if (!validateForm()) {
       // Show a toast with validation errors
-      toast.error('Please fix the errors in the form');
+      toast.error(t('waitlist.form.validation.formErrors'));
       return;
     }
     
@@ -125,14 +127,17 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          language: locale
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to submit');
       }
 
-      toast.success('Thanks for joining our waitlist! We\'ll be in touch soon.');
+      toast.success(t('waitlist.form.validation.success'));
       setFormData({
         restaurantName: '',
         ownerName: '',
@@ -144,51 +149,41 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
       });
       setErrors({});
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(t('waitlist.form.validation.error'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <motion.div
-      className="space-y-6 max-w-2xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="space-y-6 max-w-2xl mx-auto">
       {/* Community Header */}
-      <motion.div 
-        className="bg-accent-500/20 backdrop-blur-sm rounded-t-2xl p-5 border-t border-x border-accent-500/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      <div className="bg-accent-500/20 backdrop-blur-sm rounded-t-2xl p-5 border-t border-x border-accent-500/30">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
-          <p className="text-accent-300 font-medium">Join Our Community</p>
+          <p className="text-accent-300 font-medium">{t('waitlist.form.joinCommunity')}</p>
         </div>
         
         <div className="text-center">
           <div className="text-white mb-2">
             <span className="text-2xl font-bold text-accent-300">{waitlistCount}+</span> 
-            <span className="text-primary-100/80"> restaurants already transforming with BalaBite</span>
+            <span className="text-primary-100/80"> {t('waitlist.form.restaurantsTransforming')}</span>
           </div>
           <p className="text-sm text-primary-100/60 italic">
-            "Early partners receive priority access, exclusive pricing, and direct input into feature development"
+            "{t('waitlist.form.earlyPartnerQuote')}"
           </p>
         </div>
-      </motion.div>
-      
+            </div>
+
       {/* Form */}
-      <motion.form
+      <form
         onSubmit={handleSubmit}
         className="space-y-6 p-8 bg-primary-800/40 backdrop-blur-sm rounded-b-2xl border-b border-x border-accent-500/30"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="restaurantName" className="block text-sm font-medium text-primary-100 mb-2">
-              Restaurant Name *
+              {t('waitlist.form.restaurantName')} {t('waitlist.form.required')}
             </label>
             <input
               type="text"
@@ -205,7 +200,7 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
           <div>
             <label htmlFor="ownerName" className="block text-sm font-medium text-primary-100 mb-2">
-              Owner Name *
+              {t('waitlist.form.ownerName')} {t('waitlist.form.required')}
             </label>
             <input
               type="text"
@@ -222,7 +217,7 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-primary-100 mb-2">
-              Email *
+              {t('waitlist.form.email')} {t('waitlist.form.required')}
             </label>
             <input
               type="email"
@@ -239,13 +234,13 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-primary-100 mb-2">
-              Phone Number * <span className="text-xs text-primary-100/50">(e.g. (555) 123-4567)</span>
+              {t('waitlist.form.phone')} <span className="text-xs text-primary-100/50">({t('waitlist.form.phonePlaceholder')})</span>
             </label>
             <input
               type="tel"
               id="phone"
               required
-              placeholder="(555) 123-4567"
+              placeholder={t('waitlist.form.phonePlaceholder')}
               className={`w-full px-4 py-2 bg-primary-900/50 border ${errors.phone ? 'border-red-500' : 'border-primary-700'} rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent`}
               value={formData.phone}
               onChange={handlePhoneChange}
@@ -257,7 +252,7 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
           <div>
             <label htmlFor="restaurantType" className="block text-sm font-medium text-primary-100 mb-2">
-              Restaurant Type *
+              {t('waitlist.form.restaurantType')} {t('waitlist.form.required')}
             </label>
             <select
               id="restaurantType"
@@ -266,13 +261,13 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
               value={formData.restaurantType}
               onChange={(e) => setFormData({ ...formData, restaurantType: e.target.value })}
             >
-              <option value="">Select type</option>
-              <option value="fine-dining">Fine Dining</option>
-              <option value="casual-dining">Casual Dining</option>
-              <option value="fast-casual">Fast Casual</option>
-              <option value="cafe">Cafe</option>
-              <option value="bar">Bar</option>
-              <option value="other">Other</option>
+              <option value="">{t('waitlist.form.selectType')}</option>
+              <option value="fine-dining">{t('waitlist.form.fineDining')}</option>
+              <option value="casual-dining">{t('waitlist.form.casualDining')}</option>
+              <option value="fast-casual">{t('waitlist.form.fastCasual')}</option>
+              <option value="cafe">{t('waitlist.form.cafe')}</option>
+              <option value="bar">{t('waitlist.form.bar')}</option>
+              <option value="other">{t('waitlist.form.other')}</option>
             </select>
             {errors.restaurantType && (
               <p className="mt-1 text-sm text-red-500">{errors.restaurantType}</p>
@@ -281,13 +276,13 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
           <div>
             <label htmlFor="location" className="block text-sm font-medium text-primary-100 mb-2">
-              Location *
+              {t('waitlist.form.location')} {t('waitlist.form.required')}
             </label>
             <input
               type="text"
               id="location"
               required
-              placeholder="City, State"
+              placeholder={t('waitlist.form.locationPlaceholder')}
               className={`w-full px-4 py-2 bg-primary-900/50 border ${errors.location ? 'border-red-500' : 'border-primary-700'} rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent`}
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -300,7 +295,7 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
 
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-primary-100 mb-2">
-            Additional Message
+            {t('waitlist.form.additionalMessage')}
           </label>
           <textarea
             id="message"
@@ -325,14 +320,14 @@ export default function WaitlistForm({ waitlistCount }: WaitlistFormProps) {
               Processing...
             </>
           ) : (
-            'Join the Waitlist'
+            t('waitlist.form.joinButton')
           )}
         </button>
         
         <p className="text-center text-sm text-primary-100/60">
-          By joining, you'll receive updates about BalaBite AI. We respect your privacy.
+          {t('waitlist.form.privacyText')}
         </p>
-      </motion.form>
-    </motion.div>
+      </form>
+    </div>
   );
 }
