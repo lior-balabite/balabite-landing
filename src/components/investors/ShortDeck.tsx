@@ -18,6 +18,17 @@ const TOTAL_SLIDES = 11;
 export function ShortDeck() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(1);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  // Lightbox ESC handler
+  useEffect(() => {
+    if (!lightboxSrc) return;
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxSrc(null);
+    };
+    window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
+  }, [lightboxSrc]);
 
   // Keyboard navigation: ↓ / Space / PageDown → next; ↑ / PageUp → prev
   useEffect(() => {
@@ -33,6 +44,8 @@ export function ShortDeck() {
     };
 
     const onKey = (e: KeyboardEvent) => {
+      // Don't hijack keys when lightbox is open
+      if (lightboxSrc) return;
       if (['ArrowDown', 'PageDown', ' ', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
         scrollToSlide(active + 1);
@@ -280,11 +293,19 @@ export function ShortDeck() {
             <div className="short-product-triptych">
               <div className="short-product-panel short-product-panel-hero">
                 <div className="short-product-label">The Pulse</div>
-                <img
-                  src="/investors/pulse-hero.png"
-                  alt="BalaBite Pulse: morning briefing with health score, six domain-brain scores, narrative, and a reprice decision waiting for approval."
-                  className="short-product-panel-img"
-                />
+                <button
+                  type="button"
+                  className="short-product-img-btn"
+                  onClick={() => setLightboxSrc('/investors/pulse-hero.png')}
+                  aria-label="Enlarge The Pulse screenshot"
+                >
+                  <img
+                    src="/investors/pulse-hero.png"
+                    alt="BalaBite Pulse: morning briefing with health score, six domain-brain scores, narrative, and a reprice decision waiting for approval."
+                    className="short-product-panel-img"
+                  />
+                  <span className="short-product-img-hint" aria-hidden>Click to enlarge</span>
+                </button>
                 <p className="short-product-panel-caption">
                   The day, at a glance.
                 </p>
@@ -292,20 +313,36 @@ export function ShortDeck() {
               <div className="short-product-supporting">
                 <div className="short-product-panel">
                   <div className="short-product-label">Running in background</div>
-                  <img
-                    src="/investors/pulse-background.png"
-                    alt="BalaBite running in the background: six active workflows, five queued, with tasks like cost data entry, server pairing, menu descriptions, and re-engagement emails."
-                    className="short-product-panel-img"
-                  />
+                  <button
+                    type="button"
+                    className="short-product-img-btn"
+                    onClick={() => setLightboxSrc('/investors/pulse-background.png')}
+                    aria-label="Enlarge background workflows screenshot"
+                  >
+                    <img
+                      src="/investors/pulse-background.png"
+                      alt="BalaBite running in the background: six active workflows, five queued, with tasks like cost data entry, server pairing, menu descriptions, and re-engagement emails."
+                      className="short-product-panel-img"
+                    />
+                    <span className="short-product-img-hint" aria-hidden>Click to enlarge</span>
+                  </button>
                   <p className="short-product-panel-caption">The Partner doesn&rsquo;t sleep.</p>
                 </div>
                 <div className="short-product-panel">
                   <div className="short-product-label">This week&rsquo;s record</div>
-                  <img
-                    src="/investors/pulse-record.png"
-                    alt="BalaBite's weekly record: what worked, still working on, didn't land (happy hour reverted), and what's on the horizon."
-                    className="short-product-panel-img"
-                  />
+                  <button
+                    type="button"
+                    className="short-product-img-btn"
+                    onClick={() => setLightboxSrc('/investors/pulse-record.png')}
+                    aria-label="Enlarge weekly record screenshot"
+                  >
+                    <img
+                      src="/investors/pulse-record.png"
+                      alt="BalaBite's weekly record: what worked, still working on, didn't land (happy hour reverted), and what's on the horizon."
+                      className="short-product-panel-img"
+                    />
+                    <span className="short-product-img-hint" aria-hidden>Click to enlarge</span>
+                  </button>
                   <p className="short-product-panel-caption">What worked. What didn&rsquo;t.</p>
                 </div>
               </div>
@@ -633,6 +670,36 @@ export function ShortDeck() {
           </div>
         </Slide>
       </div>
+
+      {lightboxSrc && (
+        <div
+          className="short-lightbox"
+          role="dialog"
+          aria-label="Enlarged image"
+          onClick={() => setLightboxSrc(null)}
+        >
+          <button
+            type="button"
+            className="short-lightbox-close"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxSrc(null);
+            }}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+          <img
+            src={lightboxSrc}
+            alt=""
+            className="short-lightbox-img"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div className="short-lightbox-hint" aria-hidden>
+            Click outside or press <kbd>ESC</kbd> to close
+          </div>
+        </div>
+      )}
     </div>
   );
 }
