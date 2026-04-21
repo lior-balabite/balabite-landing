@@ -23,12 +23,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Skip static files by extension (images, fonts, css, etc.)
+  if (/\.[a-zA-Z0-9]+$/.test(url.pathname)) {
+    return NextResponse.next();
+  }
+
   // Rewrite pitch.balabite.ai/foo -> /pitch/foo
   url.pathname = url.pathname === '/' ? '/pitch' : `/pitch${url.pathname}`;
   return NextResponse.rewrite(url);
 }
 
 export const config = {
-  // Skip _next/static, _next/image, favicon, api (let api pass through)
-  matcher: ['/((?!_next/static|_next/image|favicon|api/).*)'],
+  // Skip _next/static, _next/image, favicon, api, and any file with extension
+  matcher: ['/((?!_next/static|_next/image|favicon|api/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
