@@ -147,3 +147,42 @@ html, body, #__next {
 .animate-nudge {
   animation: nudge 0.5s ease-in-out 1.5s 1;
 }
+
+/* NRA Show banner — Fashion-Week marquee ticker */
+@keyframes nra-marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.nra-marquee {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 28px,
+    black calc(100% - 28px),
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 28px,
+    black calc(100% - 28px),
+    transparent 100%
+  );
+}
+
+.nra-marquee-track {
+  animation: nra-marquee-scroll 56s linear infinite;
+  will-change: transform;
+}
+
+.nra-marquee:hover .nra-marquee-track,
+.nra-marquee:focus-within .nra-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nra-marquee-track {
+    animation: none;
+  }
+}

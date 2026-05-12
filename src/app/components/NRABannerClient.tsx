@@ -8,6 +8,16 @@ const NRA_BOOKING_URL =
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
 
+const TICKER_PHRASES = [
+  "I'll be at NRA Show",
+  'Booth 8332',
+  'May 16–19, Chicago',
+  'Bring me your hardest restaurant problem',
+  'AI Cofounder × You',
+  '1% of sales, $299/mo floor',
+  'Pull up a chair',
+];
+
 const useIsoLayoutEffect =
   typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -24,10 +34,28 @@ function readDismissed(): boolean {
   }
 }
 
+function TickerSet({ ariaHidden = false }: { ariaHidden?: boolean }) {
+  return (
+    <div className="flex items-center shrink-0" aria-hidden={ariaHidden}>
+      {TICKER_PHRASES.map((phrase, i) => (
+        <span key={i} className="flex items-center gap-4 px-4 whitespace-nowrap">
+          <span className="uppercase text-[11px] tracking-[0.18em] font-medium text-cream-100">
+            {phrase}
+          </span>
+          <span
+            className="text-accent-300/90 text-[10px] leading-none"
+            aria-hidden="true"
+          >
+            ✦
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function NRABannerClient({ hideAfterIso }: Props) {
   const pathname = usePathname();
-  // Lazy init so the first hydrated render already reflects sessionStorage.
-  // Prevents a banner flash on reload when the user has previously dismissed.
   const [dismissed, setDismissed] = useState<boolean>(readDismissed);
   const [pastCutoff, setPastCutoff] = useState(false);
 
@@ -40,11 +68,7 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
 
   useIsoLayoutEffect(() => {
     const root = document.documentElement;
-    if (shouldShow) {
-      root.style.setProperty('--nra-banner-h', BANNER_HEIGHT);
-    } else {
-      root.style.setProperty('--nra-banner-h', '0px');
-    }
+    root.style.setProperty('--nra-banner-h', shouldShow ? BANNER_HEIGHT : '0px');
     return () => {
       root.style.removeProperty('--nra-banner-h');
     };
@@ -73,25 +97,30 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
       }}
       data-testid="nra-banner"
     >
-      <div className="mx-auto flex h-11 max-w-[90rem] items-center justify-between gap-3 border-b border-black/30 px-4 text-cream-100 sm:px-10 lg:px-16">
-        <p className="flex-1 truncate text-[13px] font-medium tracking-tight sm:hidden">
-          Booth 8332 · May 16–19
-        </p>
-        <p className="hidden text-sm font-medium tracking-tight sm:block">
-          Visit us at NRA Show — Booth 8332, May 16–19, Chicago
-        </p>
+      <div className="relative flex h-11 items-center border-b border-black/30">
+        {/* Marquee — auto-scrolling editorial ticker */}
+        <div
+          className="nra-marquee group/marquee flex-1 overflow-hidden"
+          aria-label="I'll be at NRA Show, Booth 8332, May 16-19 Chicago — pull up a chair"
+        >
+          <div className="nra-marquee-track flex w-max">
+            <TickerSet />
+            <TickerSet ariaHidden />
+          </div>
+        </div>
 
-        <div className="flex items-center gap-2 sm:gap-5">
+        {/* CTA + dismiss — pinned outside the marquee */}
+        <div className="flex items-center gap-1 pl-2 pr-3 sm:gap-2 sm:pr-5">
           <a
             href={NRA_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             tabIndex={shouldShow ? 0 : -1}
-            className="group flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium tracking-tight text-cream-100 transition-colors hover:text-accent-200 focus-visible:text-accent-200 focus-visible:outline-none sm:text-sm"
+            className="group flex items-center gap-1.5 whitespace-nowrap rounded-sm text-[13px] font-medium tracking-tight text-cream-100 transition-colors hover:text-accent-200 focus-visible:text-accent-200 focus-visible:outline-none sm:text-sm"
             data-testid="nra-banner-cta"
           >
-            <span className="hidden sm:inline">Book 15 min at booth 8332</span>
-            <span className="sm:hidden">Book 15 min</span>
+            <span className="hidden sm:inline">Sit with me</span>
+            <span className="sm:hidden">RSVP</span>
             <span
               className="transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
               aria-hidden="true"
