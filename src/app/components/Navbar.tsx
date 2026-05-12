@@ -22,7 +22,8 @@ export default function Navbar({ onCtaClick }: NavbarProps) {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}
+      className={`fixed left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}
+      style={{ top: 'var(--nra-banner-h, 0px)' }}
     >
       <div className="mx-auto flex max-w-[90rem] items-center justify-between px-4 sm:px-10 lg:px-16 py-2 sm:py-4">
         {/* Logo — SVG inline so we can control color */}
