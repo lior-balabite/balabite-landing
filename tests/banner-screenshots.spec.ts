@@ -37,4 +37,44 @@ test.describe('NRA banner — visual capture', () => {
     await page.waitForLoadState('networkidle');
     await page.screenshot({ path: path.join(DIR, 'mobile-full.png') });
   });
+
+  test('booth page desktop hero', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/booth-8332');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: path.join(DIR, 'booth-desktop-hero.png'),
+      clip: { x: 0, y: 0, width: 1440, height: 900 },
+    });
+  });
+
+  test('booth page desktop full', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/booth-8332');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: path.join(DIR, 'booth-desktop-full.png'),
+      fullPage: true,
+    });
+  });
+
+  test('booth page mobile hero', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/booth-8332');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: path.join(DIR, 'booth-mobile-hero.png'),
+      clip: { x: 0, y: 0, width: 375, height: 812 },
+    });
+  });
+
+  test('booth page mobile full', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/booth-8332');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: path.join(DIR, 'booth-mobile-full.png'),
+      fullPage: true,
+    });
+  });
 });

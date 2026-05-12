@@ -3,17 +3,15 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
-const NRA_BOOKING_URL =
-  process.env.NEXT_PUBLIC_NRA_BOOKING_URL ?? 'https://cal.com/lior-balabite/nra-2026';
+const RSVP_URL = '/booth-8332';
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
+const HIDDEN_ROUTES = ['/pitch', '/booth-8332'];
 
 const TICKER_PHRASES = [
-  'At NRA Show',
-  'Booth 8332',
-  'May 16–19, Chicago',
+  'Meet your AI Cofounder',
+  'You run the place. We do the rest.',
   'Bring your hardest restaurant problem',
-  'AI Cofounder × You',
   'Pull up a chair',
 ];
 
@@ -38,7 +36,7 @@ function TickerSet({ ariaHidden = false }: { ariaHidden?: boolean }) {
     <div className="flex items-center shrink-0" aria-hidden={ariaHidden}>
       {TICKER_PHRASES.map((phrase, i) => (
         <span key={i} className="flex items-center gap-4 px-4 whitespace-nowrap">
-          <span className="uppercase text-[11px] tracking-[0.18em] font-medium text-cream-100">
+          <span className="text-[11px] font-medium tracking-[0.16em] text-cream-100/90 uppercase">
             {phrase}
           </span>
           <span
@@ -62,8 +60,8 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
     if (Date.now() >= new Date(hideAfterIso).getTime()) setPastCutoff(true);
   }, [hideAfterIso]);
 
-  const onPitch = pathname?.startsWith('/pitch') ?? false;
-  const shouldShow = !dismissed && !pastCutoff && !onPitch;
+  const onHiddenRoute = HIDDEN_ROUTES.some((r) => pathname?.startsWith(r));
+  const shouldShow = !dismissed && !pastCutoff && !onHiddenRoute;
 
   useIsoLayoutEffect(() => {
     const root = document.documentElement;
@@ -96,10 +94,20 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
       data-testid="nra-banner"
     >
       <div className="relative flex h-11 items-center border-b border-black/30">
-        {/* Marquee — auto-scrolling editorial ticker */}
+        {/* Anchored masthead — actionable info that never scrolls off */}
+        <div className="flex shrink-0 items-center border-r border-accent-300/30 pl-4 pr-3 sm:pl-6 sm:pr-5">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cream-50 sm:text-[12px]">
+            <span className="sm:hidden">Booth 8332</span>
+            <span className="hidden sm:inline">
+              Booth 8332 · NRA Show · May 16–19
+            </span>
+          </span>
+        </div>
+
+        {/* Marquee — editorial parade */}
         <div
           className="nra-marquee group/marquee flex-1 overflow-hidden"
-          aria-label="At NRA Show, Booth 8332, May 16-19 Chicago — pull up a chair"
+          aria-label="Meet your AI Cofounder — you run the place, we do the rest. Bring your hardest restaurant problem. Pull up a chair."
         >
           <div className="nra-marquee-track flex w-max">
             <TickerSet />
@@ -110,9 +118,7 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
         {/* CTA + dismiss — pinned outside the marquee */}
         <div className="flex items-center gap-1 pl-2 pr-3 sm:gap-2 sm:pr-5">
           <a
-            href={NRA_BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={RSVP_URL}
             tabIndex={shouldShow ? 0 : -1}
             className="group flex items-center gap-1.5 whitespace-nowrap rounded-sm text-[13px] font-medium tracking-tight text-cream-100 transition-colors hover:text-accent-200 focus-visible:text-accent-200 focus-visible:outline-none sm:text-sm"
             data-testid="nra-banner-cta"
