@@ -9,12 +9,11 @@ const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
 
 const TICKER_PHRASES = [
-  "I'll be at NRA Show",
+  'At NRA Show',
   'Booth 8332',
   'May 16–19, Chicago',
-  'Bring me your hardest restaurant problem',
+  'Bring your hardest restaurant problem',
   'AI Cofounder × You',
-  '1% of sales, $299/mo floor',
   'Pull up a chair',
 ];
 
@@ -88,11 +87,10 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
       role="region"
       aria-label="NRA Show 2026 announcement"
       aria-hidden={!shouldShow}
-      className="fixed inset-x-0 top-0 z-[60] overflow-hidden"
+      className="nra-banner-bg fixed inset-x-0 top-0 z-[60] overflow-hidden"
       style={{
         height: 'var(--nra-banner-h, 0px)',
         transition: 'height 320ms cubic-bezier(0.22, 1, 0.36, 1)',
-        backgroundColor: 'rgb(12, 56, 50)',
         pointerEvents: shouldShow ? 'auto' : 'none',
       }}
       data-testid="nra-banner"
@@ -101,7 +99,7 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
         {/* Marquee — auto-scrolling editorial ticker */}
         <div
           className="nra-marquee group/marquee flex-1 overflow-hidden"
-          aria-label="I'll be at NRA Show, Booth 8332, May 16-19 Chicago — pull up a chair"
+          aria-label="At NRA Show, Booth 8332, May 16-19 Chicago — pull up a chair"
         >
           <div className="nra-marquee-track flex w-max">
             <TickerSet />
@@ -119,8 +117,7 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
             className="group flex items-center gap-1.5 whitespace-nowrap rounded-sm text-[13px] font-medium tracking-tight text-cream-100 transition-colors hover:text-accent-200 focus-visible:text-accent-200 focus-visible:outline-none sm:text-sm"
             data-testid="nra-banner-cta"
           >
-            <span className="hidden sm:inline">Sit with me</span>
-            <span className="sm:hidden">RSVP</span>
+            <span>RSVP</span>
             <span
               className="transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
               aria-hidden="true"
