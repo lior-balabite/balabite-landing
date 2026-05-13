@@ -1,8 +1,9 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { I18nProvider } from '../i18n/I18nProvider';
+import NRABanner from './components/NRABanner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -10,10 +11,19 @@ const inter = Inter({
   display: 'swap',
 });
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-instrument-serif',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Balabite — AI Restaurant Management That Works While You Sleep',
+  metadataBase: new URL('https://balabite.ai'),
+  title: 'BalaBite — Your AI Cofounder for restaurants',
   description:
-    'AI-powered restaurant management. Menu optimization, staff scheduling, cost control, guest experience — handled by AI brains that work while you sleep and brief you at sunrise.',
+    'You run the place. We do the rest. The AI Cofounder for independent restaurants — live at NRA Show 2026, Booth 8332, May 16–19, Chicago.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -30,17 +40,18 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'BalaBite.ai — The First AI Restaurant Partner',
+    title: 'BalaBite — Your AI Cofounder for restaurants',
     description:
-      'You run the restaurant. Your AI partner runs the rest. Menu, kitchen, team, and guests — managed by AI.',
+      'You run the place. We do the rest. Live at NRA Show 2026 — Booth 8332, May 16–19, Chicago.',
     type: 'website',
-    siteName: 'BalaBite.ai',
+    siteName: 'BalaBite',
+    url: 'https://balabite.ai',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BalaBite.ai — The First AI Restaurant Partner',
+    title: 'BalaBite — Your AI Cofounder for restaurants',
     description:
-      'You run the restaurant. Your AI partner runs the rest.',
+      'You run the place. We do the rest. NRA Show 2026 · Booth 8332.',
   },
 };
 
@@ -54,8 +65,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`bg-primary-900 h-full ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`bg-primary-900 h-full ${inter.variable} ${instrumentSerif.variable}`}
+    >
       <body className="antialiased min-h-screen bg-primary-900 text-primary-100">
+        <NRABanner />
         <I18nProvider>{children}</I18nProvider>
         <Analytics />
       </body>

@@ -38,7 +38,6 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
 const metrics = [
   { value: 152, suffix: 'K+', label: 'Orders processed' },
   { value: 15, suffix: '+', label: 'Languages supported' },
-  { value: 3, suffix: '', label: 'Restaurants live' },
 ];
 
 const integrations = ['Square', 'Toast', 'Clover', 'Stripe'];
@@ -67,10 +66,6 @@ const faqs = [
   {
     q: 'Do my guests need to download an app?',
     a: 'No. Guests scan a QR code and the AI Waiter opens right in their browser. No download, no friction.',
-  },
-  {
-    q: 'How much does it cost?',
-    a: 'Early access is free for your first 90 days. After that, plans start from an affordable monthly rate based on your restaurant\u2019s size. No contracts, cancel anytime.',
   },
 ];
 
@@ -170,23 +165,6 @@ export default function SocialProof() {
               <p className="text-xs text-cream-500">Name and details coming soon</p>
             </div>
           </div>
-        </motion.div>
-
-        {/* ── PRICING SIGNAL ── */}
-        <motion.div
-          className="text-center mb-16 py-8 border-y border-cream-200"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="text-sm uppercase tracking-[0.2em] text-amber-600/70 mb-2">Early access</p>
-          <p className="text-2xl md:text-3xl font-bold text-cream-900 mb-2">
-            Free for your first 90 days.
-          </p>
-          <p className="text-base text-cream-600">
-            No credit card. No contracts. Cancel anytime.
-          </p>
         </motion.div>
 
         {/* ── FAQ ── */}

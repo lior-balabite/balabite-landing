@@ -4,6 +4,7 @@
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-serif: var(--font-instrument-serif), 'Playfair Display', Georgia, serif;
 
   /* Container / max-width sizes (matching Tailwind 3 defaults) */
   --container-sm: 24rem;    /* 384px */
@@ -146,4 +147,98 @@ html, body, #__next {
 
 .animate-nudge {
   animation: nudge 0.5s ease-in-out 1.5s 1;
+}
+
+/* Gentle palm sway — origin at the trunk base, ~1.5° back-and-forth over 7s */
+@keyframes nra-palm-sway {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50%      { transform: rotate(0.6deg); }
+}
+
+.nra-palm-sway {
+  transform-origin: 50% 100%;
+  animation: nra-palm-sway 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nra-palm-sway {
+    animation: none;
+  }
+}
+
+/* NRA Show banner — Fashion-Week marquee ticker */
+@keyframes nra-marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* AI-aurora backdrop — brand palette only (primary slate + accent amber + brand teal) */
+.nra-banner-bg {
+  background-color: var(--color-primary-900);
+  background-image:
+    linear-gradient(
+      100deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-800) 22%,
+      rgb(12, 56, 50) 42%,
+      var(--color-accent-950) 60%,
+      var(--color-primary-800) 80%,
+      var(--color-primary-900) 100%
+    );
+  background-size: 220% 100%;
+  animation: nra-bg-drift 22s ease-in-out infinite;
+  will-change: background-position;
+}
+
+@keyframes nra-bg-drift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nra-banner-bg {
+    animation: none;
+  }
+}
+
+.nra-marquee {
+  /* Two transparent zones only — left fade-in + right clearance for the
+     RSVP / dismiss area. The center remains OPAQUE so phrases actually
+     flow underneath the centered sign (the sign's solid bg occludes them). */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 40px,
+    black calc(100% - 170px),
+    transparent calc(100% - 110px),
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 40px,
+    black calc(100% - 170px),
+    transparent calc(100% - 110px),
+    transparent 100%
+  );
+}
+
+/* Scroll direction reversed inside the shorthand so it can't be reset
+   by the cascade. Phrases flow LEFT → RIGHT — entering at the left edge,
+   running past the centered sign, exiting at the right. */
+.nra-marquee-track {
+  animation: nra-marquee-scroll 56s linear infinite reverse;
+  will-change: transform;
+}
+
+.nra-marquee:hover .nra-marquee-track,
+.nra-marquee:focus-within .nra-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nra-marquee-track {
+    animation: none;
+  }
 }
