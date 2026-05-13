@@ -20,7 +20,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://balabite.ai'),
+  metadataBase: new URL('https://www.balabite.ai'),
   title: 'BalaBite — Your AI Cofounder for restaurants',
   description:
     'You run the place. We do the rest. The AI Cofounder for independent restaurants — live at NRA Show 2026, Booth 8332, May 16–19, Chicago.',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
       'You run the place. We do the rest. Live at NRA Show 2026 — Booth 8332, May 16–19, Chicago.',
     type: 'website',
     siteName: 'BalaBite',
-    url: 'https://balabite.ai',
+    url: 'https://www.balabite.ai',
   },
   twitter: {
     card: 'summary_large_image',

@@ -140,13 +140,13 @@ const eventJsonLd = {
       addressCountry: 'US',
     },
   },
-  image: ['https://balabite.ai/booth-8332/opengraph-image'],
+  image: ['https://www.balabite.ai/booth-8332/opengraph-image'],
   organizer: {
     '@type': 'Organization',
     name: 'BalaBite',
-    url: 'https://balabite.ai',
+    url: 'https://www.balabite.ai',
   },
-  url: 'https://balabite.ai/booth-8332',
+  url: 'https://www.balabite.ai/booth-8332',
 };
 
 export default function BoothPage() {
