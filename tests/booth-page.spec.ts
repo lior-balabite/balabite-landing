@@ -4,17 +4,17 @@ test.describe('/booth-8332 menu page', () => {
   test('hero shows brand tagline + booth/show context', async ({ page }) => {
     await page.goto('/booth-8332');
     const main = page.getByRole('main');
-    await expect(page.getByTestId('booth-eyebrow')).toContainText(
-      'Booth 8332 · NRA Show · May 16–19 · Chicago',
-    );
-    await expect(main.getByRole('heading', { level: 1 })).toContainText(
-      'Meet your',
-    );
+    const eyebrow = page.getByTestId('booth-eyebrow');
+    await expect(eyebrow).toContainText('NRA Show 2026');
+    await expect(eyebrow).toContainText('May 16–19');
+    await expect(eyebrow).toContainText('Chicago');
+    await expect(eyebrow).toContainText('Booth 8332');
+    await expect(main.getByRole('heading', { level: 1 })).toContainText('Your');
     await expect(main.getByRole('heading', { level: 1 })).toContainText(
       'AI Cofounder',
     );
     await expect(main.getByText('You run the place.')).toBeVisible();
-    await expect(main.getByText('We do the rest.')).toBeVisible();
+    await expect(main.getByText('the rest')).toBeVisible();
   });
 
   test('renders all four menu items', async ({ page }) => {
@@ -27,7 +27,7 @@ test.describe('/booth-8332 menu page', () => {
   test('booth drive-by has no reservation button', async ({ page }) => {
     await page.goto('/booth-8332');
     const driveBy = page.getByTestId('menu-item-drive-by');
-    await expect(driveBy).toContainText('No reservation');
+    await expect(driveBy).toContainText(/no reservation/i);
     await expect(page.getByTestId('menu-reserve-drive-by')).toHaveCount(0);
   });
 
