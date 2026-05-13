@@ -158,7 +158,7 @@ export default function BoothPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
       />
 
-      <main className="nra-banner-bg relative min-h-screen overflow-hidden bg-primary-950 text-cream-100">
+      <main className="nra-aurora-page relative min-h-screen overflow-hidden bg-primary-950 text-cream-100">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.08),transparent_55%)]"
