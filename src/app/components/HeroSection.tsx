@@ -345,18 +345,60 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
             {/* ── LEFT: Headline ── */}
             <div className="flex-1 text-center lg:text-left lg:max-w-lg">
-              <motion.p className="text-xs uppercase tracking-[0.2em] text-cream-500 mb-3"
+              {/* === BLOCK 1: Pain (small, top) === */}
+              <motion.p
+                className="text-2xl leading-tight tracking-tight text-primary-900 sm:text-3xl"
+                style={{ fontFamily: 'var(--font-instrument-serif), Georgia, serif' }}
                 variants={fadeUp} initial="hidden" animate="visible" custom={0}>
-                The reality
+                This is a{' '}
+                <span style={{ fontStyle: 'italic' }}>10</span>
+                -person job.
               </motion.p>
-              <motion.h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-primary-900 sm:text-4xl md:text-5xl lg:text-[3.5rem]"
+              <motion.p
+                className="mt-2 text-base italic leading-snug text-primary-900/55 sm:text-lg"
+                style={{ fontFamily: 'var(--font-instrument-serif), Georgia, serif' }}
                 variants={fadeUp} initial="hidden" animate="visible" custom={1}>
-                This is a ten-person job.
-              </motion.h1>
-              <motion.p className="mt-3 sm:mt-5 text-sm leading-relaxed text-cream-600 sm:text-base lg:text-lg"
+                You don&rsquo;t have to do it alone.
+              </motion.p>
+
+              {/* === BIG BREATHING ROOM === */}
+              <div className="h-10 sm:h-14 lg:h-16" aria-hidden="true" />
+
+              {/* === BLOCK 2: Brand — the dominant move === */}
+              <motion.p
+                className="text-xl italic leading-none text-primary-900/55 sm:text-2xl"
+                style={{ fontFamily: 'var(--font-instrument-serif), Georgia, serif' }}
                 variants={fadeUp} initial="hidden" animate="visible" custom={2}>
-                You&apos;ve been doing it alone.<br />
-                <span className="text-primary-900 font-medium">AI changes that.</span>
+                Meet your
+              </motion.p>
+              <motion.h1
+                className="mt-1 italic leading-[0.92] tracking-tight text-accent-600 text-[3.5rem] sm:text-[5rem] md:text-[6rem] lg:text-[7.5rem]"
+                style={{ fontFamily: 'var(--font-instrument-serif), Georgia, serif' }}
+                variants={fadeUp} initial="hidden" animate="visible" custom={2.3}>
+                AI&nbsp;Cofounder.
+              </motion.h1>
+
+              {/* === BIG BREATHING ROOM === */}
+              <div className="h-10 sm:h-14 lg:h-16" aria-hidden="true" />
+
+              {/* === BLOCK 3: The deal — accent highlights on the verbs === */}
+              <motion.p
+                className="text-lg italic leading-snug text-primary-900 sm:text-xl lg:text-2xl"
+                style={{ fontFamily: 'var(--font-instrument-serif), Georgia, serif' }}
+                variants={fadeUp} initial="hidden" animate="visible" custom={3}>
+                You{' '}
+                <span style={{ color: 'rgb(12, 56, 50)' }} className="font-medium">
+                  run the place.
+                </span>{' '}
+                We do{' '}
+                <span
+                  style={{ color: 'rgb(12, 56, 50)' }}
+                  className="font-medium"
+                  title="rest. rest-aurant."
+                >
+                  the rest
+                </span>
+                .
               </motion.p>
               <motion.div className="mt-4 sm:mt-8 flex gap-3 justify-center lg:justify-start"
                 variants={fadeUp} initial="hidden" animate="visible" custom={3}>
