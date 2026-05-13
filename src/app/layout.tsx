@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { I18nProvider } from '../i18n/I18nProvider';
 import NRABanner from './components/NRABanner';
@@ -8,6 +8,14 @@ import NRABanner from './components/NRABanner';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-instrument-serif',
   display: 'swap',
 });
 
@@ -55,7 +63,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`bg-primary-900 h-full ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`bg-primary-900 h-full ${inter.variable} ${instrumentSerif.variable}`}
+    >
       <body className="antialiased min-h-screen bg-primary-900 text-primary-100">
         <NRABanner />
         <I18nProvider>{children}</I18nProvider>

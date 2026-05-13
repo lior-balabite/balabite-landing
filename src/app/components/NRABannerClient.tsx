@@ -9,10 +9,10 @@ const BANNER_HEIGHT = '2.75rem';
 const HIDDEN_ROUTES = ['/pitch', '/booth-8332'];
 
 const TICKER_PHRASES = [
-  'Meet your AI Cofounder',
-  'You run the place. We do the rest.',
-  'Bring your hardest restaurant problem',
-  'Pull up a chair',
+  'Coffee with the founder before doors open — limited',
+  'Drinks off-floor after the floor closes — four nights',
+  'Demo on your real numbers — slots open after May 20',
+  'Booth 8332 — through Tuesday',
 ];
 
 const useIsoLayoutEffect =
@@ -35,12 +35,13 @@ function TickerSet({ ariaHidden = false }: { ariaHidden?: boolean }) {
   return (
     <div className="flex items-center shrink-0" aria-hidden={ariaHidden}>
       {TICKER_PHRASES.map((phrase, i) => (
-        <span key={i} className="flex items-center gap-4 px-4 whitespace-nowrap">
-          <span className="text-[11px] font-medium tracking-[0.16em] text-cream-100/90 uppercase">
-            {phrase}
-          </span>
+        <span
+          key={i}
+          className="flex items-center whitespace-nowrap text-[13px] font-normal tracking-tight text-cream-100/90"
+        >
+          <span>{phrase}</span>
           <span
-            className="text-accent-300/90 text-[10px] leading-none"
+            className="mx-7 text-[11px] leading-none text-accent-300/90 select-none"
             aria-hidden="true"
           >
             ✦
@@ -93,30 +94,71 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
       }}
       data-testid="nra-banner"
     >
-      <div className="relative flex h-11 items-center border-b border-black/30">
-        {/* Anchored masthead — actionable info that never scrolls off */}
-        <div className="flex shrink-0 items-center border-r border-accent-300/30 pl-4 pr-3 sm:pl-6 sm:pr-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cream-50 sm:text-[12px]">
-            <span className="sm:hidden">Booth 8332</span>
-            <span className="hidden sm:inline">
-              Booth 8332 · NRA Show · May 16–19
-            </span>
-          </span>
-        </div>
-
-        {/* Marquee — editorial parade */}
+      <div className="relative h-11 border-b border-black/30">
+        {/* Marquee — full-width, runs behind the centered sign so phrases pass
+            from one side to the other (continues on both sides of the sign).
+            Hidden on mobile (cramped at 375px). */}
         <div
-          className="nra-marquee group/marquee flex-1 overflow-hidden"
-          aria-label="Meet your AI Cofounder — you run the place, we do the rest. Bring your hardest restaurant problem. Pull up a chair."
+          className="nra-marquee absolute inset-0 hidden overflow-hidden sm:block"
+          aria-label="Coffee with the founder before doors open — limited. Drinks off-floor after the floor closes — four nights. Demo on your real numbers — slots open after May 20. Booth 8332 — through Tuesday."
         >
-          <div className="nra-marquee-track flex w-max">
+          <div className="nra-marquee-track flex h-full w-max items-center">
             <TickerSet />
             <TickerSet ariaHidden />
           </div>
         </div>
 
-        {/* CTA + dismiss — pinned outside the marquee */}
-        <div className="flex items-center gap-1 pl-2 pr-3 sm:gap-2 sm:pr-5">
+        {/* Centered booth sign — modern glass pill: backdrop-blur, thin gold
+            inlay, soft halo. Lit-from-within gold number, no emboss. */}
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 whitespace-nowrap rounded-full border border-accent-500/45 bg-primary-950/90 px-7 py-2 backdrop-blur-xl shadow-[0_2px_32px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] sm:gap-4 sm:px-9 sm:py-2.5"
+          data-testid="nra-banner-sign"
+        >
+          <span
+            className="hidden uppercase tracking-[0.24em] text-cream-200/70 text-[10px] sm:inline sm:text-[11px]"
+            style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
+          >
+            NRA Show 2026
+          </span>
+          <span
+            className="hidden text-accent-500/50 sm:inline"
+            aria-hidden="true"
+          >
+            ·
+          </span>
+          <span className="flex items-center gap-2">
+            <span
+              className="uppercase tracking-[0.24em] text-cream-200/85 text-[10px] sm:text-[11px]"
+              style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
+            >
+              Booth
+            </span>
+            <span
+              className="leading-none text-[24px] font-bold tracking-tight text-accent-300 sm:text-[32px]"
+              style={{
+                fontVariantNumeric: 'tabular-nums',
+                textShadow: '0 0 28px rgba(251,191,36,0.35)',
+              }}
+            >
+              8332
+            </span>
+          </span>
+          <span
+            className="hidden text-accent-500/50 sm:inline"
+            aria-hidden="true"
+          >
+            ·
+          </span>
+          <span
+            className="hidden uppercase tracking-[0.24em] text-cream-200/70 text-[10px] sm:inline sm:text-[11px]"
+            style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
+          >
+            May 16–19
+          </span>
+        </div>
+
+        {/* CTA + dismiss — right-anchored, on top of any marquee/bg */}
+        <div className="absolute inset-y-0 right-0 z-10 flex items-center gap-1 pr-3 sm:gap-2 sm:pr-5">
           <a
             href={RSVP_URL}
             tabIndex={shouldShow ? 0 : -1}

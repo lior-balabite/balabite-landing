@@ -369,14 +369,6 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                   See how
                 </button>
               </motion.div>
-              <motion.div className="mt-3 sm:mt-5 flex items-center gap-2.5 text-xs sm:text-sm text-cream-500 justify-center lg:justify-start"
-                variants={fadeUp} initial="hidden" animate="visible" custom={4}>
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-600" />
-                </span>
-                Live in 3 restaurants
-              </motion.div>
             </div>
 
             {/* ── RIGHT: Image + labels + P&L ── */}

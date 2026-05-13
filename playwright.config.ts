@@ -5,7 +5,7 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: ['**/banner-screenshots.spec.ts'],
+  // testIgnore: ['**/banner-screenshots.spec.ts', '**/_one-off-*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
