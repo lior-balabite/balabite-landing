@@ -189,6 +189,38 @@ html, body, #__next {
   background-size: 220% 100%;
   animation: nra-bg-drift 22s ease-in-out infinite;
   will-change: background-position;
+  /* Force a dedicated GPU compositing layer — animation lives on the
+     GPU instead of the main thread, reducing main-thread paint cost */
+  transform: translateZ(0);
+}
+
+/* Page-level aurora — for tall surfaces (/booth-8332).
+   Identical gradient but pinned via background-attachment: fixed so the
+   gradient only paints the viewport-sized region, no matter how tall
+   the page is. Slower animation cycle (30s) further cuts repaint rate. */
+.nra-aurora-page {
+  background-color: var(--color-primary-950);
+  background-image:
+    linear-gradient(
+      100deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-800) 22%,
+      rgb(12, 56, 50) 42%,
+      var(--color-accent-950) 60%,
+      var(--color-primary-800) 80%,
+      var(--color-primary-900) 100%
+    );
+  background-size: 220% 100%;
+  background-attachment: fixed;
+  animation: nra-bg-drift 30s ease-in-out infinite;
+  will-change: background-position;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nra-aurora-page {
+    animation: none;
+  }
 }
 
 @keyframes nra-bg-drift {
