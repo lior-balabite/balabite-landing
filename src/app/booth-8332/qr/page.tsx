@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const QR_TARGET = 'https://balabite.ai/booth-8332';
+const QR_TARGET = 'https://www.balabite.ai/booth-8332';
 
 export default async function BoothQRPage() {
   // Generate the QR as SVG server-side. High error-correction so it survives

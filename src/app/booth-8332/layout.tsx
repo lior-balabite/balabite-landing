@@ -14,7 +14,7 @@ export const metadata: Metadata = {
       'Coffee with the founder before doors open. Drinks after service. Post-show demo on your real numbers. NRA Show 2026 · May 16–19, Chicago.',
     type: 'website',
     siteName: 'BalaBite',
-    url: 'https://balabite.ai/booth-8332',
+    url: 'https://www.balabite.ai/booth-8332',
   },
   twitter: {
     card: 'summary_large_image',
