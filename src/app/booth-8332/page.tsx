@@ -65,30 +65,44 @@ function MenuRow({ item }: { item: MenuItem }) {
   return (
     <article
       data-testid={`menu-item-${item.id}`}
-      className="group relative grid grid-cols-[auto_1fr] gap-x-6 gap-y-4 rounded-2xl border border-primary-700/40 bg-primary-900/40 px-6 py-8 backdrop-blur-sm transition-all duration-300 hover:border-accent-500/40 hover:bg-primary-900/60 sm:grid-cols-[auto_1fr_auto] sm:gap-x-10 sm:px-10 sm:py-10"
+      className="group relative grid grid-cols-[auto_1fr] gap-x-6 gap-y-4 rounded-2xl border border-primary-700/30 bg-gradient-to-br from-primary-900/30 to-primary-950/50 px-6 py-8 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent-500/50 hover:from-primary-900/50 hover:to-primary-950/70 hover:shadow-[0_18px_42px_-22px_rgba(251,191,36,0.35)] sm:grid-cols-[auto_1fr_auto] sm:gap-x-10 sm:px-10 sm:py-10"
     >
-      <div className="row-span-2 self-start font-serif text-5xl font-medium leading-none text-accent-400/80 transition-colors group-hover:text-accent-300 sm:text-6xl">
-        {item.number}
+      {/* Subtle gold spotlight that intensifies on hover — invitation cue */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-px left-10 h-px w-16 bg-gradient-to-r from-transparent via-accent-400/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:left-24 sm:w-24"
+      />
+
+      <div className="row-span-2 flex flex-col items-start gap-1.5 self-start">
+        <span
+          className="font-mono text-[9px] uppercase tracking-[0.32em] text-accent-300/60 transition-colors group-hover:text-accent-300 sm:text-[10px]"
+        >
+          You&rsquo;re invited
+        </span>
+        <span
+          className="font-serif text-5xl font-medium leading-none text-accent-400/85 transition-colors group-hover:text-accent-300 sm:text-6xl"
+          style={{ textShadow: '0 0 24px rgba(251,191,36,0.15)' }}
+        >
+          {item.number}
+        </span>
       </div>
 
       <header>
         <h3 className="font-serif text-3xl font-medium tracking-tight text-cream-50 sm:text-[2.25rem]">
           {item.title}
         </h3>
-        <p className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[12px] uppercase tracking-[0.18em] text-cream-200/60">
-          <span>{item.meta}</span>
-          <span className="text-cream-200/30" aria-hidden="true">·</span>
-          <span>{item.duration}</span>
+        <p className="mt-2 font-serif text-[15px] italic leading-snug text-accent-200/85 sm:text-base">
+          {item.meta} · {item.duration}
         </p>
       </header>
 
-      <p className="col-start-2 max-w-2xl text-base leading-relaxed text-cream-200/85 sm:text-lg">
+      <p className="col-start-2 max-w-2xl font-serif text-lg italic leading-snug text-cream-100/90 sm:text-[1.35rem]">
         {item.description}
       </p>
 
       <div className="col-start-2 mt-4 flex items-center sm:col-start-3 sm:row-span-2 sm:mt-0 sm:self-center sm:justify-self-end">
         {item.variant === 'walk-up' ? (
-          <span className="text-sm italic text-cream-200/60">
+          <span className="font-serif text-base italic text-cream-200/70">
             Just come find us.
           </span>
         ) : (
@@ -225,18 +239,36 @@ export default function BoothPage() {
           </p>
         </section>
 
-        {/* Proof — concrete catches from the Miami kitchen */}
-        <section className="relative mx-auto max-w-6xl px-6 pb-16 sm:px-10 sm:pb-20">
-          <div className="rounded-2xl border border-primary-700/40 bg-primary-900/30 px-6 py-8 backdrop-blur-sm sm:px-10 sm:py-10">
-            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-accent-300/80 sm:text-[11px]">
-              Live in a working kitchen
+        {/* Proof — editorial pull-quote, no card, three catches as a stack */}
+        <section className="relative mx-auto max-w-5xl px-6 pb-20 sm:px-10 sm:pb-28">
+          <div className="relative pl-6 sm:pl-10">
+            {/* Vertical gold rule — magazine pull-quote indicator */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-2 left-0 w-px bg-gradient-to-b from-transparent via-accent-400/60 to-transparent"
+            />
+
+            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-accent-300/85 sm:text-[11px]">
+              Live, in a working kitchen
             </p>
-            <p className="mt-4 font-serif text-xl leading-snug text-cream-100/95 sm:text-2xl">
-              A fish-supplier price slip — caught in four minutes. Bok choy
-              that never showed — reordered before Friday. A catering DM
-              sitting since Monday — quoted, date held.
-            </p>
-            <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.28em] text-cream-200/60 sm:text-[12px]">
+
+            <ol className="mt-6 space-y-3 sm:space-y-4">
+              <li className="font-serif text-2xl italic leading-snug text-cream-50/95 sm:text-3xl">
+                A fish-supplier price slip — caught in four minutes.
+              </li>
+              <li className="font-serif text-2xl italic leading-snug text-cream-50/95 sm:text-3xl">
+                Bok choy that never showed — reordered before Friday.
+              </li>
+              <li className="font-serif text-2xl italic leading-snug text-cream-50/95 sm:text-3xl">
+                A catering DM sitting since Monday — quoted, date held.
+              </li>
+            </ol>
+
+            <p className="mt-8 flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em] text-cream-200/60 sm:text-[12px]">
+              <span
+                aria-hidden="true"
+                className="h-px w-8 bg-accent-300/40"
+              />
               A Miami restaurant · embedded since February 2026
             </p>
           </div>
