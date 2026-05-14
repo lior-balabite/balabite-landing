@@ -51,9 +51,10 @@ email-preview*.html
 **/test-*.ts
 **/test-*.tsx
 
-# showcase and demo pages
+# showcase and scratch pages
+# NOTE: /src/app/demo/ is intentionally NOT ignored — it is the real NRA
+# booth demo route (/demo), a shipping production surface, not a scratch page.
 /src/app/logo-showcase/
-/src/app/demo/
 /src/app/showcase/
 /src/app/*-showcase/
 /src/app/*-demo/

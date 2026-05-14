@@ -6,12 +6,15 @@ import { usePathname } from 'next/navigation';
 const RSVP_URL = '/booth-8332';
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
-// `/nra`, `/NRA-booklet`, `/admin/nra` are the lead-capture surfaces
-// (tab/nra-lead-capture) — the prospect is already at the booth, and the
-// banner's RSVP link would pull them out of the signup flow.
+// Kiosk, booth-floor, and lead-capture surfaces are chrome-free — the
+// banner's RSVP link would only compete with what the prospect is already
+// doing on these pages. /booth-tv + /demo: the booth TV loop and guided
+// demo. /nra, /NRA-booklet, /admin/nra: the lead-capture surfaces.
 const HIDDEN_ROUTES = [
   '/pitch',
   '/booth-8332',
+  '/booth-tv',
+  '/demo',
   '/nra',
   '/NRA-booklet',
   '/admin/nra',

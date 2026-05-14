@@ -1,0 +1,306 @@
+/* ————————————————————————————————————————————————————————————
+   /booth-tv — the silent booth TV loop
+   Kiosk-clean. Designed for a 1080p landscape TV, legible from 6+ feet.
+   Translates ShortDeck slides 1–6 into a ~82s captioned, motion-driven loop.
+   No chrome. No audio. Just the narrative, timed.
+   ———————————————————————————————————————————————————————————— */
+
+.tv-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: #020617;
+  color: var(--color-cream-100, #faf5ee);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  cursor: none; /* kiosk — hide the pointer */
+  user-select: none;
+}
+
+/* Ambient amber glow from the top — same warmth as /booth-8332 */
+.tv-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% -10%,
+    rgba(251, 191, 36, 0.1),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* Slow drifting aurora wash — keeps the dark surface alive between beats */
+.tv-root::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+      ellipse at 20% 30%,
+      rgba(12, 56, 50, 0.55),
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 85% 75%,
+      rgba(69, 26, 3, 0.5),
+      transparent 45%
+    );
+  animation: tv-aurora 26s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes tv-aurora {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(2%, 1%, 0) scale(1.08);
+  }
+}
+
+.tv-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4vh 7vw;
+}
+
+.tv-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2vh;
+  width: 100%;
+  max-width: 1500px;
+}
+
+/* ——— Shared type ——— */
+.tv-eyebrow {
+  font-family: var(--font-mono, ui-monospace), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  font-size: clamp(12px, 1.05vw, 21px);
+  color: rgba(252, 211, 77, 0.78);
+}
+
+.tv-display {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  font-size: clamp(40px, 5.6vw, 112px);
+  color: var(--color-cream-50, #fffdf9);
+}
+
+.tv-display-md {
+  font-size: clamp(34px, 4.4vw, 86px);
+}
+
+.tv-display i,
+.tv-line i {
+  font-style: italic;
+}
+
+.tv-punch {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1;
+  font-size: clamp(58px, 8.4vw, 168px);
+  color: var(--color-accent-300, #fcd34d);
+  text-shadow: 0 0 60px rgba(251, 191, 36, 0.4);
+}
+
+.tv-line {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-size: clamp(26px, 2.9vw, 58px);
+  line-height: 1.22;
+  color: rgba(250, 245, 238, 0.92);
+}
+
+.tv-amber {
+  color: var(--color-accent-300, #fcd34d);
+  font-style: italic;
+}
+
+.tv-sub {
+  font-size: clamp(16px, 1.5vw, 30px);
+  letter-spacing: 0.02em;
+  color: rgba(250, 245, 238, 0.62);
+}
+
+/* ——— Proof beat: the 6 pain → action pairs ——— */
+.tv-pairs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6vh 4vw;
+  width: 100%;
+  margin-top: 0.5vh;
+}
+
+.tv-pair {
+  text-align: left;
+  border-left: 2px solid rgba(251, 191, 36, 0.32);
+  padding-left: 1.4vw;
+}
+
+.tv-pair-pain {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-size: clamp(15px, 1.55vw, 31px);
+  line-height: 1.25;
+  color: rgba(250, 245, 238, 0.5);
+}
+
+.tv-pair-action {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 1.78vw, 35px);
+  line-height: 1.22;
+  color: var(--color-cream-50, #fffdf9);
+  margin-top: 0.3vh;
+}
+
+.tv-pair-action b {
+  font-style: normal;
+  color: var(--color-accent-300, #fcd34d);
+}
+
+/* ——— How beat: the 86-salmon vignette ——— */
+.tv-vignette {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8vh;
+}
+
+.tv-timestamp {
+  font-family: var(--font-mono, ui-monospace), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: clamp(13px, 1.15vw, 23px);
+  color: rgba(250, 245, 238, 0.5);
+}
+
+.tv-chat-bubble {
+  display: inline-block;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.95),
+    rgba(15, 23, 42, 0.95)
+  );
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 999px;
+  padding: 1.4vh 3.4vw;
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-size: clamp(30px, 3.6vw, 72px);
+  color: var(--color-cream-50, #fffdf9);
+  box-shadow: 0 24px 70px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* ——— Product beat: the 3 Pulse screens ——— */
+.tv-triptych {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.4vw;
+  width: 100%;
+  align-items: start;
+}
+
+.tv-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4vh;
+}
+
+.tv-panel-frame {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  background: #020617;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.95);
+  aspect-ratio: 1 / 1;
+}
+
+.tv-panel-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.tv-panel-label {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(16px, 1.6vw, 32px);
+  color: rgba(250, 245, 238, 0.85);
+}
+
+.tv-panel-tag {
+  font-family: var(--font-mono, ui-monospace), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: clamp(10px, 0.85vw, 16px);
+  color: rgba(252, 211, 77, 0.7);
+}
+
+/* ——— Closer / brand lockup on the Real beat ——— */
+.tv-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.7vw;
+  margin-top: 1.5vh;
+}
+
+.tv-lockup-palm {
+  display: inline-block;
+  width: clamp(20px, 1.7vw, 34px);
+  height: clamp(30px, 2.6vw, 50px);
+  background-color: var(--color-cream-100, #faf5ee);
+  -webkit-mask: url(/palm-1592.svg) no-repeat center / contain;
+  mask: url(/palm-1592.svg) no-repeat center / contain;
+}
+
+.tv-lockup-word {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(28px, 2.7vw, 54px);
+  color: var(--color-cream-100, #faf5ee);
+  letter-spacing: -0.01em;
+}
+
+.tv-booth-tag {
+  font-family: var(--font-mono, ui-monospace), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: clamp(12px, 1.05vw, 21px);
+  color: rgba(252, 211, 77, 0.85);
+  margin-top: 0.6vh;
+}
+
+/* ——— Progress hairline — the only chrome, whisper-subtle ——— */
+.tv-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(251, 191, 36, 0.55),
+    rgba(252, 211, 77, 0.9)
+  );
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.5);
+  z-index: 5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-root::after {
+    animation: none;
+  }
+}
