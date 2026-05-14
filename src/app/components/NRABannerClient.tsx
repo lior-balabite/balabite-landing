@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 const RSVP_URL = '/booth-8332';
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
-const HIDDEN_ROUTES = ['/pitch', '/booth-8332'];
+// Kiosk / booth-floor surfaces are chrome-free — the banner stays off.
+const HIDDEN_ROUTES = ['/pitch', '/booth-8332', '/booth-tv', '/demo'];
 
 const TICKER_PHRASES = [
   'Coffee with the founder before doors open — limited',
