@@ -21,6 +21,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Same guard for the booth signup route: any casing of /nra (e.g. /NRA,
+  // /Nra) redirects to the canonical lowercase /nra so a mistyped or
+  // re-cased booth QR can't 404.
+  if (
+    url.pathname.toLowerCase() === '/nra' &&
+    url.pathname !== '/nra'
+  ) {
+    url.pathname = '/nra';
+    return NextResponse.redirect(url);
+  }
+
   const isPitchSubdomain =
     hostname === 'pitch.balabite.ai' ||
     hostname === 'pitch.balabite.ai:443' ||
