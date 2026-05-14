@@ -26,7 +26,8 @@ export interface NraEnrichment {
   lon?: number;
   /** How many food/drink venues the source returned for the query. */
   matchCount?: number;
-  source: 'openstreetmap';
+  /** Which source produced this match. */
+  source: 'openstreetmap' | 'google';
 }
 
 /** Fields the prospect submits from the one-screen signup form. */
