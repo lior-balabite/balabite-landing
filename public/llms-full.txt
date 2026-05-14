@@ -1,0 +1,137 @@
+# BalaBite — Your AI Cofounder for restaurants
+
+> You run the place. We do the rest.
+
+BalaBite is the first AI Cofounder for independent restaurants. The brand
+operates as a singular presence — the Hebrew ba'al habayit, "the owner
+who knows everything" — that shows up every morning and runs the parts of
+the business a single human owner cannot get to alone.
+
+## Why the role broke
+
+Running a restaurant used to mean the kitchen and the cash drawer.
+Now it's kitchen plus reviews, delivery at 30 percent, marketing, tech,
+compliance, vendor wars, catering inquiries, scheduling, payroll, and
+a dozen more layers.
+
+The role grew. Nobody opens a restaurant for any of this.
+
+A typical independent restaurant grosses $1M–$2M a year. On the
+median 2.8 percent pre-tax margin, that is $28K–$56K in profit,
+defended across a dozen-plus software tools that don't fully talk to
+each other. The owner is the only integration layer. Alone. And the
+math doesn't pay for the team that would carry the rest.
+
+## What BalaBite does
+
+BalaBite runs the rest. Concrete examples from the embedded Miami
+kitchen:
+
+- The bok choy you ordered that never showed — reordered before
+  Friday's delivery.
+- The hurricane on Wednesday — delivery promo pushed before the storm
+  killed dine-in.
+- The new coffee shop two doors down — pricing benchmarked, slipping
+  morning regulars flagged.
+- The catering inquiry sitting in your inbox since Monday — quote
+  drafted, date held.
+- The whiteboard you haven't touched in months — three items off it
+  shipped.
+- Prime cost drifting 58 → 63 percent — leak found, the fish
+  supplier.
+
+While you slept.
+
+## Where it lives
+
+BalaBite sits wherever the real work happens — not just inside the
+software. It accepts anything an operator hands it: screenshots,
+photos of the broken ice machine, voice memos from the line, the
+text from the produce supplier. It reads the staff WhatsApp for 86s
+and callouts in real time, watches the whiteboard, the inbox, the
+DMs, and the usual data plane (POS, payroll, invoices, reviews).
+
+Sometimes it asks. Mostly it acts.
+
+## Positioning
+
+Their AI lives inside the software. Ours lives in your restaurant.
+
+The product is sold as a partnership, not as software:
+- 1 percent of sales (collected via POS integration on day one,
+  so the number moves with the restaurant's)
+- $299/month floor
+
+When they grow, we grow. Cofounder economics — not vendor pricing.
+
+A typical independent already pays $1,000–$2,500/month for fragmented
+tools they only half-use ("the shelfware tax"). BalaBite consolidates
+enough of them to be a net budget reduction, and shows up every
+morning so it can't be ignored.
+
+## Founder
+
+Lior Brik. Both the engineer and the operator.
+
+**Engineer:** Unit 8200 signals intelligence. Early data engineer at
+QuadPay (acquired by Zip, 2020). CTO at a 20-location healthcare group.
+
+**Operator:** Washed dishes at 16. Embedded partner at a Miami
+independent restaurant since January 2026. Kitchen, POS, vendors,
+payroll — not a visit, a job.
+
+In ~100 days embedded: Toast → Square migration saved ~$1,000/month
+recurring (processing + iPad menus + software consolidation), ~$8K
+off a merchant cash advance (22% → 15%), in-house procedures + tips
+software shipped, inventory built, recipes documented, food
+photography upgraded. The partner, before the product shipped.
+
+## How BalaBite is different
+
+Every Toast restaurant gets the same Toast IQ. Every Square seller
+gets the same Square AI. Same intelligence, same playbook, for your
+competitor next door.
+
+BalaBite is built for one restaurant at a time. Not your competitor's.
+
+- No POS, payments, loyalty, or delivery to defend. Toast can't tell
+  you to switch off Toast. Square can't suggest a different
+  processor. We can.
+- When the morning brief misses something, the engineer who fixes
+  it is the same person who reads it. Same day.
+- Independents first. That's where the partnership fit is tightest.
+
+## NRA Show 2026
+
+BalaBite is at NRA Show 2026 — Booth 8332, McCormick Place, Chicago,
+May 16–19.
+
+Show floor hours: Saturday–Monday 9:30am–5:00pm, Tuesday
+9:30am–3:00pm.
+
+Ways to meet:
+- **Coffee before the floor** — 30 min, May 16–19, 7:30–9am, off-floor
+  café near McCormick. Reserve via balabite.ai/booth-8332.
+- **After service** — 45 min, off-floor, right after the show floor
+  closes (5:15pm Saturday–Monday, 3:15pm Tuesday).
+- **Numbers on the table** — 45 min, after May 20, video call with
+  the founder using your restaurant's real numbers. Live demo on
+  your data.
+- **Booth drive-by** — walk-up, no reservation. Booth 8332 during
+  show hours.
+
+All bookings: https://www.balabite.ai/booth-8332
+
+## What we are not
+
+- Not a POS. Toast, Square, and Tabit own the counter. We connect
+  to theirs, strategically.
+- Not chasing chains. Independents first.
+- Not cheap. 1 percent of sales, $299/month floor — because the
+  Partner replaces owner thinking, not a spreadsheet.
+
+## Contact
+
+- Website: https://www.balabite.ai
+- Email: lior@balabite.ai
+- NRA Show booth: 8332 (May 16–19, 2026, McCormick Place, Chicago)

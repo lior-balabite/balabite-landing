@@ -34,10 +34,10 @@ export default function AboutPage() {
             className="text-center mb-16"
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-accent-400 to-accent-300 text-transparent bg-clip-text">
-              Our Story
+              The AI Cofounder for the people running independent restaurants.
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto text-primary-100/90">
-              Bringing the warmth of traditional hospitality into the age of AI
+              Bringing the warmth of traditional hospitality into the age of AI.
             </p>
           </motion.div>
           
