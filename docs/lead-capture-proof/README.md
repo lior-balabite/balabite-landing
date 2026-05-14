@@ -19,6 +19,9 @@ mobile (iPhone 13, 390×844) and desktop (1366×900) viewports.
 | `09-nra-desktop.png` | `/nra` signup, desktop | Filled state with enrichment + selected chips |
 | `10-admin-gate-desktop.png` | `/admin/nra` gate, desktop | |
 | `11-admin-authed-desktop.png` | `/admin/nra` authenticated, desktop | Populated lead list, desktop layout |
+| `12-prod-nra-mobile.png` | **LIVE** `www.balabite.ai/nra` | Production deploy — banner correctly hidden, no page errors |
+| `13-prod-nra-booklet-mobile.png` | **LIVE** `www.balabite.ai/NRA-booklet` | Production deploy |
+| `14-prod-admin-authed.png` | **LIVE** `www.balabite.ai/admin/nra` | Production deploy — passcode gate authenticates |
 
 ## Checks performed
 
@@ -51,4 +54,17 @@ two real test submissions were run through the full pipeline and confirmed:
   to the verified `balabite.ai` domain.
 - **Owner notification** — sent to `ADMIN_EMAIL`.
 - **Notes** — edited from `/admin/nra` and confirmed persisted to the row.
-- **Cleanup** — both test rows deleted; the production table starts empty.
+- **Cleanup** — all test rows deleted; the production table starts empty.
+
+## Production verification (www.balabite.ai)
+
+Deployed scoped to production. Confirmed live:
+
+- `/`, `/pitch`, `/booth-8332` — still 200 (nothing else regressed).
+- `/nra`, `/NRA-booklet`, `/admin/nra` — 200; `/nra-booklet` and
+  `/NRA-BOOKLET` 307-redirect to the canonical `/NRA-booklet`.
+- A full submission through the **production** `/api/nra/lead` stored to
+  `nra_leads` (`stored: true`), sent the thank-you (`emailed: true`), and
+  computed the fit score — then the test row was deleted.
+- `/admin/nra` passcode gate authenticates on production; the site-wide
+  marquee banner is correctly hidden on all three capture surfaces.
