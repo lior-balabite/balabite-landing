@@ -249,10 +249,10 @@ function RealScene() {
       <Rise className="tv-display" delay={0.35}>
         Not a vendor they installed.
         <br />
-        <i>A partner they built in.</i>
+        <i>A cofounder they built in.</i>
       </Rise>
       <Rise className="tv-sub" delay={2.8}>
-        One Miami independent. Live since February 2026.
+        Built into a working Miami kitchen. Live since February 2026.
       </Rise>
       <Rise delay={4.6}>
         <div className="tv-lockup">

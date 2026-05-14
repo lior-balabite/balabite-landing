@@ -65,7 +65,7 @@ to advance; the screen animates as you talk, so you don't have to rush it.
 > Nobody told it to. It didn't ask. It just handled it. **Sometimes it asks you — but
 > mostly, it acts.**"
 
-**Transition:** *"Now — the part that tells you whether this is a vendor or a partner."* → Click Next.
+**Transition:** *"Now — the part that tells you whether this is a vendor or a cofounder."* → Click Next.
 
 ### 4 — It owns it *(Screen 3 · this week's record)* (~30 sec)
 *[The weekly-record screen. Highlight lands on "Didn't land."]*
@@ -83,10 +83,10 @@ to advance; the screen animates as you talk, so you don't have to rush it.
 ### 5 — Close (~15 sec)
 *[The closing screen with the booking CTA.]*
 
-> "And this is **one real restaurant, live since February** — real POS data, three
-> years of orders, not a demo environment. What you just saw is a taste. The real
-> thing is *your* numbers. Give me twenty minutes after the show and I'll run your
-> restaurant through it — you'll see exactly what it would catch."
+> "And this is **live in a real working kitchen since February** — real POS data,
+> three years of orders, not a demo environment. What you just saw is a taste. The
+> real thing is *your* numbers. Give me twenty minutes after the show and I'll run
+> your restaurant through it — you'll see exactly what it would catch."
 >
 > "Can I grab a time?"
 
@@ -101,7 +101,7 @@ Skip the walk. Elevator pitch, then:
 
 > "Three screens. It **sees** your whole restaurant in one morning briefing. It
 > **acts** — handles the busywork overnight without being asked. And it **owns it** —
-> it even tells you what it tried that *didn't* work. One restaurant, live since
+> it even tells you what it tried that *didn't* work. Live in a working kitchen since
 > February. Want me to run yours? Twenty minutes."
 
 Then go straight to the booking.

@@ -114,7 +114,7 @@ const STEPS: Step[] = [
     ),
     points: [
       'Six domains, scored — what’s healthy, what’s drifting.',
-      'Written like a partner talking, not a report to decode.',
+      'Written like a cofounder talking, not a report to decode.',
       'One decision waiting for you. Just one.',
     ],
     highlights: [
@@ -211,7 +211,7 @@ const STEPS: Step[] = [
     eyebrow: 'Booth 8332 · NRA Show 2026',
     heading: (
       <>
-        One restaurant. Live since February.
+        Live since February.
         <br />
         <i>This is a taste.</i>
       </>
