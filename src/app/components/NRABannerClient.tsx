@@ -52,14 +52,26 @@ function TickerSet({ ariaHidden = false }: { ariaHidden?: boolean }) {
   );
 }
 
+const MOBILE_SIGN_LABELS = ['BOOTH 8332', 'NRA SHOW 2026', 'MAY 16–19'];
+
 export default function NRABannerClient({ hideAfterIso }: Props) {
   const pathname = usePathname();
   const [dismissed, setDismissed] = useState<boolean>(readDismissed);
   const [pastCutoff, setPastCutoff] = useState(false);
+  const [mobileSignIdx, setMobileSignIdx] = useState(0);
 
   useEffect(() => {
     if (Date.now() >= new Date(hideAfterIso).getTime()) setPastCutoff(true);
   }, [hideAfterIso]);
+
+  // Mobile sign rotates through 3 labels every 3s — visible info on a
+  // single-line plaque without a marquee competing with it.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMobileSignIdx((i) => (i + 1) % MOBILE_SIGN_LABELS.length);
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
 
   const onHiddenRoute = HIDDEN_ROUTES.some((r) => pathname?.startsWith(r));
   const shouldShow = !dismissed && !pastCutoff && !onHiddenRoute;
@@ -96,10 +108,10 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
     >
       <div className="relative h-11 border-b border-black/30">
         {/* Marquee — full-width, runs behind the centered sign so phrases pass
-            from one side to the other (continues on both sides of the sign).
-            Hidden on mobile (cramped at 375px). */}
+            from one side to the other. Now also visible on mobile (the sign
+            occludes the middle; phrases peek through left/right). */}
         <div
-          className="nra-marquee absolute inset-0 hidden overflow-hidden sm:block"
+          className="nra-marquee absolute inset-0 overflow-hidden"
           aria-label="Coffee with the founder before doors open — limited. Drinks off-floor after the floor closes — four nights. Demo on your real numbers — slots open after May 20. Booth 8332 — through Tuesday."
         >
           <div className="nra-marquee-track flex h-full w-max items-center">
@@ -111,11 +123,29 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
         {/* Centered booth sign — modern glass pill: backdrop-blur, thin gold
             inlay, soft halo. Lit-from-within gold number, no emboss. */}
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 whitespace-nowrap rounded-full border border-accent-500/45 bg-primary-950/90 px-7 py-2 backdrop-blur-xl shadow-[0_2px_32px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] sm:gap-4 sm:px-9 sm:py-2.5"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 whitespace-nowrap rounded-full border border-accent-500/45 bg-primary-950/90 px-5 py-2 backdrop-blur-xl shadow-[0_2px_32px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] sm:gap-4 sm:px-9 sm:py-2.5"
           data-testid="nra-banner-sign"
         >
+          {/* Mobile sign — rotates between BOOTH 8332 / NRA SHOW 2026 / MAY 16–19 */}
+          <div className="relative flex h-6 w-[155px] items-center justify-center sm:hidden">
+            {MOBILE_SIGN_LABELS.map((label, i) => (
+              <span
+                key={i}
+                className="absolute inset-0 flex items-center justify-center text-[13px] font-bold uppercase tracking-[0.16em] text-accent-300"
+                style={{
+                  opacity: mobileSignIdx === i ? 1 : 0,
+                  transition: 'opacity 500ms ease-in-out',
+                  textShadow: '0 0 18px rgba(251,191,36,0.3)',
+                }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {/* Desktop sign — all parts visible inline */}
           <span
-            className="hidden uppercase tracking-[0.24em] text-cream-200/70 text-[10px] sm:inline sm:text-[11px]"
+            className="hidden uppercase tracking-[0.24em] text-cream-200/70 sm:inline sm:text-[11px]"
             style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
           >
             NRA Show 2026
@@ -126,15 +156,15 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
           >
             ·
           </span>
-          <span className="flex items-center gap-2">
+          <span className="hidden items-center gap-2 sm:flex">
             <span
-              className="uppercase tracking-[0.24em] text-cream-200/85 text-[10px] sm:text-[11px]"
+              className="uppercase tracking-[0.24em] text-cream-200/85 sm:text-[11px]"
               style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
             >
               Booth
             </span>
             <span
-              className="leading-none text-[24px] font-bold tracking-tight text-accent-300 sm:text-[32px]"
+              className="leading-none font-bold tracking-tight text-accent-300 sm:text-[32px]"
               style={{
                 fontVariantNumeric: 'tabular-nums',
                 textShadow: '0 0 28px rgba(251,191,36,0.35)',
@@ -150,7 +180,7 @@ export default function NRABannerClient({ hideAfterIso }: Props) {
             ·
           </span>
           <span
-            className="hidden uppercase tracking-[0.24em] text-cream-200/70 text-[10px] sm:inline sm:text-[11px]"
+            className="hidden uppercase tracking-[0.24em] text-cream-200/70 sm:inline sm:text-[11px]"
             style={{ fontFamily: 'var(--font-mono, ui-monospace)' }}
           >
             May 16–19
