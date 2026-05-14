@@ -6,8 +6,19 @@ import { usePathname } from 'next/navigation';
 const RSVP_URL = '/booth-8332';
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
-// Kiosk / booth-floor surfaces are chrome-free — the banner stays off.
-const HIDDEN_ROUTES = ['/pitch', '/booth-8332', '/booth-tv', '/demo'];
+// Kiosk, booth-floor, and lead-capture surfaces are chrome-free — the
+// banner's RSVP link would only compete with what the prospect is already
+// doing on these pages. /booth-tv + /demo: the booth TV loop and guided
+// demo. /nra, /NRA-booklet, /admin/nra: the lead-capture surfaces.
+const HIDDEN_ROUTES = [
+  '/pitch',
+  '/booth-8332',
+  '/booth-tv',
+  '/demo',
+  '/nra',
+  '/NRA-booklet',
+  '/admin/nra',
+];
 
 const TICKER_PHRASES = [
   'Coffee with the founder before doors open — limited',

@@ -9,6 +9,29 @@ export function middleware(request: NextRequest) {
   const hostname = (request.headers.get('host') || '').toLowerCase();
   const url = request.nextUrl.clone();
 
+  // Case-insensitive alias for the NRA booklet QR. The printed booklet's QR is
+  // locked to /NRA-booklet (PM-verified against book-final.pdf p.12); this
+  // guards against any case mismatch in the QR — /nra-booklet, /NRA-BOOKLET,
+  // etc. all redirect to the canonical /NRA-booklet so it can never 404.
+  if (
+    url.pathname.toLowerCase() === '/nra-booklet' &&
+    url.pathname !== '/NRA-booklet'
+  ) {
+    url.pathname = '/NRA-booklet';
+    return NextResponse.redirect(url);
+  }
+
+  // Same guard for the booth signup route: any casing of /nra (e.g. /NRA,
+  // /Nra) redirects to the canonical lowercase /nra so a mistyped or
+  // re-cased booth QR can't 404.
+  if (
+    url.pathname.toLowerCase() === '/nra' &&
+    url.pathname !== '/nra'
+  ) {
+    url.pathname = '/nra';
+    return NextResponse.redirect(url);
+  }
+
   const isPitchSubdomain =
     hostname === 'pitch.balabite.ai' ||
     hostname === 'pitch.balabite.ai:443' ||
