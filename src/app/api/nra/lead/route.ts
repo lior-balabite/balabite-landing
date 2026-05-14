@@ -39,7 +39,7 @@ const enrichmentSchema = z
     lat: z.number().optional(),
     lon: z.number().optional(),
     matchCount: z.number().optional(),
-    source: z.literal('openstreetmap'),
+    source: z.enum(['openstreetmap', 'google']),
   })
   .nullable()
   .optional();
