@@ -91,7 +91,9 @@ export function notificationEmail(opts: {
 }): { subject: string; html: string; text: string } {
   const { email, when, location } = opts;
   const subject = `Someone just connected — ${email}`;
-  const replyHref = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(
+  // mailto recipients must be literal — percent-encoding the "@" (%40)
+  // breaks the link in many mail clients. Only the subject value is encoded.
+  const replyHref = `mailto:${email}?subject=${encodeURIComponent(
     'Good to meet you',
   )}`;
   const locLine = location
