@@ -35,6 +35,7 @@ const enrichmentSchema = z
     region: z.string().optional(),
     country: z.string().optional(),
     displayName: z.string().optional(),
+    matchedName: z.string().optional(),
     lat: z.number().optional(),
     lon: z.number().optional(),
     matchCount: z.number().optional(),

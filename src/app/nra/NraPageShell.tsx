@@ -19,7 +19,13 @@ export default function NraPageShell({ source }: { source: LeadSource }) {
     <div className={`nra-root ${nraFontClass}`}>
       <div className="nra-shell">
         <header className="nra-topbar">
-          <span className="nra-wordmark">BalaBite</span>
+          {/* Homepage logo lockup — Prospero Alpini 1592 date-palm woodcut
+              (CSS-masked so it takes the ink color) + italic serif wordmark.
+              Not a link: this is a focused signup funnel. */}
+          <span className="nra-logo" aria-label="BalaBite">
+            <span className="nra-logo-palm nra-palm-sway" aria-hidden="true" />
+            <span className="nra-serif nra-logo-word">balabite</span>
+          </span>
           <span className="nra-booth-chip">NRA 2026 · Booth 8332</span>
         </header>
 

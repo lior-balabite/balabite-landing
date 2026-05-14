@@ -20,9 +20,11 @@ export interface NraEnrichment {
   country?: string;
   /** Full formatted name returned by the source. */
   displayName?: string;
+  /** The venue's actual name as matched — lets the owner sanity-check the match. */
+  matchedName?: string;
   lat?: number;
   lon?: number;
-  /** How many candidate matches the source returned (confidence proxy). */
+  /** How many food/drink venues the source returned for the query. */
   matchCount?: number;
   source: 'openstreetmap';
 }
