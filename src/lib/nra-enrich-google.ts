@@ -4,14 +4,15 @@ import { nameSimilarity, cityScore } from './nra-enrich-match';
 /**
  * Restaurant enrichment via the Google Places API (New) — Text Search.
  *
- * Google's restaurant coverage is effectively complete, so this is the
- * primary source when `GOOGLE_PLACES_API_KEY` is set. It still runs the
- * same precision gates as the OSM path (name + city must genuinely match)
- * — Google ranks well, but a loose text query can still surface the wrong
- * place, and a wrong guess breaks the "your Cofounder noticed you" moment.
+ * Primary source when `GOOGLE_PLACES_API_KEY` is set. Google's restaurant
+ * coverage is effectively complete, and one Text Search call also carries
+ * the rich signal — editorial summary, rating, website, service traits —
+ * so the "your Cofounder noticed you" moment can be specific without a
+ * second request.
  *
- * Hard rule: never throws. Any failure (no key, quota, network, no match)
- * returns `null`, and the caller falls back to OpenStreetMap.
+ * Still runs the same precision gates as the OSM path (name + city must
+ * genuinely match). Hard rule: never throws — any failure returns `null`
+ * and the caller falls back to OpenStreetMap.
  */
 
 const ENDPOINT = 'https://places.googleapis.com/v1/places:searchText';
@@ -25,6 +26,23 @@ const FIELD_MASK = [
   'places.primaryTypeDisplayName',
   'places.location',
   'places.addressComponents',
+  // richer signal — same call, no extra latency
+  'places.editorialSummary',
+  'places.rating',
+  'places.userRatingCount',
+  'places.priceLevel',
+  'places.websiteUri',
+  'places.nationalPhoneNumber',
+  'places.businessStatus',
+  'places.servesBrunch',
+  'places.servesCocktails',
+  'places.servesVegetarianFood',
+  'places.takeout',
+  'places.delivery',
+  'places.reservable',
+  'places.outdoorSeating',
+  'places.goodForGroups',
+  'places.liveMusic',
 ].join(',');
 
 /** Google place types that mean "this is a food/drink venue". */
@@ -51,6 +69,22 @@ interface GooglePlace {
   primaryTypeDisplayName?: GoogleLocalizedText;
   location?: { latitude?: number; longitude?: number };
   addressComponents?: GoogleAddressComponent[];
+  editorialSummary?: GoogleLocalizedText;
+  rating?: number;
+  userRatingCount?: number;
+  priceLevel?: string;
+  websiteUri?: string;
+  nationalPhoneNumber?: string;
+  businessStatus?: string;
+  servesBrunch?: boolean;
+  servesCocktails?: boolean;
+  servesVegetarianFood?: boolean;
+  takeout?: boolean;
+  delivery?: boolean;
+  reservable?: boolean;
+  outdoorSeating?: boolean;
+  goodForGroups?: boolean;
+  liveMusic?: boolean;
 }
 
 function isFoodVenue(place: GooglePlace): boolean {
@@ -72,15 +106,13 @@ function deriveCuisine(place: GooglePlace): string | undefined {
   const display = place.primaryTypeDisplayName?.text?.trim();
   if (display) {
     const lower = display.toLowerCase();
-    if (lower === 'restaurant') return undefined; // generic — say nothing specific
+    if (lower === 'restaurant') return undefined;
     if (lower === 'fast food restaurant') return 'Quick-service';
     if (lower === 'cafe' || lower === 'café' || lower === 'coffee shop')
       return 'Coffee shop';
-    // "Italian restaurant" -> "Italian"; "Bakery"/"Bar"/"Pub" stay as-is.
     const stripped = display.replace(/\s+restaurant$/i, '').trim();
     return stripped || undefined;
   }
-  // Fallback: derive from the machine primaryType.
   const pt = place.primaryType;
   if (!pt) return undefined;
   if (pt === 'cafe' || pt === 'coffee_shop') return 'Coffee shop';
@@ -94,6 +126,37 @@ function deriveCuisine(place: GooglePlace): string | undefined {
     return word ? word.charAt(0).toUpperCase() + word.slice(1) : undefined;
   }
   return undefined;
+}
+
+function priceLabel(level?: string): string | undefined {
+  switch (level) {
+    case 'PRICE_LEVEL_FREE':
+    case 'PRICE_LEVEL_INEXPENSIVE':
+      return '$';
+    case 'PRICE_LEVEL_MODERATE':
+      return '$$';
+    case 'PRICE_LEVEL_EXPENSIVE':
+      return '$$$';
+    case 'PRICE_LEVEL_VERY_EXPENSIVE':
+      return '$$$$';
+    default:
+      return undefined;
+  }
+}
+
+/** Collect the human-readable service traits, most useful first, capped at 6. */
+function collectTraits(p: GooglePlace): string[] {
+  const traits: string[] = [];
+  if (p.servesCocktails) traits.push('cocktails');
+  if (p.servesBrunch) traits.push('brunch');
+  if (p.outdoorSeating) traits.push('outdoor seating');
+  if (p.liveMusic) traits.push('live music');
+  if (p.goodForGroups) traits.push('good for groups');
+  if (p.reservable) traits.push('takes reservations');
+  if (p.servesVegetarianFood) traits.push('vegetarian-friendly');
+  if (p.takeout) traits.push('takeout');
+  if (p.delivery) traits.push('delivery');
+  return traits.slice(0, 6);
 }
 
 export async function enrichViaGoogle(
@@ -152,7 +215,6 @@ export async function enrichViaGoogle(
       const cScore = cityScore(cityTrimmed ?? '', [locality, adminArea]);
       if (hasCity && cScore === 0) continue; // wrong city — not their restaurant
 
-      // Google returns results in relevance order — a small position bonus.
       const positionBonus = Math.max(0, 0.08 - index * 0.015);
       const confidence = hasCity
         ? nameScore * 0.6 + Math.max(cScore, 0) * 0.34 + positionBonus
@@ -170,16 +232,22 @@ export async function enrichViaGoogle(
       : nameScore >= 0.66;
     if (!passes) return null;
 
+    // Soft multi-location hint: same-brand venues among the results we already
+    // have (no extra call; the city scope keeps generic-name noise down).
+    const siblingLocations = venues.filter(
+      (v) => nameSimilarity(name, v.displayName?.text ?? '') >= 0.85
+    ).length;
+
     const locality =
       component(p, 'locality')?.longText ??
       component(p, 'postal_town')?.longText ??
       component(p, 'sublocality')?.longText;
     const region = component(p, 'administrative_area_level_1')?.longText;
     const country = component(p, 'country')?.longText;
-    const cuisine = deriveCuisine(p);
+    const traits = collectTraits(p);
 
     const enrichment: NraEnrichment = {
-      cuisine,
+      cuisine: deriveCuisine(p),
       category: p.primaryType,
       locality,
       region,
@@ -189,10 +257,26 @@ export async function enrichViaGoogle(
       lat: p.location?.latitude,
       lon: p.location?.longitude,
       matchCount: venues.length,
+      editorialSummary: p.editorialSummary?.text || undefined,
+      rating: typeof p.rating === 'number' ? p.rating : undefined,
+      reviewCount:
+        typeof p.userRatingCount === 'number' ? p.userRatingCount : undefined,
+      priceLevel: priceLabel(p.priceLevel),
+      website: p.websiteUri || undefined,
+      phone: p.nationalPhoneNumber || undefined,
+      traits: traits.length ? traits : undefined,
+      businessStatus: p.businessStatus
+        ? p.businessStatus.toLowerCase()
+        : undefined,
+      siblingLocations: siblingLocations > 1 ? siblingLocations : undefined,
       source: 'google',
     };
 
-    const hasSignal = enrichment.cuisine || enrichment.locality || enrichment.region;
+    const hasSignal =
+      enrichment.cuisine ||
+      enrichment.locality ||
+      enrichment.region ||
+      enrichment.editorialSummary;
     return hasSignal ? enrichment : null;
   } catch {
     return null; // timeout / network / bad JSON → fall back to OSM

@@ -39,6 +39,15 @@ const enrichmentSchema = z
     lat: z.number().optional(),
     lon: z.number().optional(),
     matchCount: z.number().optional(),
+    editorialSummary: z.string().optional(),
+    rating: z.number().optional(),
+    reviewCount: z.number().optional(),
+    priceLevel: z.string().optional(),
+    website: z.string().optional(),
+    phone: z.string().optional(),
+    traits: z.array(z.string()).optional(),
+    businessStatus: z.string().optional(),
+    siblingLocations: z.number().optional(),
     source: z.enum(['openstreetmap', 'google']),
   })
   .nullable()

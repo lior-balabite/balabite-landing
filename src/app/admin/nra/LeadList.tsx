@@ -25,6 +25,12 @@ const CSV_COLUMNS: { key: string; label: string }[] = [
   { key: 'cuisine', label: 'Cuisine (enriched)' },
   { key: 'locality', label: 'Locality (enriched)' },
   { key: 'region', label: 'Region (enriched)' },
+  { key: 'rating', label: 'Rating' },
+  { key: 'reviewCount', label: 'Reviews' },
+  { key: 'priceLevel', label: 'Price' },
+  { key: 'website', label: 'Website' },
+  { key: 'editorialSummary', label: 'Summary (enriched)' },
+  { key: 'traits', label: 'Traits' },
   { key: 'note', label: 'Note' },
 ];
 
@@ -36,11 +42,18 @@ function csvCell(value: unknown): string {
 function buildCsv(leads: NraLeadRow[]): string {
   const header = CSV_COLUMNS.map((c) => csvCell(c.label)).join(',');
   const rows = leads.map((lead) => {
+    const e = lead.enrichment;
     const flat: Record<string, unknown> = {
       ...lead,
-      cuisine: lead.enrichment?.cuisine ?? '',
-      locality: lead.enrichment?.locality ?? '',
-      region: lead.enrichment?.region ?? '',
+      cuisine: e?.cuisine ?? '',
+      locality: e?.locality ?? '',
+      region: e?.region ?? '',
+      rating: e?.rating ?? '',
+      reviewCount: e?.reviewCount ?? '',
+      priceLevel: e?.priceLevel ?? '',
+      website: e?.website ?? '',
+      editorialSummary: e?.editorialSummary ?? '',
+      traits: e?.traits?.join('; ') ?? '',
     };
     return CSV_COLUMNS.map((c) => csvCell(flat[c.key])).join(',');
   });
@@ -115,12 +128,20 @@ function LeadNote({ lead }: { lead: NraLeadRow }) {
 
 /* --- Lead card ------------------------------------------------------- */
 
+function websiteHost(url?: string): string {
+  if (!url) return '';
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
 function LeadCard({ lead }: { lead: NraLeadRow }) {
   const signal = lead.fit_signal ?? 'weak';
-  const enrichBits = lead.enrichment
-    ? [lead.enrichment.cuisine, lead.enrichment.locality, lead.enrichment.region]
-        .filter(Boolean)
-        .join(' · ')
+  const e = lead.enrichment;
+  const enrichBits = e
+    ? [e.cuisine, e.locality, e.region].filter(Boolean).join(' · ')
     : '';
 
   return (
@@ -183,10 +204,42 @@ function LeadCard({ lead }: { lead: NraLeadRow }) {
         </div>
       </dl>
 
-      {enrichBits && (
+      {e && (
         <div className="nra-lead-enrich">
-          <span className="nra-lead-enrich-label">Enriched</span>
-          {enrichBits}
+          <div className="nra-lead-enrich-head">
+            <span className="nra-lead-enrich-label">Enriched · {e.source}</span>
+            {(typeof e.rating === 'number' || e.priceLevel) && (
+              <span className="nra-lead-enrich-rating">
+                {typeof e.rating === 'number' ? `${e.rating.toFixed(1)}★` : ''}
+                {typeof e.reviewCount === 'number' && e.reviewCount > 0
+                  ? ` · ${e.reviewCount.toLocaleString()}`
+                  : ''}
+                {e.priceLevel ? ` · ${e.priceLevel}` : ''}
+              </span>
+            )}
+          </div>
+          {enrichBits && <div className="nra-lead-enrich-line">{enrichBits}</div>}
+          {e.editorialSummary && (
+            <div className="nra-lead-enrich-summary">“{e.editorialSummary}”</div>
+          )}
+          {e.traits && e.traits.length > 0 && (
+            <div className="nra-lead-enrich-traits">{e.traits.join(' · ')}</div>
+          )}
+          {(e.website || e.phone) && (
+            <div className="nra-lead-enrich-links">
+              {e.website && (
+                <a href={e.website} target="_blank" rel="noopener noreferrer">
+                  {websiteHost(e.website)}
+                </a>
+              )}
+              {e.phone && <span>{e.phone}</span>}
+            </div>
+          )}
+          {e.siblingLocations && e.siblingLocations > 1 && (
+            <div className="nra-lead-enrich-traits">
+              ~{e.siblingLocations} same-name locations in metro
+            </div>
+          )}
         </div>
       )}
 

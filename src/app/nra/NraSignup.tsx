@@ -85,6 +85,28 @@ function composeReflection(e: NraEnrichment, bucket?: LocationBucket): string {
   return `looks like ${phrase}.`;
 }
 
+/** Bare hostname for display: "https://www.miamisqueeze.com/" -> "miamisqueeze.com". */
+function websiteHost(url?: string): string | undefined {
+  if (!url) return undefined;
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return undefined;
+  }
+}
+
+/** Compact fact line for the reflection card: "4.4★ · 1,664 reviews · $$ · site.com". */
+function buildMeta(e: NraEnrichment): string {
+  const bits: string[] = [];
+  if (typeof e.rating === 'number') bits.push(`${e.rating.toFixed(1)}★`);
+  if (typeof e.reviewCount === 'number' && e.reviewCount > 0)
+    bits.push(`${e.reviewCount.toLocaleString()} reviews`);
+  if (e.priceLevel) bits.push(e.priceLevel);
+  const host = websiteHost(e.website);
+  if (host) bits.push(host);
+  return bits.join('  ·  ');
+}
+
 export default function NraSignup({ source }: { source: LeadSource }) {
   const [step, setStep] = useState<Step>('form');
 
@@ -353,12 +375,31 @@ export default function NraSignup({ source }: { source: LeadSource }) {
                   Reading up on {restaurantName.trim()}…
                 </div>
               ) : (
-                <div>
-                  <div className="nra-reflect-label">Your Cofounder</div>
-                  <div className="nra-reflect-text">
-                    Got it — {enrichment && composeReflection(enrichment, locationCount)}
+                enrichment && (
+                  <div className="nra-reflect-body">
+                    <div className="nra-reflect-label">Your Cofounder</div>
+                    <div className="nra-reflect-text">
+                      Got it — {composeReflection(enrichment, locationCount)}
+                    </div>
+                    {enrichment.editorialSummary && (
+                      <div className="nra-reflect-summary">
+                        “{enrichment.editorialSummary}”
+                      </div>
+                    )}
+                    {buildMeta(enrichment) && (
+                      <div className="nra-reflect-meta">
+                        {buildMeta(enrichment)}
+                      </div>
+                    )}
+                    {enrichment.siblingLocations &&
+                      enrichment.siblingLocations > 1 && (
+                        <div className="nra-reflect-meta">
+                          looks like {enrichment.siblingLocations} spots around{' '}
+                          {enrichment.locality || 'town'} — nice
+                        </div>
+                      )}
                   </div>
-                </div>
+                )
               )}
             </div>
           </motion.div>

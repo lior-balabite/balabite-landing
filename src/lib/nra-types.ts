@@ -18,7 +18,7 @@ export interface NraEnrichment {
   /** State / region. */
   region?: string;
   country?: string;
-  /** Full formatted name returned by the source. */
+  /** Full formatted name / address returned by the source. */
   displayName?: string;
   /** The venue's actual name as matched — lets the owner sanity-check the match. */
   matchedName?: string;
@@ -26,6 +26,26 @@ export interface NraEnrichment {
   lon?: number;
   /** How many food/drink venues the source returned for the query. */
   matchCount?: number;
+
+  /* --- Richer signal (Google Places only; absent on the OSM fallback) --- */
+  /** Google's curated one-line description of the place. */
+  editorialSummary?: string;
+  /** Average rating, 0–5. */
+  rating?: number;
+  /** Number of ratings behind `rating`. */
+  reviewCount?: number;
+  /** Price level normalized to "$"–"$$$$". */
+  priceLevel?: string;
+  /** The restaurant's own website. */
+  website?: string;
+  phone?: string;
+  /** Human-readable service traits: "brunch", "cocktails", "outdoor seating", … */
+  traits?: string[];
+  /** "operational" | "closed_temporarily" | "closed_permanently". */
+  businessStatus?: string;
+  /** Same-brand venues found in the prospect's metro — a soft multi-location hint. */
+  siblingLocations?: number;
+
   /** Which source produced this match. */
   source: 'openstreetmap' | 'google';
 }
