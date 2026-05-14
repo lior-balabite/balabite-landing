@@ -1,5 +1,31 @@
 # Tab: SEO + AI-Search migration to "AI Cofounder"
 
+> ## ✅ SHIPPED 2026-05-14 — code side complete, on `balabite.ai` prod
+>
+> All code-side work merged to `main` (PRs #2–#7). What shipped:
+> - **NRA banner** — anchored masthead → centered glass sign → event-fact marquee, AI-aurora gradient, palm logo + Instrument Serif italic wordmark, mobile rotating sign + marquee
+> - **`/booth-8332`** — menu-style RSVP page (4 dishes), Cal.com modal embed, proof pull-quote, sticky mobile RSVP, `/booth-8332/qr`
+> - **Positioning migration** — "AI Cofounder" in title, meta, h1, body copy (HeroSection / ProductReveal / HowItWorks / TheSplit / FinalCTA), footer
+> - **AI-search readiness** — `robots.ts` (allows ClaudeBot/GPTBot/PerplexityBot/etc.), `sitemap.ts`, `public/llms.txt` + `llms-full.txt`
+> - **Structured data** — Organization + WebSite + SoftwareApplication + FAQPage (root), Event w/ offers + performer (`/booth-8332`)
+> - **OG images** — edge-rendered, center-focal (survive chat-app square crops), www canonical
+> - **FAQ** — 10 brand-voice Q&A (4 SEO-targeted), FAQPage schema
+> - **Favicon** — palm, dark-mode adaptive
+> - **Aurora perf opt** on `/booth-8332`
+>
+> ### ⏭ Post-show TODO — resume after NRA (May 19)
+> Crawl re-indexing takes 1–3 weeks; nothing actionable until then.
+> - [ ] **Google Search Console** — verify `www.balabite.ai`, submit `sitemap.xml`, Request Indexing on `/`, `/about`, `/booth-8332`
+> - [ ] **Bing Webmaster Tools** — submit sitemap (Bing feeds ChatGPT search)
+> - [ ] **Weekly AI-assistant tests** — ChatGPT / Claude / Perplexity / Google AI Overviews; confirm "AI Cofounder" not "AI waiter"; screenshots → `docs/seo-test-results/`
+> - [ ] **Monitor the crawl shift** — Google's cached description currently says "AI waiter"; should flip to "AI Cofounder" as the new body copy re-crawls
+> - [ ] **Lighthouse SEO ≥95** verification once indexed
+> - [ ] **Auto-expire check** — confirm the NRA banner self-hides on/after 2026-05-20 (server cutoff + client backup)
+> - [ ] **Third-party mentions** (long game) — press, podcasts, industry pubs for backlink authority
+> - [ ] Optional: `/ai-for-independent-restaurants` hub page for the niche keyword
+
+---
+
 **Repo**: balabite-landing
 **Branch**: `tab/seo-cofounder`
 **Worktree**: `/Users/admin/balabite-landing-tab-seo`
