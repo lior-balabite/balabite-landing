@@ -146,6 +146,46 @@ const eventJsonLd = {
     name: 'BalaBite',
     url: 'https://www.balabite.ai',
   },
+  performer: {
+    '@type': 'Organization',
+    name: 'BalaBite',
+    url: 'https://www.balabite.ai',
+  },
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'Coffee before the floor',
+      description:
+        '30 minutes with the founder, off-floor, before the show floor opens.',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://www.balabite.ai/booth-8332',
+      validFrom: '2026-05-16T07:30:00-05:00',
+    },
+    {
+      '@type': 'Offer',
+      name: 'After service',
+      description:
+        '45 minutes off-floor, right after the show floor closes.',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://www.balabite.ai/booth-8332',
+      validFrom: '2026-05-16T17:15:00-05:00',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Numbers on the table',
+      description:
+        'A 45-minute post-show video demo on the restaurant’s real numbers.',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://www.balabite.ai/booth-8332',
+      validFrom: '2026-05-20T00:00:00-05:00',
+    },
+  ],
   url: 'https://www.balabite.ai/booth-8332',
 };
 

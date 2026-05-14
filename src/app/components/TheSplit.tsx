@@ -375,6 +375,9 @@ export default function TheSplit() {
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6 }}
       >
+        <p className="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-accent-600 mb-3">
+          Your AI Cofounder
+        </p>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900">
           Same restaurant. Same day.
         </h2>

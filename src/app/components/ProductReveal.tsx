@@ -252,7 +252,7 @@ export default function ProductReveal() {
             It&apos;s not a dashboard.
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-900 mb-4">
-            It&apos;s the partner you never got to hire.
+            It&apos;s the AI Cofounder you never got to hire.
           </h2>
         </motion.div>
 
