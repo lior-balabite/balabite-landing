@@ -14,10 +14,11 @@ mobile (iPhone 13, 390×844) and desktop (1366×900) viewports.
 | `04-nra-mobile-confirmation.png` | `/nra` confirmation | "Your Cofounder is already reading up on …" — plants intent, pitch-tab handoff point |
 | `05-nra-booklet-mobile.png` | `/NRA-booklet`, mobile | Same flow as `/nra`, attributed `?src=booklet` |
 | `06-admin-gate-mobile.png` | `/admin/nra` gate, mobile | Passcode gate |
-| `07-admin-authed-mobile.png` | `/admin/nra` authenticated | Graceful "storage not connected" state (captured before the Supabase service key was wired — see below) |
+| `07-admin-authed-mobile.png` | `/admin/nra` authenticated, mobile | Populated lead list — fit badges, enrichment, fit reason, note editors, filters, CSV export |
 | `08-nra-3g-throttled.png` | `/nra` on Fast-3G | Renders + interactive under throttling |
 | `09-nra-desktop.png` | `/nra` signup, desktop | Filled state with enrichment + selected chips |
 | `10-admin-gate-desktop.png` | `/admin/nra` gate, desktop | |
+| `11-admin-authed-desktop.png` | `/admin/nra` authenticated, desktop | Populated lead list, desktop layout |
 
 ## Checks performed
 
@@ -36,11 +37,18 @@ mobile (iPhone 13, 390×844) and desktop (1366×900) viewports.
 - **Auth** — `/admin/nra` passcode gate authenticates and sets an httpOnly
   cookie; fails closed if no passcode is configured.
 
-## Pending final verification (needs the live Supabase service key)
+## End-to-end verification (against the live prod Supabase)
 
-`07-admin-authed-mobile.png` shows the graceful no-storage state. Once the
-`nra_leads` migration is run and `NRA_SUPABASE_SERVICE_ROLE_KEY` is wired, the
-following are verified on the production deploy and this folder updated:
+After the `nra_leads` migration was run and the scoped env vars were wired,
+two real test submissions were run through the full pipeline and confirmed:
 
-- Real end-to-end submit → row in `nra_leads` + Resend thank-you + owner email.
-- `/admin/nra` populated lead list with fit score, enrichment, notes, CSV export.
+- **Storage** — both rows landed in `public.nra_leads` with the correct
+  fields, `?src=` attribution (booth vs booklet), enrichment JSON, and
+  computed fit score + reason.
+- **Enrichment** — resolved live ("Small plates · Chicago · Illinois",
+  "American · Chicago · Illinois") from OpenStreetMap.
+- **Resend thank-you** — fired on submit (`emailed: true`); sender corrected
+  to the verified `balabite.ai` domain.
+- **Owner notification** — sent to `ADMIN_EMAIL`.
+- **Notes** — edited from `/admin/nra` and confirmed persisted to the row.
+- **Cleanup** — both test rows deleted; the production table starts empty.

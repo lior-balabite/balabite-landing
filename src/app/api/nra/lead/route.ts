@@ -22,7 +22,9 @@ export const dynamic = 'force-dynamic';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
-const FROM_EMAIL = process.env.NRA_FROM_EMAIL || 'BalaBite <hello@waitlist.balabite.ai>';
+// `balabite.ai` is the verified sender domain on the Resend account
+// (the older `waitlist.balabite.ai` subdomain is not verified).
+const FROM_EMAIL = process.env.NRA_FROM_EMAIL || 'BalaBite <hello@balabite.ai>';
 const OWNER_EMAIL = process.env.ADMIN_EMAIL || 'lior@balabite.ai';
 
 const enrichmentSchema = z
