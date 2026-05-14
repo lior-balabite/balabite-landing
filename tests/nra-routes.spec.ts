@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
-// Coverage for the NRA booth surfaces: /booth-tv (kiosk loop),
-// /demo (guided walkthrough), and the /NRA-booklet redirect.
+// Coverage for this tab's NRA booth surfaces: /booth-tv (kiosk loop) and
+// /demo (guided walkthrough). /NRA-booklet is owned by tab/nra-lead-capture.
 
 const FORBIDDEN = [
   /claude/i,
@@ -100,14 +100,5 @@ test.describe('/demo — guided walkthrough', () => {
       const next = page.getByTestId('demo-next');
       if (await next.count()) await next.click();
     }
-  });
-});
-
-test.describe('/NRA-booklet redirect', () => {
-  test('resolves to the booth page tagged as booklet traffic', async ({
-    page,
-  }) => {
-    await page.goto('/NRA-booklet');
-    await expect(page).toHaveURL(/\/booth-8332\?src=booklet$/);
   });
 });

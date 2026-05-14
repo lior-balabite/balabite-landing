@@ -39,8 +39,9 @@ live route.
     in Vercel to point the close CTA at the exact Cal.com slot you want.**
 
 ### `/NRA-booklet` — the printed-booklet QR target
-- `balabite.ai/NRA-booklet` → redirects to `/booth-8332?src=booklet` (so booklet
-  scans are attributable).
+- Owned by `tab/nra-lead-capture` (merged separately). The booklet QR lands on the
+  lead-capture signup flow, attributed `?src=booklet`. This tab no longer ships a
+  redirect for it — see that tab's `docs/lead-capture-proof/`.
 
 ## Re-capturing the proof / re-recording the loop
 
