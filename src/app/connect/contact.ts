@@ -20,4 +20,6 @@ export const CONTACT = {
   linkedin: 'https://www.linkedin.com/in/lior-brik',
   linkedinLabel: 'linkedin.com/in/lior-brik',
   tagline: 'Building the AI Cofounder for restaurants',
+  // Where the "want time off the floor?" line in the instant email points.
+  booth: 'https://balabite.ai/booth-8332',
 } as const;

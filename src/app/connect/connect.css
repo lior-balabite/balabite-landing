@@ -12,31 +12,30 @@
   }
 }
 
-@keyframes connect-glow {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: translate(-50%, 0) scale(1);
+@keyframes connect-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
   }
-  50% {
-    opacity: 0.75;
-    transform: translate(-50%, 0) scale(1.06);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Entrance — children stagger via inline animation-delay */
+/* Entrance — the card rises in as one calm move */
 .connect-rise {
   animation: connect-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Ambient amber halo behind the card */
-.connect-glow {
-  animation: connect-glow 7s ease-in-out infinite;
+/* Beat 2 — the exchange panel easing open after the vCard tap */
+.connect-reveal {
+  animation: connect-reveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .connect-rise,
-  .connect-glow {
+  .connect-reveal {
     animation: none;
   }
 }

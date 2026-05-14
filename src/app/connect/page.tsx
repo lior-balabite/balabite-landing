@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import BalaBiteLogo from '../components/BalaBiteLogo';
+import Link from 'next/link';
 import { CONTACT } from './contact';
+import ConnectExchange from './ConnectExchange';
 import './connect.css';
 
 export const metadata: Metadata = {
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
     title: `${CONTACT.fullName} — ${CONTACT.title}, ${CONTACT.org}`,
     description: `${CONTACT.tagline}.`,
     type: 'profile',
-    siteName: 'BalaBite.ai',
+    siteName: 'BalaBite',
   },
   twitter: {
     card: 'summary',
@@ -19,26 +20,30 @@ export const metadata: Metadata = {
   },
 };
 
-/* Inline, stroke-based icons — consistent with the hand-drawn brand mark. */
-function ContactIcon({ className = '' }: { className?: string }) {
+const SERIF = 'var(--font-instrument-serif), Georgia, serif';
+
+/* Prospero Alpini 1592 date-palm woodcut — CSS-masked so it colours with
+   the rest of the brand. Same lockup as the navbar and /booth-8332. */
+function PalmMark({ className = '' }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
+    <span
       aria-hidden="true"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M19 8v6M22 11h-6" />
-    </svg>
+      className={`nra-palm-sway inline-block bg-cream-100 ${className}`}
+      style={{
+        WebkitMaskImage: 'url(/palm-1592.svg)',
+        maskImage: 'url(/palm-1592.svg)',
+        WebkitMaskRepeat: 'no-repeat',
+        maskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'center',
+        maskPosition: 'center',
+        WebkitMaskSize: 'contain',
+        maskSize: 'contain',
+      }}
+    />
   );
 }
 
+/* Inline, stroke-based icons — quiet, editorial, gold on hover. */
 function GlobeIcon({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -85,82 +90,101 @@ function MailIcon({ className = '' }: { className?: string }) {
 
 export default function ConnectPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-primary-950 via-primary-900 to-primary-950 px-5 py-12">
-      {/* Ambient amber halo */}
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary-950 px-5 py-12 text-cream-100">
+      {/* Gold light from the top — same wash as /booth-8332 */}
       <div
         aria-hidden="true"
-        className="connect-glow pointer-events-none absolute left-1/2 top-[-14%] h-[34rem] w-[34rem] rounded-full bg-accent-500/20 blur-[120px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[-10%] left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-accent-400/10 blur-[110px]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.10),transparent_55%)]"
       />
 
       <article className="connect-rise relative w-full max-w-sm">
-        <div className="rounded-[1.75rem] border border-accent-500/15 bg-gradient-to-b from-primary-800/80 to-primary-900/90 p-8 shadow-2xl shadow-black/40 backdrop-blur-xl">
-          {/* Brand mark */}
-          <div className="flex justify-center">
-            <div className="rounded-full bg-primary-900/60 p-1 ring-1 ring-accent-500/20">
-              <BalaBiteLogo size="lg" showText={false} />
-            </div>
-          </div>
+        {/* Brand lockup */}
+        <Link
+          href="/"
+          aria-label="BalaBite home"
+          className="mx-auto mb-7 flex w-fit items-end gap-2.5 leading-none"
+        >
+          <PalmMark className="h-9 w-[24px]" />
+          <span
+            className="text-[1.85rem] italic leading-none tracking-tight text-cream-100"
+            style={{ fontFamily: SERIF }}
+          >
+            balabite
+          </span>
+        </Link>
 
+        {/* The card */}
+        <div className="rounded-[1.5rem] border border-primary-700/40 bg-gradient-to-br from-primary-900/50 to-primary-950/70 p-8 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.7)] backdrop-blur-sm">
           {/* Identity */}
-          <header className="mt-6 text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-white">
+          <header className="text-center">
+            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-accent-300/80">
+              {CONTACT.title} &middot; {CONTACT.org}
+            </p>
+            <h1
+              className="mt-3 text-[2.75rem] font-medium leading-[1.05] tracking-tight text-cream-50"
+              style={{ fontFamily: SERIF }}
+            >
               {CONTACT.fullName}
             </h1>
-            <p className="mt-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent-300">
-              {CONTACT.title} &mdash; {CONTACT.org}
-            </p>
-            <p className="mx-auto mt-4 max-w-[18rem] text-[0.95rem] leading-relaxed text-cream-200/85">
+            {/* Gold hairline — magazine rule */}
+            <span
+              aria-hidden="true"
+              className="mx-auto mt-5 block h-px w-12 bg-gradient-to-r from-transparent via-accent-400/70 to-transparent"
+            />
+            <p
+              className="mx-auto mt-5 max-w-[19rem] text-[1.2rem] italic leading-snug text-cream-100/90"
+              style={{ fontFamily: SERIF }}
+            >
               {CONTACT.tagline}
             </p>
           </header>
 
-          {/* Primary action — one-tap vCard */}
-          <a
-            href="/connect/vcard"
-            className="group mt-7 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-accent-500 px-6 py-4 text-base font-semibold text-primary-950 shadow-lg shadow-accent-500/25 transition-all hover:bg-accent-400 hover:shadow-accent-400/40 active:scale-[0.99]"
-          >
-            <ContactIcon className="h-5 w-5" />
-            Add to Contacts
-          </a>
-          <p className="mt-2.5 text-center text-xs text-primary-300">
-            One tap &mdash; saves straight to your phone.
-          </p>
+          {/* Primary action — one-tap vCard, then the optional exchange */}
+          <ConnectExchange />
 
           {/* Secondary links */}
-          <nav className="mt-6 grid grid-cols-3 gap-2.5" aria-label="Find Lior elsewhere">
+          <nav
+            className="mt-7 grid grid-cols-3 gap-2.5"
+            aria-label="Find Lior elsewhere"
+          >
             <a
               href={CONTACT.site}
-              className="flex flex-col items-center gap-1.5 rounded-xl border border-primary-700/60 bg-primary-800/40 px-2 py-3 text-primary-200 transition-colors hover:border-accent-500/40 hover:text-accent-300"
+              className="group flex flex-col items-center gap-2 rounded-xl border border-primary-700/40 bg-primary-900/40 px-2 py-3.5 text-cream-200/80 transition-colors hover:border-accent-500/45 hover:bg-primary-900/70 hover:text-accent-300"
             >
-              <GlobeIcon className="h-5 w-5" />
-              <span className="text-[0.7rem] font-medium">Website</span>
+              <GlobeIcon className="h-[18px] w-[18px]" />
+              <span className="font-mono text-[9px] uppercase tracking-[0.18em]">
+                Website
+              </span>
             </a>
             <a
               href={CONTACT.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center gap-1.5 rounded-xl border border-primary-700/60 bg-primary-800/40 px-2 py-3 text-primary-200 transition-colors hover:border-accent-500/40 hover:text-accent-300"
+              className="group flex flex-col items-center gap-2 rounded-xl border border-primary-700/40 bg-primary-900/40 px-2 py-3.5 text-cream-200/80 transition-colors hover:border-accent-500/45 hover:bg-primary-900/70 hover:text-accent-300"
             >
-              <LinkedInIcon className="h-5 w-5" />
-              <span className="text-[0.7rem] font-medium">LinkedIn</span>
+              <LinkedInIcon className="h-[18px] w-[18px]" />
+              <span className="font-mono text-[9px] uppercase tracking-[0.18em]">
+                LinkedIn
+              </span>
             </a>
             <a
               href={`mailto:${CONTACT.email}`}
-              className="flex flex-col items-center gap-1.5 rounded-xl border border-primary-700/60 bg-primary-800/40 px-2 py-3 text-primary-200 transition-colors hover:border-accent-500/40 hover:text-accent-300"
+              className="group flex flex-col items-center gap-2 rounded-xl border border-primary-700/40 bg-primary-900/40 px-2 py-3.5 text-cream-200/80 transition-colors hover:border-accent-500/45 hover:bg-primary-900/70 hover:text-accent-300"
             >
-              <MailIcon className="h-5 w-5" />
-              <span className="text-[0.7rem] font-medium">Email</span>
+              <MailIcon className="h-[18px] w-[18px]" />
+              <span className="font-mono text-[9px] uppercase tracking-[0.18em]">
+                Email
+              </span>
             </a>
           </nav>
         </div>
 
-        {/* Footer wordmark */}
-        <p className="mt-6 text-center text-xs tracking-wide text-primary-500">
-          {CONTACT.siteLabel}
+        {/* Footer — the brand promise carries the sign-off */}
+        <p
+          className="mt-6 text-center text-sm italic text-cream-200/55"
+          style={{ fontFamily: SERIF }}
+        >
+          You run the place. We do the rest.
         </p>
       </article>
     </main>
