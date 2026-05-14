@@ -245,26 +245,20 @@ export default function NraSignup({ source }: { source: LeadSource }) {
         </h1>
 
         <p className="nra-confirm-body">
-          You run the place — that part’s yours. The idea behind BalaBite is
-          simple: <strong>a Cofounder who quietly does the rest</strong>. By the
-          time we talk, it’ll know your neighborhood and the shape of your
-          business, so the conversation starts where it matters — your numbers,
-          your headaches, your next move.
+          You run the place — that part’s yours.{' '}
+          <strong>BalaBite is the Cofounder that takes the rest.</strong> It’s
+          already reading up on {confirmName}, so by the time we talk, we can
+          skip the small talk and get straight to what’s costing you.
         </p>
 
         <div className="nra-confirm-card">
           <div className="nra-confirm-card-label">What happens next</div>
           <p className="nra-confirm-step">
-            Lior reaches out within the week to set up a real conversation — no
-            pitch theater, just an honest look at where a Cofounder earns its
-            keep at {confirmName}. Check your inbox; there’s a note waiting.
+            Lior reaches out within the week. No pitch theater — just a straight
+            conversation about where a Cofounder would pull its weight at{' '}
+            {confirmName}. There’s a note from him in your inbox already.
           </p>
         </div>
-
-        <p className="nra-confirm-body" style={{ marginBottom: 22 }}>
-          The deal is built to be fair: BalaBite earns when you do — 1% of
-          sales, a $299/mo floor. No lock-in, no per-seat games.
-        </p>
 
         <p className="nra-confirm-signoff">
           — Lior
@@ -486,8 +480,8 @@ export default function NraSignup({ source }: { source: LeadSource }) {
       )}
 
       <p className="nra-trust">
-        <strong>The deal is built to be fair</strong> — BalaBite earns when you
-        do: 1% of sales, $299/mo floor. No lock-in.
+        No clipboard, no spam — just a real conversation about your restaurant.
+        Lior reads every one of these himself.
       </p>
     </form>
   );

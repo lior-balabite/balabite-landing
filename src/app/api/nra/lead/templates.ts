@@ -72,7 +72,7 @@ export function getProspectThankYouEmail(input: ProspectEmailInput): {
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:${CREAM};">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${metAt} Your Cofounder is already reading up on ${restaurant}.</div>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your Cofounder is already reading up on ${restaurant}.</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CREAM};">
     <tr><td align="center" style="padding:40px 20px;">
       <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background:${CREAM_CARD};border:1px solid ${HAIRLINE};border-radius:16px;overflow:hidden;">
@@ -86,24 +86,17 @@ export function getProspectThankYouEmail(input: ProspectEmailInput): {
         </td></tr>
         <tr><td style="padding:20px 36px 0 36px;">
           <p style="margin:0 0 14px 0;font:400 16px/1.62 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK_60};">
-            ${name} — ${metAt} You run the place; the idea is simple — a Cofounder who does the rest.
+            ${name} — ${metAt} The short version of what we do: you run the restaurant, and BalaBite is the Cofounder that handles everything around it.
           </p>
           <p style="margin:0 0 14px 0;font:400 16px/1.62 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK_60};">
-            By the time we talk, it'll already know your neighborhood and the shape of your business — so the conversation starts where it matters: your numbers, your headaches, your next move.
+            It's already reading up on ${restaurant}. By the time we actually talk, it'll know your neighborhood, your competition, the rhythm of your week — so we can skip the small talk and get straight to what's costing you.
           </p>
         </td></tr>
         <tr><td style="padding:8px 36px 0 36px;">
           <div style="border-top:1px solid ${HAIRLINE};padding-top:20px;">
             <div style="font:600 12px/1 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:${INK_40};margin-bottom:12px;">What happens next</div>
             <p style="margin:0 0 10px 0;font:400 15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK_60};">
-              Lior will reach out within the week to set up a real conversation — no pitch theater, just an honest look at where a Cofounder would earn its keep at ${restaurant}.
-            </p>
-          </div>
-        </td></tr>
-        <tr><td style="padding:20px 36px 0 36px;">
-          <div style="background:${CREAM};border:1px solid ${HAIRLINE};border-radius:12px;padding:16px 18px;">
-            <p style="margin:0;font:400 14px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK_60};">
-              <strong style="color:${INK};">The deal is built to be fair.</strong> BalaBite earns when you do — 1% of sales, with a $299/mo floor. No lock-in, no per-seat games.
+              Lior will reach out within the week. No pitch theater — just a straight conversation about where a Cofounder would pull its weight at ${restaurant}.
             </p>
           </div>
         </td></tr>
@@ -127,11 +120,9 @@ export function getProspectThankYouEmail(input: ProspectEmailInput): {
     ``,
     `Your Cofounder is already reading up on ${input.restaurantName.trim()}.`,
     ``,
-    `You run the place; the idea is simple — a Cofounder who does the rest. By the time we talk, it'll already know your neighborhood and the shape of your business, so the conversation starts where it matters: your numbers, your headaches, your next move.`,
+    `The short version of what we do: you run the restaurant, and BalaBite is the Cofounder that handles everything around it. It's already reading up on ${input.restaurantName.trim()} — by the time we actually talk, it'll know your neighborhood, your competition, the rhythm of your week, so we can skip the small talk and get straight to what's costing you.`,
     ``,
-    `What happens next: Lior will reach out within the week to set up a real conversation — no pitch theater, just an honest look at where a Cofounder would earn its keep at ${input.restaurantName.trim()}.`,
-    ``,
-    `The deal is built to be fair. BalaBite earns when you do — 1% of sales, with a $299/mo floor. No lock-in, no per-seat games.`,
+    `What happens next: Lior will reach out within the week. No pitch theater — just a straight conversation about where a Cofounder would pull its weight at ${input.restaurantName.trim()}.`,
     ``,
     `— Lior`,
     `Founder, BalaBite`,

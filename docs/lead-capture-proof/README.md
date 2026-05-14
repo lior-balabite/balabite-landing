@@ -22,6 +22,7 @@ mobile (iPhone 13, 390×844) and desktop (1366×900) viewports.
 | `12-prod-nra-mobile.png` | **LIVE** `www.balabite.ai/nra` | Production deploy — banner correctly hidden, no page errors |
 | `13-prod-nra-booklet-mobile.png` | **LIVE** `www.balabite.ai/NRA-booklet` | Production deploy |
 | `14-prod-admin-authed.png` | **LIVE** `www.balabite.ai/admin/nra` | Production deploy — passcode gate authenticates |
+| `15-email-thankyou.png` | Resend thank-you email | Rendered template — Cofounder voice, no pricing, no feature-anchoring |
 
 ## Checks performed
 
