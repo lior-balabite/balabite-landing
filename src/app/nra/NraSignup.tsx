@@ -43,11 +43,12 @@ function composeReflection(e: NraEnrichment, bucket?: LocationBucket): string {
   const cuisine = e.cuisine?.trim();
 
   // No cuisine signal — just acknowledge the place so it still feels seen.
+  // (No leading dash here: the caller prefixes "Got it — ".)
   if (!cuisine) {
     if (place) {
       return bucket === '2-5' || bucket === '6-20'
-        ? `found you — ${place} and around, right?`
-        : `found you — ${place}, right?`;
+        ? `found you in ${place} and around, right?`
+        : `found you in ${place}, right?`;
     }
     return 'found it.';
   }
