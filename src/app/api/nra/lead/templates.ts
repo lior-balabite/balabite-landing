@@ -165,8 +165,17 @@ export function getOwnerNotificationEmail(input: OwnerEmailInput): {
 
   if (input.enrichment) {
     const e = input.enrichment;
-    const parts = [e.cuisine, e.locality, e.region].filter(Boolean).join(' · ');
-    rows.push(['Enrichment', parts || e.displayName || '—']);
+    const parts = [e.cuisine, e.locality, e.region].filter(Boolean);
+    if (typeof e.rating === 'number') {
+      parts.push(
+        `${e.rating.toFixed(1)}★${e.reviewCount ? ` (${e.reviewCount.toLocaleString()})` : ''}`
+      );
+    }
+    if (e.priceLevel) parts.push(e.priceLevel);
+    rows.push(['Enrichment', parts.join(' · ') || e.displayName || '—']);
+    if (e.editorialSummary) rows.push(['Known for', e.editorialSummary]);
+    if (e.traits && e.traits.length) rows.push(['Traits', e.traits.join(', ')]);
+    if (e.website) rows.push(['Website', e.website]);
   }
 
   const failBanner = input.stored
