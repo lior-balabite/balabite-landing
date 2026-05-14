@@ -1,0 +1,488 @@
+/* ===========================================================
+   NRA Show 2026 — owner-facing lead list (/admin/nra)
+   Scoped under .nra-admin-root. Built to work on Lior's phone at
+   the booth and his laptop in the evening — responsive, dense,
+   fast to scan. Same cream/ink palette as the signup surface.
+   =========================================================== */
+
+.nra-admin-root {
+  --a-cream: #faf7f0;
+  --a-card: #fffdf7;
+  --a-ink: #0a0a0a;
+  --a-ink-80: rgba(10, 10, 10, 0.82);
+  --a-ink-60: rgba(10, 10, 10, 0.6);
+  --a-ink-45: rgba(10, 10, 10, 0.45);
+  --a-ink-30: rgba(10, 10, 10, 0.3);
+  --a-hairline: rgba(10, 10, 10, 0.12);
+  --a-hairline-soft: rgba(10, 10, 10, 0.07);
+  --a-amber: #b45309;
+  --a-forest: #0a3a2a;
+  --a-strong-bg: rgba(10, 58, 42, 0.1);
+  --a-strong-fg: #0a3a2a;
+  --a-medium-bg: rgba(180, 83, 9, 0.12);
+  --a-medium-fg: #92400e;
+  --a-weak-bg: rgba(10, 10, 10, 0.06);
+  --a-weak-fg: rgba(10, 10, 10, 0.5);
+  --a-error: #9a2a1c;
+
+  min-height: 100svh;
+  background: var(--a-cream);
+  color: var(--a-ink);
+  font-family: var(--font-nra-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nra-admin-root *,
+.nra-admin-root *::before,
+.nra-admin-root *::after {
+  box-sizing: border-box;
+}
+
+.nra-admin-root .nra-serif {
+  font-family: var(--font-nra-serif), Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+.nra-admin-shell {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px 18px 64px;
+}
+
+/* --- Header ------------------------------------------------ */
+.nra-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.nra-admin-title {
+  font-size: 30px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.nra-admin-subtitle {
+  font-size: 13px;
+  color: var(--a-ink-45);
+  margin: 4px 0 0;
+}
+
+.nra-admin-signout {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--a-ink-45);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.nra-admin-signout:hover {
+  color: var(--a-ink);
+}
+
+/* --- Toolbar ----------------------------------------------- */
+.nra-admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 22px;
+}
+
+.nra-admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  flex: 1;
+}
+
+.nra-admin-filter {
+  min-height: 38px;
+  padding: 0 13px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--a-ink-60);
+  background: var(--a-card);
+  border: 1px solid var(--a-hairline);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.nra-admin-filter:hover {
+  border-color: rgba(10, 10, 10, 0.26);
+}
+
+.nra-admin-filter[aria-pressed='true'] {
+  background: var(--a-ink);
+  border-color: var(--a-ink);
+  color: #fff;
+}
+
+.nra-admin-export {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: var(--a-ink);
+  border: 1px solid var(--a-ink);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: opacity 0.14s ease;
+}
+
+.nra-admin-export:hover {
+  opacity: 0.86;
+}
+
+.nra-admin-export:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* --- Notices ----------------------------------------------- */
+.nra-admin-notice {
+  background: var(--a-card);
+  border: 1px solid var(--a-hairline);
+  border-radius: 12px;
+  padding: 28px 22px;
+  text-align: center;
+  color: var(--a-ink-60);
+  font-size: 14.5px;
+}
+
+.nra-admin-notice.is-warning {
+  background: rgba(180, 83, 9, 0.06);
+  border-color: rgba(180, 83, 9, 0.28);
+  color: var(--a-medium-fg);
+  text-align: left;
+}
+
+.nra-admin-notice strong {
+  color: var(--a-ink);
+  font-weight: 600;
+}
+
+/* --- Lead list --------------------------------------------- */
+.nra-lead-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nra-lead-card {
+  background: var(--a-card);
+  border: 1px solid var(--a-hairline);
+  border-radius: 13px;
+  padding: 16px 17px;
+}
+
+.nra-lead-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nra-lead-restaurant {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.nra-lead-person {
+  font-size: 13.5px;
+  color: var(--a-ink-60);
+  margin: 2px 0 0;
+}
+
+.nra-fit-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 7px;
+}
+
+.nra-fit-badge.is-strong {
+  background: var(--a-strong-bg);
+  color: var(--a-strong-fg);
+}
+
+.nra-fit-badge.is-medium {
+  background: var(--a-medium-bg);
+  color: var(--a-medium-fg);
+}
+
+.nra-fit-badge.is-weak {
+  background: var(--a-weak-bg);
+  color: var(--a-weak-fg);
+}
+
+.nra-lead-divider {
+  height: 1px;
+  background: var(--a-hairline-soft);
+  margin: 13px 0;
+}
+
+.nra-lead-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px 18px;
+}
+
+@media (min-width: 480px) {
+  .nra-lead-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.nra-lead-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13.5px;
+  min-width: 0;
+}
+
+.nra-lead-row dt {
+  flex-shrink: 0;
+  width: 62px;
+  color: var(--a-ink-45);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+
+.nra-lead-row dd {
+  margin: 0;
+  color: var(--a-ink-80);
+  word-break: break-word;
+  min-width: 0;
+}
+
+.nra-lead-row dd a {
+  color: var(--a-ink-80);
+  text-decoration: none;
+  border-bottom: 1px solid var(--a-hairline);
+}
+
+.nra-lead-row dd a:hover {
+  color: var(--a-ink);
+  border-color: var(--a-ink-45);
+}
+
+.nra-source-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--a-weak-bg);
+  color: var(--a-ink-60);
+}
+
+.nra-lead-enrich {
+  margin-top: 11px;
+  font-size: 12.5px;
+  color: var(--a-forest);
+  background: rgba(10, 58, 42, 0.06);
+  border: 1px solid rgba(10, 58, 42, 0.16);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+.nra-lead-enrich-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 10px;
+  opacity: 0.8;
+  margin-right: 6px;
+}
+
+.nra-lead-fitreason {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--a-ink-45);
+  font-style: italic;
+}
+
+/* --- Note editor ------------------------------------------- */
+.nra-lead-note {
+  margin-top: 13px;
+}
+
+.nra-lead-note-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--a-ink-45);
+  margin-bottom: 6px;
+}
+
+.nra-lead-note-saved {
+  color: var(--a-strong-fg);
+  font-weight: 600;
+}
+
+.nra-lead-note-failed {
+  color: var(--a-error);
+  font-weight: 600;
+}
+
+.nra-lead-note textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 11px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.45;
+  color: var(--a-ink);
+  background: var(--a-cream);
+  border: 1px solid var(--a-hairline);
+  border-radius: 9px;
+  resize: vertical;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.nra-lead-note textarea:focus {
+  outline: none;
+  border-color: var(--a-amber);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+  background: #fff;
+}
+
+.nra-lead-note-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 7px;
+}
+
+.nra-lead-note-save {
+  min-height: 36px;
+  padding: 0 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: var(--a-ink);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.14s ease;
+}
+
+.nra-lead-note-save:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* --- Gate -------------------------------------------------- */
+.nra-gate {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 22px;
+}
+
+.nra-gate-inner {
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+
+.nra-gate-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--a-amber);
+  margin-bottom: 18px;
+}
+
+.nra-gate-title {
+  font-size: 34px;
+  line-height: 1.1;
+  margin: 0 0 12px;
+}
+
+.nra-gate-sub {
+  font-size: 14px;
+  color: var(--a-ink-45);
+  margin: 0 0 28px;
+}
+
+.nra-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nra-gate-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--a-ink);
+  background: var(--a-card);
+  border: 1px solid var(--a-hairline);
+  border-radius: 12px;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.nra-gate-input:focus {
+  outline: none;
+  border-color: var(--a-amber);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.13);
+  background: #fff;
+}
+
+.nra-gate-button {
+  width: 100%;
+  height: 52px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: var(--a-ink);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.nra-gate-error {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--a-error);
+}

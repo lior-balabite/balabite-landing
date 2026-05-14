@@ -1,0 +1,72 @@
+/** Shared types for the NRA Show 2026 lead-capture system. */
+
+/** # of locations buckets — must match the SQL CHECK-free `location_count` text values. */
+export const LOCATION_BUCKETS = ['1', '2-5', '6-20', '20+'] as const;
+export type LocationBucket = (typeof LOCATION_BUCKETS)[number];
+
+/** Lead origin — drives the `?src=` attribution. */
+export type LeadSource = 'booth' | 'booklet';
+
+/** Public-source restaurant enrichment. Every field optional — enrichment degrades gracefully. */
+export interface NraEnrichment {
+  /** Cuisine / kind of place, human-readable, e.g. "Italian", "Coffee shop". */
+  cuisine?: string;
+  /** OSM category: restaurant | cafe | fast_food | bar | pub | ... */
+  category?: string;
+  /** City / town. */
+  locality?: string;
+  /** State / region. */
+  region?: string;
+  country?: string;
+  /** Full formatted name returned by the source. */
+  displayName?: string;
+  lat?: number;
+  lon?: number;
+  /** How many candidate matches the source returned (confidence proxy). */
+  matchCount?: number;
+  source: 'openstreetmap';
+}
+
+/** Fields the prospect submits from the one-screen signup form. */
+export interface NraLeadInput {
+  fullName: string;
+  restaurantName: string;
+  role: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  locationCount?: LocationBucket;
+  source: LeadSource;
+  /** Enrichment the client already resolved (so we don't re-fetch on submit). */
+  enrichment?: NraEnrichment | null;
+}
+
+/** Light AI fit signal — is this an independent owner/operator (our ICP)? */
+export interface NraFitScore {
+  /** 0-100. */
+  score: number;
+  signal: 'strong' | 'medium' | 'weak';
+  /** Short human-readable rationale for the owner list. */
+  reason: string;
+}
+
+/** A row of `public.nra_leads` as read back for the owner list view. */
+export interface NraLeadRow {
+  id: string;
+  created_at: string;
+  full_name: string;
+  restaurant_name: string;
+  role: string | null;
+  email: string;
+  phone: string | null;
+  city: string | null;
+  location_count: string | null;
+  enrichment: NraEnrichment | null;
+  enriched_at: string | null;
+  fit_score: number | null;
+  fit_signal: 'strong' | 'medium' | 'weak' | null;
+  fit_reason: string | null;
+  note: string | null;
+  source: string;
+  user_agent: string | null;
+}

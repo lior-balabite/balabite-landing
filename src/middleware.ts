@@ -9,6 +9,18 @@ export function middleware(request: NextRequest) {
   const hostname = (request.headers.get('host') || '').toLowerCase();
   const url = request.nextUrl.clone();
 
+  // Case-insensitive alias for the NRA booklet QR. The printed booklet's QR is
+  // locked to /NRA-booklet (PM-verified against book-final.pdf p.12); this
+  // guards against any case mismatch in the QR — /nra-booklet, /NRA-BOOKLET,
+  // etc. all redirect to the canonical /NRA-booklet so it can never 404.
+  if (
+    url.pathname.toLowerCase() === '/nra-booklet' &&
+    url.pathname !== '/NRA-booklet'
+  ) {
+    url.pathname = '/NRA-booklet';
+    return NextResponse.redirect(url);
+  }
+
   const isPitchSubdomain =
     hostname === 'pitch.balabite.ai' ||
     hostname === 'pitch.balabite.ai:443' ||
