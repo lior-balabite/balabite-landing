@@ -5,6 +5,15 @@
    Mobile-first — every prospect lands here on a phone at a noisy show.
    =========================================================== */
 
+/* The site-wide NRA marquee banner is hidden on the signup surfaces — the
+   prospect is already at the booth, and its RSVP link would pull them out
+   of the flow. NRABannerClient also route-hides it; this kills any
+   first-paint flash before hydration. (This rule loads only on /nra and
+   /NRA-booklet — nra.css is route-scoped.) */
+[data-testid='nra-banner'] {
+  display: none !important;
+}
+
 .nra-root {
   --nra-cream: #faf7f0;
   --nra-cream-warm: #f4eede;

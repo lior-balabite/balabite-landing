@@ -5,6 +5,11 @@
    fast to scan. Same cream/ink palette as the signup surface.
    =========================================================== */
 
+/* Hide the site-wide NRA marquee banner on this internal tool. */
+[data-testid='nra-banner'] {
+  display: none !important;
+}
+
 .nra-admin-root {
   --a-cream: #faf7f0;
   --a-card: #fffdf7;
