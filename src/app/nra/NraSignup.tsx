@@ -52,11 +52,12 @@ function composeReflection(e: NraEnrichment, bucket?: LocationBucket): string {
     return 'found it.';
   }
 
-  // Some enrichment values are place-nouns ("Coffee shop"); others are
-  // cuisine adjectives ("Italian"). Phrase each naturally.
-  const isPlaceNoun = /(shop|bar|pub|bakery|deli|court|stand|house|hall|room)$/i.test(
-    cuisine
-  );
+  // Some enrichment values are place-nouns ("Coffee shop", "Diner"); others
+  // are cuisine adjectives ("Italian"). Phrase each naturally.
+  const isPlaceNoun =
+    /(shop|bar|pub|bakery|deli|court|stand|house|hall|room|diner|steakhouse|brewery|winery|bistro|tavern|cafeteria|parlor|parlour|lounge|joint)$/i.test(
+      cuisine
+    );
   const noun = isPlaceNoun ? cuisine.toLowerCase() : `${cuisine} spot`;
   const plural = isPlaceNoun ? `${cuisine.toLowerCase()}s` : `${cuisine} spots`;
   const article = /^[aeiou]/i.test(noun) ? 'an' : 'a';
