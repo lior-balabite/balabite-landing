@@ -21,7 +21,7 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.balabite.ai'),
-  title: 'BalaBite — Your AI Cofounder for restaurants',
+  title: 'BalaBite — The AI Cofounder for independent restaurants',
   description:
     'You run the restaurant. We do the rest. The AI Cofounder for independent restaurants — live at NRA Show 2026, Booth 8332, May 16–19, Chicago.',
   icons: {

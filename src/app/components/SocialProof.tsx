@@ -43,31 +43,64 @@ const metrics = [
 const integrations = ['Square', 'Toast', 'Clover', 'Stripe'];
 
 const faqs = [
+  // SEO-targeted entries (answer search-intent queries directly)
+  {
+    q: 'What is an AI Cofounder for restaurants?',
+    a: 'A partner that thinks alongside you — and acts on its own. You can talk to it like you would text a cofounder, but it is not waiting to be asked. It watches the business, makes the call, and runs the rest while you run the place.',
+  },
+  {
+    q: 'How can independent restaurants use AI?',
+    a: 'Not for answers on demand — for judgment. A real AI Cofounder watches the business, thinks through what it sees, and shows up every morning with decisions made and the rest already handled.',
+  },
+  {
+    q: 'What AI solutions work best for small or single-location restaurants?',
+    a: 'The kind built by someone who has actually run the floor — not studied it from a deck. BalaBite was built from inside a working kitchen. It thinks like an operator because it was made by one.',
+  },
+  {
+    q: 'How is BalaBite different from Toast IQ, Square AI, or other restaurant POS AI?',
+    a: 'Toast, Square, and the rest sell you a POS, payments, or loyalty — so their AI will never tell you to leave. BalaBite has nothing to defend. If switching your processor saves real money without dropping your standards, we are the only one who will say so.',
+  },
+
+  // Practical adoption FAQs (existing)
   {
     q: 'Does this work with my POS?',
-    a: 'BalaBite integrates with Square, Toast, and Clover. More integrations are coming — if yours isn\u2019t listed, let us know and we\u2019ll prioritize it.',
+    a: 'Square, Toast, and Clover today. Yours next if it is not on the list — tell us and we will prioritize it.',
   },
   {
     q: 'How long does setup take?',
-    a: '10 minutes to connect your POS. 24 hours for BalaBite to learn your restaurant. Your first briefing arrives the next morning.',
+    a: 'Ten minutes to connect your POS. Twenty-four hours to learn your restaurant. The first briefing lands the next sunrise.',
   },
   {
     q: 'Do I need to change how I work?',
-    a: 'No. BalaBite works alongside your existing tools and workflow. Nothing to replace, nothing to rip out.',
+    a: 'No. BalaBite slots in around the tools and workflow you already have. Nothing to rip out, nothing to migrate.',
   },
   {
     q: 'Is my data safe?',
-    a: 'Bank-level encryption. Your data stays yours. We never share, sell, or use your data for anything other than making YOUR restaurant smarter.',
+    a: 'Yours stays yours. We do not share it, sell it, or use it to train anything that could end up at the restaurant down the block.',
   },
   {
     q: 'What if I only have one location?',
-    a: 'BalaBite is built for single locations and multi-location groups alike. Most of our pilots are independent restaurants.',
+    a: 'Then you are exactly who this is for. The math does not pay for a real partner at one location — that is the gap BalaBite fills.',
   },
   {
-    q: 'Do my guests need to download an app?',
-    a: 'No. Guests scan a QR code and the AI Waiter opens right in their browser. No download, no friction.',
+    q: 'Do I need an app to use BalaBite?',
+    a: 'No. BalaBite lives where you already live — text it, message it on WhatsApp, open it on the web.',
   },
 ];
+
+// FAQ JSON-LD — lets Google + AI assistants extract these as rich results
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -174,6 +207,11 @@ export default function SocialProof() {
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6 }}
         >
+          {/* FAQ JSON-LD — Google + AI search rich-result eligibility */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          />
           <h3 className="text-2xl font-bold text-cream-900 text-center mb-8">
             Questions you&apos;d ask over a drink.
           </h3>
