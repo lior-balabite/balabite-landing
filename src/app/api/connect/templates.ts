@@ -116,16 +116,23 @@ export function notificationEmail(opts: {
           <td style="padding:2px 0 2px 16px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:${INK};">${when}</td></tr>
       ${locLine}
     </table>
+    <p style="margin:0 0 14px;font-family:${SERIF};font-size:18px;line-height:1.4;color:${INK};">
+      Just hit <strong>Reply</strong> &mdash; this email goes straight back to them.
+    </p>
     <a href="${replyHref}"
        style="display:inline-block;background:${GOLD};color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:600;text-decoration:none;padding:13px 28px;border-radius:999px;">
       Reply now &rarr;
     </a>
+    <p style="margin:10px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;line-height:1.5;color:${MUTED};">
+      (Button needs a mail app set as default &mdash; Reply always works.)
+    </p>
   `);
   const text = `Someone connected — ${email}
 
 Email: ${email}
 When:  ${when}${location ? `\nAround: ${location}` : ''}
 
-Reply: ${replyHref}`;
+Just hit Reply — this email goes straight back to them.
+(Or: ${replyHref})`;
   return { subject, html, text };
 }
