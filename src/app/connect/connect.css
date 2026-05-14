@@ -1,0 +1,42 @@
+/* Scoped styling for the /connect digital business card.
+   Kept deliberately small — fast, calm, confident. */
+
+@keyframes connect-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes connect-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate(-50%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translate(-50%, 0) scale(1.06);
+  }
+}
+
+/* Entrance — children stagger via inline animation-delay */
+.connect-rise {
+  animation: connect-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Ambient amber halo behind the card */
+.connect-glow {
+  animation: connect-glow 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connect-rise,
+  .connect-glow {
+    animation: none;
+  }
+}
