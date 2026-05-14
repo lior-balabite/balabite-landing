@@ -8,7 +8,7 @@ const steps = [
     time: '10 minutes',
     title: 'Connect your POS',
     body: 'Toast, Square, or Clover. No developer. No IT person. Just your login. BalaBite syncs your menu, transactions, and history.',
-    detail: 'Works with restaurants from 10 seats to 200 covers.',
+    detail: 'Works with independent restaurants from 10 seats to 200 covers.',
   },
   {
     label: 'Cook',
@@ -22,7 +22,7 @@ const steps = [
     time: 'Every morning',
     title: 'Open the app. Three taps. Done.',
     body: 'Your first briefing arrives. What happened, what to do, what to watch. Approve, dismiss, or dig deeper. Then go run your restaurant.',
-    detail: 'The partner is already working. You just showed up.',
+    detail: 'Your AI Cofounder is already working. You just showed up.',
   },
 ];
 

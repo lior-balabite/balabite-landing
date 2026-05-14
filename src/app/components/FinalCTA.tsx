@@ -147,7 +147,7 @@ const FinalCTA = forwardRef<HTMLDivElement>(function FinalCTA(_, ref) {
           variants={fadeUp}
           className="text-lg text-cream-600 max-w-[36rem] mx-auto"
         >
-          You&apos;ve seen what BalaBite does. The question is whether you want to keep carrying it alone.
+          You&apos;ve seen what your AI Cofounder does. The question is whether you want to keep carrying it alone.
         </motion.p>
       </div>
 
