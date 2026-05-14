@@ -6,7 +6,16 @@ import { usePathname } from 'next/navigation';
 const RSVP_URL = '/booth-8332';
 const DISMISS_KEY = 'nra-banner-dismissed';
 const BANNER_HEIGHT = '2.75rem';
-const HIDDEN_ROUTES = ['/pitch', '/booth-8332'];
+// `/nra`, `/NRA-booklet`, `/admin/nra` are the lead-capture surfaces
+// (tab/nra-lead-capture) — the prospect is already at the booth, and the
+// banner's RSVP link would pull them out of the signup flow.
+const HIDDEN_ROUTES = [
+  '/pitch',
+  '/booth-8332',
+  '/nra',
+  '/NRA-booklet',
+  '/admin/nra',
+];
 
 const TICKER_PHRASES = [
   'Coffee with the founder before doors open — limited',
