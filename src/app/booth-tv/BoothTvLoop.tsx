@@ -252,7 +252,7 @@ function RealScene() {
         <i>A cofounder gets built in.</i>
       </Rise>
       <Rise className="tv-sub" delay={2.8}>
-        The engineer who built it runs the kitchen. Live since February 2026.
+        The engineer who built it runs the restaurant. Live since February 2026.
       </Rise>
       <Rise delay={4.6}>
         <div className="tv-lockup">

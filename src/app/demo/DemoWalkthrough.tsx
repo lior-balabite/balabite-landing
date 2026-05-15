@@ -385,7 +385,7 @@ function BookCta() {
         className="demo-btn demo-btn-primary demo-btn-cta"
         data-testid="demo-book-cta"
       >
-        Book 20 minutes →
+        Book a time →
       </button>
     );
   }
@@ -396,7 +396,7 @@ function BookCta() {
       className="demo-btn demo-btn-primary demo-btn-cta"
       data-testid="demo-book-cta"
     >
-      Book 20 minutes →
+      Book a time →
     </a>
   );
 }
