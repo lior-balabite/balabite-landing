@@ -2,6 +2,12 @@ import { test, expect, type Page } from '@playwright/test';
 
 // Coverage for this tab's NRA booth surfaces: /booth-tv (kiosk loop) and
 // /demo (guided walkthrough). /NRA-booklet is owned by tab/nra-lead-capture.
+//
+// Both surfaces are soft-gated; ?key= uses the fallback access key, which
+// is what booth-gate.ts resolves to when BOOTH_ACCESS_KEY is unset (CI/local).
+const KEY = 'balabite-nra-2026';
+const BOOTH_TV = `/booth-tv?key=${KEY}`;
+const DEMO = `/demo?key=${KEY}`;
 
 const FORBIDDEN = [
   /claude/i,
@@ -21,9 +27,29 @@ async function expectClean(page: Page) {
   }
 }
 
+test.describe('booth surfaces are gated', () => {
+  test('/booth-tv and /demo show the access gate without a key', async ({
+    page,
+  }) => {
+    await page.goto('/booth-tv');
+    await expect(page.getByTestId('booth-gate')).toBeVisible();
+    await expect(page.getByTestId('booth-tv')).toHaveCount(0);
+
+    await page.goto('/demo');
+    await expect(page.getByTestId('booth-gate')).toBeVisible();
+    await expect(page.getByTestId('demo')).toHaveCount(0);
+  });
+
+  test('a valid ?key= unlocks the surface', async ({ page }) => {
+    await page.goto(BOOTH_TV);
+    await expect(page.getByTestId('booth-tv')).toBeVisible();
+    await expect(page.getByTestId('booth-gate')).toHaveCount(0);
+  });
+});
+
 test.describe('/booth-tv — booth TV loop', () => {
   test('renders kiosk-clean with the NRA banner suppressed', async ({ page }) => {
-    await page.goto('/booth-tv');
+    await page.goto(BOOTH_TV);
     await expect(page.getByTestId('booth-tv')).toBeVisible();
 
     const banner = page.getByTestId('nra-banner');
@@ -36,7 +62,7 @@ test.describe('/booth-tv — booth TV loop', () => {
   });
 
   test('covers all six beats, in order, and loops', async ({ page }) => {
-    await page.goto('/booth-tv');
+    await page.goto(BOOTH_TV);
     const scene = page.locator('[data-beat]');
     // Pause the auto-advance, then step through with the hidden operator keys.
     await page.keyboard.press('Space');
@@ -65,7 +91,7 @@ test.describe('/demo — guided walkthrough', () => {
   test('walks Open → Sees → Acts → Owns it → Close and ends on a booking CTA', async ({
     page,
   }) => {
-    await page.goto('/demo');
+    await page.goto(DEMO);
     await expect(page.getByTestId('demo')).toHaveAttribute('data-step', 'open');
 
     const steps = ['open', 'sees', 'acts', 'owns', 'close'];
@@ -88,7 +114,7 @@ test.describe('/demo — guided walkthrough', () => {
   test('each screen step shows the Pulse PNG, not a rebuilt product', async ({
     page,
   }) => {
-    await page.goto('/demo');
+    await page.goto(DEMO);
     await page.getByTestId('demo-next').click(); // → sees
     for (const src of [
       'pulse-hero.png',
