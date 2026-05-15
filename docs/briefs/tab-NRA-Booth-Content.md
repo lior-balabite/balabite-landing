@@ -43,7 +43,7 @@ stale, and the `/demo` Pulse images are lower-res than Lior wants. Lior wants:
 |---|---|---|
 | Recipe page | **Exists** in the app | Confirm route; capture at high DPI |
 | "Open tabs" page | **Exists** in the app | Confirm route; capture at high DPI |
-| Pulse screens | PNGs in `public/investors/pulse-*.png` | **Too low-res for `/demo`.** Need the higher-res source — Lior thinks there's a Pulse mockup page; locate it (this repo or elsewhere). Otherwise re-export, or rebuild as a component (content locked to the existing PNGs). |
+| Pulse screens | PNGs in `public/investors/pulse-*.png` | **Too low-res for `/demo`.** High-res source identified by Lior: the product-app preview — **`https://balabiteaidev-git-feature-boh-suite-bala-bite-dev.vercel.app/`** (the `feature-boh-suite` branch of the `balabiteaidev` project on the `bala-bite-dev` Vercel team; the "pulse preview" page). Capture there at `deviceScaleFactor: 2–3`, then re-point `/demo`. Lior to confirm the exact pulse-preview path. |
 | WhatsApp mockup | **Needs creating** | A mock of the staff-chat / "show it anything" surface (ShortDeck slide 4). Mock data only — build on a real chat-bubble structure, don't design a messenger. |
 | Notifications | **Mock data** | Use a real notification component if one exists; otherwise a faithful mock-data version. |
 | Pulse data screens | **Mock data** | Variations on the Pulse with mock data — same structure as the locked PNGs. |
@@ -94,9 +94,12 @@ Likely a small gated route, e.g. `/booth-logo` — confirm with Lior.
 
 ## Open questions — flag to Lior, don't guess
 
-1. **Where is the high-res Pulse source?** The `pulse-*.png` in this repo are the
-   only copies here. Is there a Pulse mockup page (this repo? another repo? Figma)?
-   Without it, deliverable B means rebuilding the screens as components.
+1. **Pulse source — confirm the path.** Lior identified the source as the product
+   app preview: `https://balabiteaidev-git-feature-boh-suite-bala-bite-dev.vercel.app/`
+   ("pulse preview"). Need the exact route to capture, and access (the preview may
+   be gated). If `pulse preview` shows the same content as the locked PNGs, capture
+   at high DPI and we're done; if the structure has drifted, re-point `/demo` to a
+   captured-at-high-DPI version of whatever-now-ships, NOT a redesign.
 2. **Marketing + loyalty pages** — these don't exist. "Not hard" still means
    *authoring* new pages, which trips the anti-loop rule. What exactly should they
    show, and is content locked anywhere?
