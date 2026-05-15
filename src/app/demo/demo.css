@@ -61,6 +61,10 @@
   border-radius: 999px;
   border: 1px solid rgba(250, 245, 238, 0.18);
   font-size: 0.95em;
+  /* the rail's 0.22em tracking would otherwise add a trailing gap after
+     the digits and shove them left of the circle's center */
+  letter-spacing: normal;
+  line-height: 1;
 }
 
 .demo-rail-step.is-active {

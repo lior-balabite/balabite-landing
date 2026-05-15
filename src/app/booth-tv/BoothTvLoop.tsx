@@ -247,12 +247,12 @@ function RealScene() {
         Already live
       </Rise>
       <Rise className="tv-display" delay={0.35}>
-        Not a vendor they installed.
+        Software gets installed.
         <br />
-        <i>A cofounder they built in.</i>
+        <i>A cofounder gets built in.</i>
       </Rise>
       <Rise className="tv-sub" delay={2.8}>
-        Built into a working Miami kitchen. Live since February 2026.
+        The engineer who built it runs the kitchen. Live since February 2026.
       </Rise>
       <Rise delay={4.6}>
         <div className="tv-lockup">
