@@ -97,14 +97,7 @@ const softwareJsonLd = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description:
-    'AI Cofounder for independent restaurants. Built like a partner, priced like one.',
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    price: '299',
-    description:
-      '$299/month floor + 1% of sales. Partner economics, not software pricing.',
-  },
+    'AI Cofounder for independent restaurants. Built like a partner.',
   audience: {
     '@type': 'Audience',
     audienceType: 'Restaurant owners and operators',

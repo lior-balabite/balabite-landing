@@ -1,0 +1,41 @@
+/* Scoped styling for the /connect digital business card.
+   Kept deliberately small — fast, calm, confident. */
+
+@keyframes connect-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes connect-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Entrance — the card rises in as one calm move */
+.connect-rise {
+  animation: connect-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Beat 2 — the exchange panel easing open after the vCard tap */
+.connect-reveal {
+  animation: connect-reveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connect-rise,
+  .connect-reveal {
+    animation: none;
+  }
+}
