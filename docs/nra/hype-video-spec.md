@@ -1,326 +1,247 @@
-# Hype Video — production spec (v2, post-Zavo benchmark)
+# Hype Video — production spec (v3)
 
-**Built from:** the Trillo / Guidara / Collins / Devlin roundtable + the read on Y
-Combinator's Zavo launch video (the visible benchmark in our category).
-**For:** NRA Show 2026, Booth 8332 (May 16–19). Three deliverables — one master,
-two derivatives. Built in [`tab/nra-booth-content`](../briefs/tab-NRA-Booth-Content.md).
+**Built from:** the up-and-coming-startup roundtable (Chesky / Collison / Heyward / Lessin / Fadell), the post-Zavo benchmark read, and the locked landing-page canon.
+**For:** NRA Show 2026, Booth 8332 (May 16–19). **One** 30-second silent piece, captioned, that plays in `/booth-tv` rotation **and** posts on LinkedIn. Same edit, two audio variants (booth = silent; LinkedIn = ambient bed + one sound-design tap).
 
-> **What changed from v1:** Zavo's piece is character-driven cinematic ad
-> (mannequin "agents" Greg / Theo / Maria, real shoot, agency-tier polish, ~60s).
-> We don't match its tier of polish in this timeline — and we shouldn't try.
-> The bet is **editorial cinematic** (Bottega Veneta silent films, A24 trailer
-> opens, Chef's Table cold opens), not narrative cinematic ad. Quieter, slower,
-> POV-driven, no characters. We invert their playbook on purpose; their video
-> accidentally makes our slide-4 moat undeniable.
->
-> Concrete changes vs v1:
-> 1. **60s is now the master**, not 30s. (Format parity with the benchmark; gives
->    room for the *"didn't land"* honesty beat — the one thing Zavo can't match.)
-> 2. **Shot 5 specs upgraded** to Frame-4-caliber composition (low angle, warm
->    overhead pendant, hero card, micro-text label).
-> 3. **Match + Reveal lean on real photography** plus Runway-overlay motion, not
->    pure Runway generation. Avoids the "AI-generated kitchen" tell.
-> 4. **Captions sized up** to display scale (6–7 vw) — confident, not timid.
-> 5. **Negative-prompt block** explicitly steers away from Zavo's aesthetic
->    (mannequins, suited agents, margin-dollar UI overlays, choreographed kitchen).
-> 6. New **Reference Works** section locks the cinematic-editorial style anchors.
+> **What changed from v2:** v2 mixed two jobs into one piece — depth (Honesty Beat) and reach (hype). They are different jobs. v3 is **hype-grade only**: a stranger gets BalaBite cold in 30 seconds. The Honesty Beat moves out of this spec; if shipped, it ships separately as a `/booth-tv` depth variant in [`tab/nra-booth-content`](../briefs/tab-NRA-Booth-Content.md). One video, both surfaces — booth-TV rotation + LinkedIn.
+
+---
+
+## Job-to-be-done
+
+The hype's job, in one sentence: **a stranger nods *"yes, that's me"* inside 5 seconds, gets the BalaBite role in 8, sees what the calm looks like in 15, holds the brand stake in 5 more, and leaves with *"Meet your AI Cofounder. You run the place. We do the rest."* stuck in their head.**
+
+Not: depth, education, product demo, comparison-to-competitors. *Hype.* Recognition and signature.
 
 ---
 
 ## TL;DR (6 lines)
 
-- **60s silent hero, captioned, loopable** is the master deliverable (booth-TV variant). Two derivatives — **30s social cut** and **15s teaser** — cut from it, never re-shot.
-- **9 beats:** black → match → fires (×3) → fixes (×3) → decision → **honesty beat** (what worked / still working / didn't land) → reveal → door.
-- **5 captions in the 30s, +2 in the 60s extension.** Instrument Serif, 6–7 vw display, amber accents.
-- **Runway generates atmosphere only.** Product pixels (the *Approve* button macro) are **real captures**, never generated. Captions are typography overlays in post — never Runway text.
-- **Match + Reveal** use real photography (royalty-free) with Runway-applied subtle motion — not pure generation.
-- Final mp4s ship at **`public/booth/hype/`**. Source assets at **`docs/nra/hype-assets/`**.
+- **30 seconds. Silent. Captioned. Loopable.** Same visual edit plays on `/booth-tv` and on LinkedIn; only the audio variant changes.
+- **9 beats:** threshold → ten-person job → and you're doing it all → the pause → the turn → while you slept → one decision waiting → yours alone → the door.
+- **7 captions.** Instrument Serif, 6–7 vw display, amber accents on punch words. The tagline is the line that travels.
+- **Pulled 100% from canon:** backdrop ("a ten-person job"), `TheTurn.tsx` ("what if you weren't?"), `DayWithout.tsx` (the hats), deck slide 3 (pain→action pairs), `pulse-hero.png` (Shot 5), deck slide 7 ("yours alone"), the locked tagline.
+- **Runway atmosphere only.** The Approve macro is a real capture (✅ committed). The end-card is the existing brand asset.
+- **Master mp4 ships at** `public/booth/hype/hype-30s.mp4`. Source assets at `docs/nra/hype-assets/`.
 
 ---
 
-## Source assets — what we have, what we still need
+## The five voices behind this spec
 
-| Asset | Status | Path | Notes |
+A reminder for whoever generates it — the choices are non-arbitrary.
+
+| Voice | Their non-negotiable |
+|---|---|
+| **Chesky** (Airbnb) | The 1-second black threshold, the half-second pause at t=7, the long tagline hold. Restraint *is* the brand. |
+| **Collison** (Stripe) | Subtract. Every caption and cut earns its time. Three-word captions where possible. |
+| **Heyward** (Red Antler) | The "ten-person job" hook line; the "yours alone" brand stake as typography. Quotable. Screenshotable. |
+| **Lessin** (Slow Ventures) | LinkedIn rules: silence reads as intentional, logo only at end, captions ARE the script. Same edit, two audio variants. |
+| **Fadell** (Nest) | 5 seconds on the Approve macro. The product is the climax. Sound-design tap on the button — the iPod *click*. |
+
+---
+
+## Source assets
+
+| Asset | Status | Path |
+|---|---|---|
+| `approve-button-macro.png` — Pulse decision card @ 3× DPI | ✅ **Committed** to `tab/nra-booth-content` | `docs/nra/hype-assets/approve-button-macro.png` (1824 × 825) |
+| Reference frames — 6 "ten-person-job" objects (Shot 2) | Need | Royalty-free stock (Unsplash / Pexels). Macros: menu open, register-tape stub, staff rota / schedule, phone with notifications, inbox close-up, scuffed clipboard. → `docs/nra/hype-assets/refs/job-{1..6}.jpg` |
+| Reference frame — operator-POV midnight (Shot 3) | Need | Unsplash, "restaurant pass at night, no people, receipts" or similar. → `refs/midnight-pov.jpg` |
+| Reference frames — 3 pain→action pairs (Shot 6) | Need | Stock; same brief as v2 (bok-choy crate, hurricane window, unread inbox + matching fix frames). → `refs/pair-{1a,1b,2a,2b,3a,3b}.png` |
+| Reference frame — kitchen-warm wide (Shot 8) | Need | Real photo. Annie Spratt / Petr Magera Unsplash. → `refs/yours-alone-wide.jpg` |
+| Brand end-card | Have | Existing `/booth-tv` Real-beat lockup; capture clean 1920×1080 from `/booth-tv?key=…` mid-Real-beat or build dedicated `/booth-endcard` route |
+| Sound design — single Approve "tap" | Need (LinkedIn cut only) | Freesound / Soundsnap, "soft UI tap, single, organic." ≤−10 dB |
+| Room-tone ambient bed | Need (LinkedIn cut only) | Freesound: "empty restaurant ambient" |
+
+---
+
+## Captions track (all 7)
+
+| # | t (s) | On screen | Style |
 |---|---|---|---|
-| **`approve-button-macro.png`** — Pulse decision card @ 3× DPI | ✅ **Committed** to `tab/nra-booth-content` | `docs/nra/hype-assets/approve-button-macro.png` | 1824 × 825, sharp. Use for Shot 5. Trim faint left-edge hairline in post. |
-| **Honesty-beat captures** — `/demo` Owns-it screen at high DPI (the *what worked / still working / didn't land* section) | Need | `docs/nra/hype-assets/owns-it-{worked,working,didnt-land}.png` | Same DevTools DPR=3 capture pattern, against `/demo?key=…` on the new tab. Crop tight on each section. |
-| **Brand end-card** (palm + balabite wordmark + booth tag, 1920×1080) | Have working version on live `/booth-tv` Real beat | new gated `/booth-endcard` route in the new tab is cleaner | Build `/booth-endcard` as a tiny route in the new tab; capture at 3×. Reusable for future videos. |
-| **Reference frames — Match** (phone-on-pass, kitchen-night) | Need | `docs/nra/hype-assets/refs/match-still.{jpg,png}` | **Real photo, not AI.** Annie Spratt (Unsplash) restaurant series, or `unsplash.com/s/photos/restaurant-kitchen-night` royalty-free. |
-| **Reference frames — Fires ×3** | Need | `refs/fire-{1,2,3}-*.png` | Stock: empty produce crate, rain-streaked storefront window, phone inbox macro |
-| **Reference frames — Fixes ×3** | Need | `refs/fix-{1,2,3}-*.png` | Stock or product capture |
-| **Reference frame — Reveal** (wide kitchen with warm hospitality light) | Need | `refs/reveal-still.{jpg,png}` | **Real photo, not AI.** Petr Magera or Edwin Tan (Unsplash). Pick a shot with the right pendant-light warmth. |
-| **Music bed** (social cut only — booth TV stays silent) | Need | n/a (license-tracked) | Musicbed / Artlist; *"cinematic ambient minimal, instrumental, ~70 BPM, no drums, sub-1-min"*. **Anything pre-licensed Lior wants to reuse?** |
-| **Room-tone audio** (social cut only) | Need | n/a | Freesound.org: *empty restaurant ambient room tone* |
+| C1 | 1.3 → 4.0 | *a ten-person job.* | Instrument Serif italic, cream-50, **6.5 vw**, lower-third center |
+| C2 | 4.5 → 7.0 | *and you're doing it all.* | same; cream-100, slightly larger |
+| C3 | 8.5 → 11.0 | *what if you weren't?* | same; amber-300 (the warmth returns) |
+| C4 | 11.5 → 17.0 | *while you slept.* | same; cream-50, **7 vw** |
+| C5 | 18.0 → 22.0 | one decision waiting. | Mono uppercase, **1.6 vw**, letter-spacing 0.24 em, amber-300, beside the Approve button |
+| C6 | 22.3 → 25.0 | **yours alone.** | Instrument Serif italic, amber-300, **7.5 vw**, center |
+| C7 (line 1) | 25.5 → 26.5 | **Meet your AI Cofounder.** | Instrument Serif italic, cream-50, **6.5 vw** |
+| C7 (line 2) + booth tag | 26.8 → 29.4 | **You run the place. We do the rest.**<br>`BOOTH 8332 · NRA SHOW 2026` | Same as the existing `/booth-tv` Real-beat lockup |
+
+**Captions are an overlay track** — After Effects / Final Cut / Resolve titles, or a one-off `/hype-captions` React route screen-recorded for exact typography parity with `/booth-tv`. **Never let Runway render text.**
 
 ---
 
-## Captions track
+## Shot list — the 9 beats
 
-| # | Cut | t (s) | On screen | Style |
-|---|---|---|---|---|
-| C1 | all | 4.5 → 10.0 | *the day isn't done.* | Instrument Serif italic, cream-50, **6.5 vw**, lower-third center |
-| C2 | all | 10.5 → 16.0 | *while you slept.* | same; amber-300; slightly above center |
-| C3 | 30s + 60s | 17.0 → 22.0 | one decision waiting. | Mono uppercase, **1.6 vw**, letter-spacing 0.24 em, amber-300, beside the Approve button |
-| C4 *(60s only)* | 60s | 36.0 → 40.0 | a vendor never tells you their thing failed. | Instrument Serif italic, cream-50, **6 vw**, center |
-| C5 *(60s only)* | 60s | 40.5 → 44.0 | *a cofounder does.* | same; amber-300, slightly larger (7 vw) |
-| C6 | all | 45.5 → 49.0 *(60s)* · 23.0 → 27.0 *(30s)* | **Your cofounder.** | Instrument Serif italic, cream-50, **7 vw**, center |
-| C7 | all | 51.0 → 60.0 *(60s)* · 27.5 → 30.0 *(30s)* | **You run the place. We do the rest.**<br>`BOOTH 8332 · NRA SHOW 2026` | Identical to existing `/booth-tv` Real-beat lockup |
+> **24 fps. 1080p output. 8-generation budget per Runway shot.** If a take isn't there at 8, substitute (slow Ken Burns on the reference still) — never fish past 8.
 
-**Caption layer is a separate overlay track** — After Effects / Final Cut / Resolve titles, or a one-off `/hype-captions` React route screen-recorded for exact typography parity with `/booth-tv`. **Never let Runway render text.**
+### Shot 1 — The Threshold *(1.0s, black)*
+Pure black hold. Last 0.2s: a faint warm vignette begins to ease up from below (Shot 2's warmth bleeding through). **Post only — no Runway.**
 
----
+### Shot 2 — The Ten-Person Job *(3.0s — six object cuts at 0.5s each)*
+Hard cuts, no transitions. Each cut is a still macro from `refs/job-{1..6}.jpg` with the slightest 1–2% Runway-applied push-in for life. Order, locked:
 
-## Shot list — the 9 beats of the 60s master
+1. **menu** — an open paper menu, half-folded
+2. **register tape** — a printed receipt tail curled on the counter
+3. **staff rota** — a paper schedule, names handwritten
+4. **phone alerts** — a phone with notification badges (no readable text)
+5. **inbox** — close-up of an unread email row (no readable copy)
+6. **clipboard** — a scuffed prep clipboard with a list
 
-> Every shot generates at **16:9 1080p** (or upscaled to 1080p via Topaz Video AI).
-> **24 fps end-to-end.** **8-generation budget per shot, hard.** If the take
-> isn't there at 8, substitute (slow Ken Burns on the reference still) — don't
-> fish past 8.
+**Audio (LinkedIn cut):** a soft tick-tick-tick under each cut, like a stopwatch — same gesture as a chef's tasting list ticking off. ≤−14 dB.
 
-### Shot 1 — Threshold *(1.5s, black)*
-Pure black hold with a faint warm vignette easing up from below frame in the last 0.3s (the warmth of Shot 2 bleeding through). **Built in post, not in Runway.**
-
-### Shot 2 — The Match *(2.5s)*
-
-| | |
-|---|---|
-| Type | **Real photo + Runway img2vid (motion overlay only)** |
-| Base image | `refs/match-still.jpg` — real photograph of a phone on a stainless-steel restaurant pass at night, kitchen out of focus behind. **Source from Unsplash.** Grade in post to match palette (warm amber lift, deep blacks). |
-| Runway role | Take the graded still through Runway's image-to-video at **Gen-4** with a *very slow zoom-in (5% over 2.5s)* + a subtle screen-glow pulse. Use it for motion only — keep the underlying photograph readable. |
-| Camera | Very slow zoom-in |
-| Acceptance | Phone screen MUST NOT have legible text. Lamp glow warm (3000K-ish), never blue. No human in frame. |
-
-**Runway motion prompt:**
-```
-Subtle living motion only: very slow zoom-in by 5%, gentle screen-glow pulse
-once, faint condensation breath in the air. Keep all other elements still.
-```
-**Negative:** `<<NEG_BASE>>`
-
-### Shot 3 — Fires ×3 *(2.0s each, 6.0s total)*
-
-Three quick beats, identical pacing, hard cuts between them.
-
-**3a — the bok-choy that didn't show**
-
-| | |
-|---|---|
-| Type | Runway img2vid (Gen-3 Alpha Turbo) |
-| Reference | `refs/fire-1-bok-choy.png` — empty produce crate on a walk-in shelf, packing-slip clipped, paper marked "MISSED" |
-| Camera | Static, micro-handheld shake |
-| Prompt | `Empty wood-fiber produce crate on a stainless walk-in shelf, packing slip clipped to the side stamped MISSED, soft fluorescent walk-in light, faint condensation breath visible in the cold air. Static camera with a barely-perceptible handheld micro-shake. Documentary, melancholy.` |
-
-**3b — the hurricane Wednesday**
-
-| | |
-|---|---|
-| Reference | `refs/fire-2-hurricane.png` — phone weather-alert reflected on a rain-streaked storefront window, warm interior glowing behind |
-| Camera | Slow horizontal pan-right, 4 px/s |
-| Prompt | `Rain-streaked restaurant storefront window at dusk; warm interior glows behind it; in the foreground a phone screen with a weather alert reflects in the glass; thick wind-driven rain. Slow horizontal pan right.` |
-
-**3c — the catering DM sitting since Monday**
-
-| | |
-|---|---|
-| Reference | `refs/fire-3-inbox.png` — macro of a phone inbox row, a single unread message highlighted, badge `(4d)` |
-| Camera | Very slow tilt-down |
-| Prompt | `Macro-close-up of a phone inbox row, a single unread message highlighted in a soft accent color, a small unread badge. Very slow vertical tilt-down. Shallow DOF, dark UI.` |
-
-### Shot 4 — Fixes ×3 *(2.0s each, 6.0s total)*
-
-Same cadence as Fires, hard cuts, **matched against their fires** (3a→4a, etc.).
-
-**4a — reordered before Friday**
-- Reference: confirmation card sliding into view, "REORDERED" stamp, bok-choy crate now full behind
-- Prompt: `A clean confirmation card sliding gently into view over a warmly lit walk-in shelf; a faint REORDERED stamp; the previously empty crate now full. Subtle warm light, optimistic but restrained. Slight push-in.`
-
-**4b — promo pushed before the storm**
-- Reference: phone showing a promo card sending out, rain still at the edge
-- Prompt: `Macro on a phone screen, a promo card animating outward with a soft motion blur suggesting it's been sent; warm storefront light at the right edge of frame; rain still faintly visible. Slow slide-left.`
-
-**4c — quote drafted, date held**
-- Reference: draft email-quote card folding into a "sent" envelope, soft amber accent
-- Prompt: `A draft message card softly folding away into a "sent" envelope graphic with a small amber accent; dark UI, very shallow DOF; subtle parallax movement. Cinematic, restrained.`
-
-### Shot 5 — The Decision *(6.0s)* — **REAL CAPTURE, NOT GENERATED**
-
-This is the most expensive frame in the video and the one Zavo's video frames sideways. Match Frame-4's composition philosophy — low angle, hero asset, single companion data element, deep blacks, warm light from above.
-
-| | |
-|---|---|
-| Type | **Real capture** — `docs/nra/hype-assets/approve-button-macro.png` ✅ committed |
-| Composition | **Low-angle lift.** The Approve-button macro sits as the visual hero, occupying ~65–70% of frame width, positioned ~55% down. A single soft warm pendant-glow gradient hangs above (added in post, mimicking Frame-4's overhead pendant). A small micro-text card to the side reads: `11:47 PM · Fima's` — Instrument Serif italic, cream-100, 1.4 vw. *No* margin-dollar overlays (Zavo's Frame-4 owns that exact visual; we explicitly steer away). |
-| Move | 0.0–1.5s static hold · 1.5–4.0s **subtle warm-light sweep** across the button at 5%/s (rotating gradient in post) · 4.0–6.0s gentle 3% push-in |
-| Audio (social cut only) | Single soft tap/chime at t=1.5 (sound design); keep ≤ −10 dB |
-| Acceptance | Amber matches `--color-accent-500` (#f59e0b ±5). Pixel-sharp at 6 ft. The micro-text label `Fima's` reads as a *restraint signal* — we name the restaurant by first-name, not a price/margin. |
-
-**Why this isn't Runway:** Runway cannot reliably reproduce specific brand UI. Animating the real asset in post is faster, sharper, and on-brand. Period.
-
-### Shot 6 — Honesty Beat *(22.0s, 60s cut only)* — **REAL CAPTURES**
-
-The single thing in this video Zavo's piece cannot match. Their video brags *"400+ businesses."* Ours shows the experiment that *failed and got reverted*. This is the moat moment.
-
-The full beat is screen-recording-style on `/demo`'s Owns-it step (or the `pulse-record` PNG/component), graded down to the booth palette, with captions appearing in rhythm.
-
-**6a — What worked *(4.0s, t=22.0–26.0)***
-- Source: real capture from `docs/nra/hype-assets/owns-it-worked.png` — *"Customer retention up 34% → 41%. Food cost on 4 flagged items down from 48% to 31%."*
-- Motion: slow scroll-up across the section, 1.2× speed of natural reading
-- Caption: none (let the screen speak)
-
-**6b — Still working on *(4.0s, t=26.0–30.0)***
-- Source: `owns-it-working.png` — *"Server performance gap narrowing. Cost data: 14 of 29 items entered."*
-- Motion: continue the scroll, no acceleration
-- Caption: none
-
-**6c — Didn't land *(6.0s, t=30.0–36.0)***
-- Source: `owns-it-didnt-land.png` — *"Happy hour pricing experiment. Orders up 20% but revenue per order dropped 35%. Net negative. Reverted."*
-- Motion: scroll slows by half; gentle vignette darkens around the *"reverted"* line
-- Caption: none yet — the screen says it
-
-**6d — The line *(8.0s, t=36.0–44.0)***
-- Source: black, then white type, then black
-- Captions land in succession:
-  - C4 *(36.0–40.0)*: *a vendor never tells you their thing failed.*
-  - C5 *(40.5–44.0)*: ***a cofounder does.***
-- Audio (social cut): a single low piano note enters on C5
-
-### Shot 7 — The Reveal *(5.0s)*
+### Shot 3 — And You're Doing It All *(3.0s)*
 
 | | |
 |---|---|
 | Type | **Real photo + Runway img2vid (motion overlay)** |
-| Base | `refs/reveal-still.jpg` — wide of a phone on a stainless pass, kitchen alive in warm hospitality light, a server's shoulder at the edge of frame. **Real photo.** Annie Spratt / Petr Magera Unsplash. |
-| Runway role | Image-to-video: slow dolly-out, 8% over 5s, add ambient steam motion in the kitchen background |
-| Camera | Slow pull-back |
-| Acceptance | Faces never in close-up. Hands holding plates partially visible at frame edge only. No fluorescent / clinical light. |
+| Base | `refs/midnight-pov.jpg` — operator-POV at a stainless pass, warm pendant overhead, pile of receipts, single phone with the Pulse glowing |
+| Runway role | Image-to-video at **Gen-4**: imperceptibly slow 3% zoom-in, the phone screen pulses once. Otherwise static. |
+| Acceptance | No face. No hands holding anything readable. Hospitality warmth (2700–3000 K). |
 
-### Shot 8 — The Door *(11.0s in 60s cut · 3.0s in 30s cut)* — **REAL ASSET**
+### Shot 4 — The Pause *(1.0s, total black)*
+Pure black. **Total silence on both audio variants.** This is Chesky's second. Don't compress it.
+
+### Shot 5 — The Turn *(3.0s)*
 
 | | |
 |---|---|
-| Type | Existing `/booth-tv` Real-beat lockup, or a dedicated `/booth-endcard` route built in the new tab. |
-| Move (60s cut) | t=49.0–55.5: hold the lockup (palm + balabite wordmark). Palm has the existing `.nra-palm-sway` 7s sway. C6 *(Your cofounder.)* fades in at t=45.5 and rides into this beat. t=55.5–60.0: C7 (*You run the place. We do the rest.* + `BOOTH 8332 · NRA SHOW 2026`) lands as the door closes. Slow fade-to-black at t=59.4. |
-| Move (30s cut) | Same lockup, compressed to 3.0s. C7 lands at t=27.5. |
+| Type | **Real photo + Runway img2vid (motion overlay)** |
+| Base | `refs/midnight-pov.jpg` (same frame as Shot 3) — but re-graded warmer, the Pulse now visibly glowing brighter |
+| Runway role | Image-to-video Gen-4: the Pulse glow blooms (4% brightness lift), camera pushes in 5% over 3s |
+| Acceptance | Same composition as Shot 3 so the *return* feels like the same room — but warmer, brighter, alive |
+
+### Shot 6 — While You Slept *(6.0s — three pain→action pairs at 2.0s each)*
+Three quick beats, hard cuts. Each pair is two reference stills hard-cut together (pain image → action image), 1.0s + 1.0s. Subtle Runway motion on each.
+
+| Pair | Pain image | Action image |
+|---|---|---|
+| 6a | empty produce crate, "MISSED" stamp | confirmation card sliding in, "REORDERED" stamp |
+| 6b | rain on storefront window + weather-alert reflection | promo card animating out, motion-blur of "sent" |
+| 6c | phone inbox macro, single unread row, "(4d)" badge | draft message folding into "sent" envelope, amber accent |
+
+Runway prompts: see `<<NEG_BASE>>` block below; use the same atmosphere prompts from v2 (still valid).
+
+### Shot 7 — One Decision Waiting *(5.0s)* — **REAL CAPTURE**
+
+| | |
+|---|---|
+| Type | Real capture, animated in post |
+| Source | `docs/nra/hype-assets/approve-button-macro.png` (committed @ 3× DPI) |
+| Composition | Low-angle lift. Approve macro occupies ~65–70% of frame width, positioned ~55% down. Soft warm pendant-glow gradient hangs above (post-added). Micro restraint-label to the side: `11:47 PM · Fima's` — Instrument Serif italic, cream-100, 1.4 vw. **No margin-dollar overlays.** |
+| Move | 0.0–1.5s hold static · 1.5–4.0s subtle warm-light sweep across the button at 5%/s · 4.0–5.0s gentle 3% push-in |
+| Sound (LinkedIn cut) | One soft tap chime at t=1.5 — the iPod-click moment. ≤−10 dB. |
+| Acceptance | Approve amber matches `--color-accent-500` (#f59e0b ±5). Crisp at 6 ft. Restraint label reads as a *human* moment (a name + a time), not a dashboard data point. |
+
+### Shot 8 — Yours Alone *(3.0s)*
+
+| | |
+|---|---|
+| Type | **Real photo + typography overlay (no Runway character work)** |
+| Base | `refs/yours-alone-wide.jpg` — wide of a warm-lit working kitchen, no people centered, hospitality warmth, slight motion blur in the deep background only |
+| Caption | **yours alone.** — Instrument Serif italic, amber-300, 7.5 vw, centered. Held for the full 3 seconds. |
+| Sound (LinkedIn cut) | Room tone only. No tap, no swell. |
+| Rule | **No mannequins. No suited figures. No split-screen comparison. No competitor parody.** The brand stake is typography. |
+
+### Shot 9 — The Door *(4.5s)* — **REAL ASSET**
+
+| | |
+|---|---|
+| Type | The existing `/booth-tv` Real-beat lockup, or a dedicated `/booth-endcard` route built in the new tab |
+| Move | t=25.5–26.5: lockup appears, C7 line 1 (*Meet your AI Cofounder.*) holds. t=26.5–26.8: micro pause. t=26.8–29.4: C7 line 2 (*You run the place. We do the rest.*) + `BOOTH 8332 · NRA SHOW 2026` mono tag land. t=29.4–30.0: slow fade to black. |
+| Acceptance | Identical typography to the booth-TV closer — so the LinkedIn viewer and the booth-floor viewer leave with the same lockup imprinted. |
 
 ---
 
-## Master timeline (60s)
+## Master timeline
 
 ```
-t=0.0   ┃ Shot 1  Threshold (black)             ┃ 1.5s
-t=1.5   ┃ Shot 2  The Match                      ┃ 2.5s   amber glow begins
-t=4.0   ┃ Shot 3a Fire — bok choy                ┃ 2.0s
-        ┃   [C1 fades in t=4.5]
-t=6.0   ┃ Shot 3b Fire — hurricane               ┃ 2.0s
-t=8.0   ┃ Shot 3c Fire — inbox                   ┃ 2.0s
-t=10.0  ┃ Shot 4a Fix — reorder                  ┃ 2.0s
-        ┃   [C1 fades out · C2 fades in t=10.5]
-t=12.0  ┃ Shot 4b Fix — promo                    ┃ 2.0s
-t=14.0  ┃ Shot 4c Fix — quote                    ┃ 2.0s
-t=16.0  ┃ Shot 5  Decision (Approve macro)        ┃ 6.0s   REAL
-        ┃   [C2 fades out · C3 fades in t=17.0]
-t=22.0  ┃ Shot 6a Honesty — what worked          ┃ 4.0s   REAL
-        ┃   [C3 fades out at 22.0]
-t=26.0  ┃ Shot 6b Honesty — still working        ┃ 4.0s   REAL
-t=30.0  ┃ Shot 6c Honesty — didn't land           ┃ 6.0s   REAL
-t=36.0  ┃ Shot 6d The line                       ┃ 8.0s
-        ┃   [C4 fades in t=36.0]
-        ┃   [C5 fades in t=40.5]
-t=44.0  ┃ Shot 7  Reveal (slow dolly-out)        ┃ 5.0s
-        ┃   [C5 fades out · C6 fades in t=45.5]
-t=49.0  ┃ Shot 8  Door + lockup hold              ┃ 11.0s  REAL
-        ┃   [C7 + booth tag fade in t=51.0]
-t=59.4  ┃   slow fade-to-black (0.6s)
-t=60.0  ┃ END
+t=0.0   ┃ Shot 1  Threshold (black)            ┃ 1.0s
+t=1.0   ┃ Shot 2  Ten-person job (6 cuts)      ┃ 3.0s
+        ┃   [C1 'a ten-person job.' fades in 1.3]
+t=4.0   ┃ Shot 3  And you're doing it all      ┃ 3.0s
+        ┃   [C1 fades · C2 fades in 4.5]
+t=7.0   ┃ Shot 4  THE PAUSE (black, silent)    ┃ 1.0s
+t=8.0   ┃ Shot 5  The Turn (warmth returns)    ┃ 3.0s
+        ┃   [C3 'what if you weren't?' fades in 8.5]
+t=11.0  ┃ Shot 6  While you slept (3 pairs)    ┃ 6.0s
+        ┃   [C3 fades · C4 'while you slept.' fades in 11.5]
+t=17.0  ┃ Shot 7  One Decision Waiting          ┃ 5.0s   REAL CAPTURE
+        ┃   [C4 fades · C5 'one decision waiting.' fades in 18.0]
+        ┃   [LinkedIn cut: soft tap at 18.5]
+t=22.0  ┃ Shot 8  Yours Alone                  ┃ 3.0s
+        ┃   [C5 fades at 22.0 · C6 'yours alone.' fades in 22.3]
+t=25.0  ┃ Shot 9  The Door                     ┃ 4.5s   REAL ASSET
+        ┃   [C7 line 1 fades in 25.5]
+        ┃   [C7 line 2 + booth tag fade in 26.8]
+t=29.4  ┃   slow fade to black (0.6s)
+t=30.0  ┃ END
 ```
-
----
-
-## The two cut-downs (derived from the 60s master — never re-shot)
-
-### 30s social cut (LinkedIn landscape · IG square)
-The 60s master with the **Honesty Beat removed** and the **Reveal/Door tightened**.
-
-```
-0.0   Threshold (black)                  1.5s
-1.5   Match                              2.5s
-4.0   Fires ×3                           6.0s
-10.0  Fixes ×3                           6.0s
-16.0  Decision                           6.0s
-22.0  Reveal                             5.0s
-27.0  Door + tagline                     3.0s
-                                       ─────
-                                       30.0s
-```
-- Captions C1 · C2 · C3 · C6 · C7 (no C4/C5).
-- **Audio:** music bed −12 dB, room tone −22 dB, single tap on Shot 5.
-- Export at 1920×1080 and 1080×1080.
-
-### 15s teaser (LinkedIn vertical · TikTok · Reels)
-The compressed *fires → fixes → brand* version.
-
-```
-0.0   Fires ×3                           6.0s
-6.0   Fixes ×3                           6.0s
-12.0  End-card: "Your AI Cofounder."     3.0s
-      + booth tag
-                                       ─────
-                                       15.0s
-```
-- Caption C1 enters t=0.5; C2 enters t=6.5.
-- Export at 1080×1920. **First-touch piece** — drives traffic to `/booth-8332`.
 
 ---
 
 ## Edit & assembly
 
-**Tool:** any timeline NLE (Final Cut / Premiere / Resolve / CapCut). Hard cuts everywhere except the final 0.6s fade.
+**Tool:** any timeline NLE — Final Cut, Premiere, Resolve, CapCut. Hard cuts everywhere except the final 0.6s fade.
 
 **Color grade:**
 - LUT: Kodak Vision3 250D feel at ~30% strength
-- Crush blacks gently — Devlin's threshold needs *deep* black on Shot 1
-- Match Shot 5's amber to `#f59e0b` reference
+- Crush blacks gently — the threshold and the pause must read as *deep* black
+- Match Shot 7's amber to `#f59e0b` reference
+- Shots 3 + 5 should share the *exact* warmth (same room, same time, both phases of the Turn)
 
-**Audio (social + teaser only — booth-TV cut is silent):**
-- Music bed at −12 dB
-- Room-tone bed at −22 dB across the piece
-- Sound design taps at t=17.5 (decision lands) and t=40.5 (C5 — *a cofounder does*) — both ≤ −10 dB
-- No drums anywhere
+**Audio — TWO variants from the same edit:**
 
-**Reframing:** crop centered for 9:16 + 1:1; Shots 2, 5, 7 may need a 5% re-pan to keep the subject central.
+**Booth-TV variant (silent):**
+- No audio track at all. Renders as a silent mp4. The booth TV is in a loud aisle.
+
+**LinkedIn variant (ambient bed + one tap):**
+- Room tone bed at −22 dB across the piece (continuous "presence")
+- Soft tick-tick-tick under Shot 2's object cuts (≤−14 dB)
+- ZERO audio during Shot 4 (the Pause) — silence is the gesture
+- ONE soft tap on the Approve frame at t=18.5 (≤−10 dB)
+- ZERO music. The brief from the roundtable is explicit: music signals "ad," silence signals "film."
+
+**Reframing for vertical/square (LinkedIn 9:16 + 1:1):**
+- Crop centered.
+- Shots 3, 5, 7 may need a 4% re-pan to keep the subject central.
+- Captions need re-laid out for vertical (single column, larger).
 
 **Export specs:**
-- `hype-60s.mp4` — 1920×1080 h.264 CRF 20 faststart ≤ 28 MB *(booth-TV master)*
-- `hype-30s-1920.mp4` — 1920×1080 ≤ 14 MB
-- `hype-30s-1x1.mp4` — 1080×1080 ≤ 12 MB
-- `hype-15s-9x16.mp4` — 1080×1920 ≤ 8 MB
+- `hype-30s-silent.mp4` — 1920×1080 h.264 CRF 20 faststart, no audio, ≤14 MB → **booth-TV rotation file**
+- `hype-30s-linkedin.mp4` — 1920×1080, with LinkedIn audio variant, ≤16 MB → **LinkedIn landscape**
+- `hype-30s-9x16.mp4` — 1080×1920, LinkedIn audio → **LinkedIn vertical / Reels / TikTok**
+- `hype-30s-1x1.mp4` — 1080×1080, LinkedIn audio → **LinkedIn feed square**
 - All in `public/booth/hype/`.
 
 ---
 
-## Reference Works — the cinematic-editorial style anchors
+## Reference Works — the cinematic-editorial anchors
 
-The operator generating Runway shots **studies these for tone before they prompt anything.** The goal isn't to copy them — it's to recognize the *quality of restraint* they share and tune Runway prompts toward it.
+Whoever generates studies these before prompting. The goal isn't to copy — it's to recognize the *quality of restraint* they share and tune Runway prompts toward it.
 
 | Reference | Why it's the anchor |
 |---|---|
-| **Bottega Veneta — silent product films (2018–2024)** (e.g., *Salon 02* film, leather-bag close-ups) | The "object as protagonist, no narration, no music" template. Premium restraint without a single character. |
-| **Chef's Table — cold opens (Netflix, dirs. David Gelb)** | Slow ambient establishment of a real kitchen — light, water, breath. Specifically the cold opens, not the chef-monologue body. |
-| **A24 trailer openings** — *Past Lives*, *Aftersun*, *Mass* | Quiet first 10–20 seconds, captions over visual, no music at first. The opposite of a typical promo. |
-| **Apple Watch product film** (2014 launch) | Object cinema with single companion micro-text labels. Direct template for Shot 5's restraint-text. |
-| **Soderbergh openings** — *Contagion*, *No Sudden Move* | Hard cuts, observational POV, real lens grain, no overscoring. The cutting rhythm we want for Fires/Fixes. |
-| **"The Bear" pilot — opening minute** (2022, FX, dir. Christopher Storer) | Kitchen ambient *before the chaos* — the quiet warm-light beat. **Specifically the first 60 seconds**, not the kitchen-rush sequences. |
+| **Airbnb "Belong Anywhere" launch films** (Chesky-era) | Founder-aesthete: hospitality warmth, no characters, the brand emerges from a feeling. |
+| **Stripe Press launch films** | Collison restraint: clarity, only what does work, no decoration. |
+| **Bottega Veneta silent product films** | Object-as-protagonist. Premium without performance. |
+| **Casper / Allbirds early launch films** (Red Antler) | The Heyward brand-stake template — claim a category in one line. |
+| **Chef's Table cold opens** | Slow ambient establishment of a real kitchen. Light, water, breath. |
+| **Apple Watch product film (2014 launch)** | Object cinema with single companion micro-text labels. Direct template for Shot 7's restraint-text. |
+| **"The Bear" pilot — opening minute** | Kitchen ambient *before the chaos.* The quiet warm-light beat. |
 
-**Aesthetic do/don't shortlist:**
+**Do / don't shortlist:**
 
 | Do | Don't |
 |---|---|
-| Real photography graded down | Generated kitchen interiors (Runway will hallucinate AI tells) |
+| Real photography graded down | Generated kitchen interiors (Runway's AI tells will show) |
 | One object, one moment | Crowded compositions with action everywhere |
 | Hospitality warmth (2700–3000 K) | Clinical white, fluorescent green |
-| Captions late, restrained | Captions over every shot |
-| Single sound-design tap | Layered SFX |
+| Captions late, large, restrained | Captions over every shot |
+| Single sound-design tap | Layered SFX, music beds |
 | Deep black thresholds | Mid-grey fades |
+| Typography as brand stake ("yours alone") | Mannequin/character comparison frames |
 
 ---
 
@@ -350,55 +271,39 @@ Wes Anderson symmetrical kitchen, real chef toque close-up
 
 | | What | Why |
 |---|---|---|
-| Hero shots (Match, Reveal) | **Runway Gen-4** if available; otherwise Gen-3 Alpha | Better motion coherence on slow camera moves |
-| Atmosphere shots (Fires, Fixes) | **Runway Gen-3 Alpha Turbo** | Faster, cheaper, 2 s clips don't need top-tier fidelity |
-| Reference stills you need to generate | **Runway Frames** | Same look as the video model |
-| Generation length per shot | **5 seconds**, slice best 2.0–2.5 s in editing | Runway coherence degrades past 5 s |
-| Generations per shot | **8 max**, then substitute (Ken Burns on the still) | Spec rule |
-| Runway output res | 1280×768 (Gen-3) / 1408×768 (Gen-4) | Upscale to 1920×1080 in post via Topaz Video AI |
-| Frame rate | **24 fps end-to-end** | Cinema feel; 30 fps reads as social-video |
-| Total Runway cost | ~$30–50 across 8 shots × 8 generations | Trivial |
-| Total generation time | ~90 minutes of clock time | A plane flight |
+| Hero shots (Shot 3, Shot 5) | **Runway Gen-4** if available; otherwise Gen-3 Alpha | Better motion coherence on slow pushes |
+| Atmosphere shots (Shot 2 cuts, Shot 6 pairs) | **Runway Gen-3 Alpha Turbo** | Fast, cheap, sub-1s motion is undemanding |
+| Reference stills, if generating own | **Runway Frames** | Same model family — consistent look |
+| Generation length per shot | **5 seconds**, slice best 1–3s in editing | Coherence degrades past 5s |
+| Generations per shot | **8 max** — then substitute (Ken Burns on still) | Hard rule |
+| Output resolution from Runway | 1280×768 (Gen-3) / 1408×768 (Gen-4) | Upscale to 1920×1080 in post via Topaz Video AI |
+| Frame rate | **24 fps end-to-end** | Cinema feel |
+| Total Runway cost | ~$25–40 across ~7 generated shots | Trivial |
+| Total generation time | ~70 minutes of clock time | A plane flight |
 
 ---
 
 ## Production sequence
 
 **Done before flying:**
-1. ✅ Asset committed — `docs/nra/hype-assets/approve-button-macro.png` is in `tab/nra-booth-content`.
-2. ✅ Spec v2 locked — this doc.
+1. ✅ Approve-button macro committed.
+2. ✅ Spec v3 locked — this document.
 
-**Tonight (Lior, before flying — ~30 min total):**
-3. Capture the Honesty-beat sources (`/demo?key=...` Owns-it screen, DPR=3) → `docs/nra/hype-assets/owns-it-{worked,working,didnt-land}.png`. Same DevTools workflow as the Approve macro.
-4. Source the **6 Fires/Fixes** + **Match** + **Reveal** reference frames from Unsplash royalty-free (1920×1080) → `docs/nra/hype-assets/refs/`.
-5. (Optional but recommended) license one music track from Musicbed/Artlist for the social cut.
+**Tonight (Lior, ~20 min):**
+3. Source the **6 ten-person-job object** stills + **1 midnight-POV** still + **6 pain→action pair** stills + **1 yours-alone wide** = 14 reference frames from Unsplash royalty-free.
+4. Commit them all under `docs/nra/hype-assets/refs/` on `tab/nra-booth-content`.
 
-**In transit (plane / hotel, ~90 min):**
-6. Generate Shots 2, 3a-c, 4a-c, 7. 8 attempts each. Save winners + seeds.
+**In transit (~70 min):**
+5. Generate the 7 Runway shots (Shot 2 ×6 cuts, Shot 3, Shot 5, Shot 6 ×6 frames, Shot 8 motion). 8 attempts each. Save winners + seeds.
 
-**Day 1 evening (May 16, post-floor — ~2 h):**
-7. Assemble the 60s hero. Drop captions track. Color grade. Export `hype-60s.mp4` (1920×1080) + `hype-30s-1920.mp4` (derived).
+**Day 1 evening (May 16, post-floor, ~90 min):**
+6. Assemble the 30s master. Caption track. Color grade. Export both audio variants and all three reframes (landscape silent, landscape LinkedIn, vertical, square).
 
-**Day 2 morning (May 17 — ~30 min):**
-8. Cut the 15s teaser from the 60s. Add music bed. Export `hype-15s-9x16.mp4`.
-9. Post the 15s teaser on LinkedIn + email + iMessage from your booth contacts. Booth address in the copy.
+**Day 2 morning (May 17, ~15 min):**
+7. Post to LinkedIn (square or vertical, depending on what the algorithm rewards that morning). Booth address in the caption copy.
 
-**Day 2 evening:**
-10. Load `hype-60s.mp4` onto the booth-TV laptop. Add to rotation alongside the existing `/booth-tv` deck loop (rotation mechanism = deliverable of `tab/nra-booth-content`).
-
----
-
-## What `tab/nra-booth-content` owns
-
-This spec hands off cleanly to that tab. The new tab's brief at
-`docs/briefs/tab-NRA-Booth-Content.md` references this file directly. That
-session executes:
-
-- Honesty-beat captures (step 3 above)
-- Reference-frame sourcing (step 4)
-- The `/booth-endcard` route (optional clean-asset route)
-- The Runway generation passes (if running with `RUNWAY_API_KEY`)
-- Final assembly, export, and the booth-TV rotation mechanism
+**Day 2 onward:**
+8. Load `hype-30s-silent.mp4` onto the booth-TV laptop. Add to rotation alongside the 82s `/booth-tv` deck loop (rotation mechanism = `tab/nra-booth-content` deliverable).
 
 ---
 
@@ -406,26 +311,31 @@ session executes:
 
 ```
 docs/nra/
-  hype-video-spec.md              ← this file (v2)
+  hype-video-spec.md              ← this file (v3)
   hype-assets/
-    approve-button-macro.png      ← ✅ committed (1824×825)
-    owns-it-worked.png
-    owns-it-working.png
-    owns-it-didnt-land.png
-    brand-endcard.png             ← optional, from /booth-endcard route
+    approve-button-macro.png      ← ✅ committed
     refs/
-      match-still.jpg
-      fire-{1,2,3}-*.png
-      fix-{1,2,3}-*.png
-      reveal-still.jpg
+      job-{1..6}.jpg              ← 6 object stills
+      midnight-pov.jpg            ← Shot 3 / Shot 5 base
+      pair-{1a,1b,2a,2b,3a,3b}.png ← 3 pain→action pairs
+      yours-alone-wide.jpg        ← Shot 8 base
 
 public/booth/hype/
-  hype-60s.mp4                    ← master (booth TV)
-  hype-30s-1920.mp4               ← social landscape
-  hype-30s-1x1.mp4                ← social square
-  hype-15s-9x16.mp4               ← teaser vertical
-  takes/                          ← winners + seeds
-    shot-2-match.mp4
-    shot-3a-bok-choy.mp4
-    …
+  hype-30s-silent.mp4             ← BOOTH-TV master (in rotation)
+  hype-30s-linkedin.mp4           ← LinkedIn landscape
+  hype-30s-9x16.mp4               ← LinkedIn vertical
+  hype-30s-1x1.mp4                ← LinkedIn square
+  takes/                          ← winners + Runway seeds
 ```
+
+---
+
+## What `tab/nra-booth-content` owns from here
+
+This spec hands off cleanly. That tab's brief at `docs/briefs/tab-NRA-Booth-Content.md` references this file. That session executes:
+
+- Sourcing the 14 reference frames (step 3 above)
+- The `/booth-endcard` route, if we go that path for Shot 9
+- Runway generation passes (if running with `RUNWAY_API_KEY`)
+- Final assembly, export, and the booth-TV rotation mechanism
+- The Honesty-Beat *depth* piece — separate from this hype — as a parallel deliverable for the booth-TV rotation only (no LinkedIn version)
