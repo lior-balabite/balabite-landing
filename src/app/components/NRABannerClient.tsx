@@ -14,6 +14,7 @@ const HIDDEN_ROUTES = [
   '/pitch',
   '/booth-8332',
   '/booth-tv',
+  '/booth-mockups',
   '/demo',
   '/nra',
   '/NRA-booklet',

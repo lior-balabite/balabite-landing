@@ -167,6 +167,38 @@ html, body, #__next {
   }
 }
 
+/* ——— The booth's heartbeat ———
+   A 1s, 4% breath shared across every BalaBite palm mark on every booth
+   surface. Same cadence on /booth-tv, /booth-mockups/*, /demo — so the
+   brand feels alive from any angle, at any distance. */
+@keyframes balabite-breath {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.cc-env-palm,
+.mw-sheet-palm,
+.tv-lockup-palm,
+.rx-lockup-palm {
+  transform-origin: center;
+  animation: balabite-breath 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-env-palm,
+  .mw-sheet-palm,
+  .tv-lockup-palm,
+  .rx-lockup-palm {
+    animation: none;
+  }
+}
+
 /* NRA Show banner — Fashion-Week marquee ticker */
 @keyframes nra-marquee-scroll {
   from { transform: translate3d(0, 0, 0); }

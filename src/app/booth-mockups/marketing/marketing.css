@@ -1,0 +1,523 @@
+/* ————————————————————————————————————————————————————————————
+   /booth-mockups/marketing — The Cofounder's marketing room
+   3-column live console. Campaign orbs left, in-flight action center,
+   receipts right. Reads at 6ft as "work is happening, without you."
+   ———————————————————————————————————————————————————————————— */
+
+.mk-root {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Inter, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.mk-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% -10%,
+    rgba(251, 191, 36, 0.06),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* ——— Header ——— */
+.mk-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mk-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mk-brand-palm {
+  display: inline-block;
+  width: 16px;
+  height: 20px;
+  background-color: #fcd34d;
+  -webkit-mask: url(/palm-1592.svg) no-repeat center / contain;
+  mask: url(/palm-1592.svg) no-repeat center / contain;
+}
+
+.mk-brand-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.85);
+}
+
+.mk-brand-sep {
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 4px;
+}
+
+.mk-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+}
+
+.mk-live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #16a34a;
+  border-radius: 999px;
+  box-shadow: 0 0 10px #16a34a;
+  animation: mk-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes mk-pulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.mk-autopilot {
+  padding: 5px 12px;
+  border: 1px solid rgba(252, 211, 77, 0.28);
+  border-radius: 999px;
+  color: rgba(252, 211, 77, 0.85);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mk-autopilot-on {
+  color: #16a34a;
+}
+
+/* ——— Layout ——— */
+.mk-layout {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr 320px;
+  gap: 0;
+  min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .mk-layout {
+    grid-template-columns: 180px 1fr 280px;
+  }
+}
+
+/* ——— Rails ——— */
+.mk-rail {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.mk-rail-left {
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mk-rail-right {
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mk-rail-right::-webkit-scrollbar {
+  display: none;
+}
+
+.mk-rail-head {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 10px;
+}
+
+.mk-rail-foot {
+  margin-top: auto;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mk-rail-foot strong {
+  color: rgba(252, 211, 77, 0.85);
+  font-weight: 600;
+}
+
+/* ——— Campaign orbs ——— */
+.mk-orbs {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.mk-orb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mk-orb-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: conic-gradient(
+    from 0deg,
+    rgba(252, 211, 77, 0) 0%,
+    rgba(252, 211, 77, 0.85) 25%,
+    rgba(252, 211, 77, 0) 50%
+  );
+  animation: mk-orbit 14s linear infinite;
+  filter: blur(0.3px);
+}
+
+.mk-orb-gold .mk-orb-ring {
+  background: conic-gradient(from 0deg, rgba(252, 211, 77, 0) 0%, rgba(252, 211, 77, 0.95) 25%, rgba(252, 211, 77, 0) 50%);
+}
+
+.mk-orb-green .mk-orb-ring {
+  background: conic-gradient(from 0deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.85) 25%, rgba(34, 197, 94, 0) 50%);
+}
+
+.mk-orb-plum .mk-orb-ring {
+  background: conic-gradient(from 0deg, rgba(168, 85, 247, 0) 0%, rgba(168, 85, 247, 0.75) 25%, rgba(168, 85, 247, 0) 50%);
+}
+
+.mk-orb-muted .mk-orb-ring {
+  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 25%, rgba(255, 255, 255, 0) 50%);
+  opacity: 0.6;
+}
+
+.mk-orb-core {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mk-orb.is-active .mk-orb-core {
+  box-shadow: inset 0 0 18px rgba(252, 211, 77, 0.25);
+}
+
+.mk-orb.is-flagged .mk-orb-ring {
+  background: conic-gradient(from 0deg, rgba(239, 68, 68, 0) 0%, rgba(239, 68, 68, 0.95) 25%, rgba(239, 68, 68, 0) 50%);
+  animation-duration: 4s;
+}
+
+.mk-orb.is-flagged .mk-orb-core {
+  box-shadow: inset 0 0 18px rgba(239, 68, 68, 0.4);
+}
+
+.mk-orb-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.2;
+}
+
+@keyframes mk-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ——— Center stage ——— */
+.mk-stage {
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mk-stage::-webkit-scrollbar {
+  display: none;
+}
+
+.mk-stage-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.85);
+}
+
+.mk-cursor-bar {
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  background: #fcd34d;
+  animation: mk-blink 1.05s steps(2, end) infinite;
+}
+
+@keyframes mk-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Email draft tile */
+.mk-draft {
+  background: #f8f4ec;
+  color: #111;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 680px;
+}
+
+.mk-draft-subject {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.mk-draft-subject strong {
+  color: #0c3832;
+  font-weight: 700;
+  font-size: 18px;
+  margin-left: 4px;
+}
+
+.mk-draft-body {
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.85);
+  font-family: ui-serif, Georgia, serif;
+  min-height: 6em;
+}
+
+.mk-draft-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  background: rgba(251, 191, 36, 0.8);
+  vertical-align: -0.18em;
+  margin-left: 4px;
+  animation: mk-blink 1.05s steps(2, end) infinite;
+}
+
+.mk-draft-meta {
+  font-size: 12.5px;
+  color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 12px;
+}
+
+.mk-draft-meta strong {
+  color: #0c3832;
+  font-weight: 600;
+}
+
+.mk-meta-sep {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.mk-meta-soft {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.mk-draft-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mk-btn {
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mk-btn-primary {
+  background: #fcd34d;
+  color: #0c3832;
+}
+
+.mk-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.mk-btn-icon {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.4);
+  width: 36px;
+  padding: 0;
+}
+
+/* Dispatch lines */
+.mk-dispatch {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mk-dispatch-line {
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: ui-monospace, 'SF Mono', monospace;
+}
+
+.mk-arrow {
+  color: rgba(252, 211, 77, 0.85);
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+/* ——— Receipts ——— */
+.mk-receipts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mk-receipt {
+  background: rgba(255, 255, 255, 0.025);
+  border-left: 2px solid rgba(252, 211, 77, 0.5);
+  padding: 12px 14px;
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mk-receipt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.mk-receipt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(252, 211, 77, 0.08);
+  color: rgba(252, 211, 77, 0.8);
+  font-size: 9.5px;
+}
+
+.mk-receipt-palm {
+  display: inline-block;
+  width: 9px;
+  height: 12px;
+  background-color: #fcd34d;
+  -webkit-mask: url(/palm-1592.svg) no-repeat center / contain;
+  mask: url(/palm-1592.svg) no-repeat center / contain;
+}
+
+.mk-receipt-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.mk-receipt-body {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.mk-receipt-body strong {
+  color: rgba(252, 211, 77, 0.85);
+  font-weight: 600;
+}
+
+.mk-receipt-body i {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mk-live-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mk-live-counter strong {
+  color: #4ade80;
+}
+
+/* ——— Footer ——— */
+.mk-footer {
+  position: relative;
+  z-index: 2;
+  padding: 14px 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
