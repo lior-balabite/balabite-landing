@@ -19,15 +19,53 @@ import { AnimatePresence, motion } from 'framer-motion';
 // Hidden operator controls: Space = pause/resume, ←/→ = step, F = fullscreen.
 // ————————————————————————————————————————————————————————————
 
-type BeatId = 'hook' | 'problem' | 'proof' | 'how' | 'product' | 'real';
+type BeatId =
+  | 'hook'
+  | 'problem'
+  | 'proof'
+  | 'how'
+  | 'product'
+  | 'real'
+  | 'logo'
+  | 'logo-a'
+  | 'logo-b'
+  | 'logo-c'
+  | 'logo-d'
+  | 'logo-e'
+  | 'logo-f'
+  | 'mockup-whatsapp'
+  | 'mockup-menu'
+  | 'mockup-loyalty'
+  | 'mockup-marketing'
+  | 'mockup-recipes'
+  | 'mockup-cofounder';
 
+// Each mockup runs as a "video" beat playing its live loop, with a
+// "balabite.ai" station bumper (logo) between every clip. Snappy mockups
+// first; deep ones last.
 const BEATS: { id: BeatId; ms: number }[] = [
+  // — Narrative spine (original 6 beats)
   { id: 'hook', ms: 8000 },
   { id: 'problem', ms: 9000 },
   { id: 'proof', ms: 18000 },
   { id: 'how', ms: 14000 },
   { id: 'product', ms: 22000 },
   { id: 'real', ms: 11000 },
+
+  // — Mockup video reel, each separated by the BalaBite sign —
+  { id: 'logo', ms: 4000 },
+  { id: 'mockup-whatsapp', ms: 22000 },
+  { id: 'logo-a', ms: 4000 },
+  { id: 'mockup-menu', ms: 22000 },
+  { id: 'logo-b', ms: 4000 },
+  { id: 'mockup-loyalty', ms: 26000 },
+  { id: 'logo-c', ms: 4000 },
+  { id: 'mockup-marketing', ms: 44000 },
+  { id: 'logo-d', ms: 4000 },
+  { id: 'mockup-recipes', ms: 62000 },
+  { id: 'logo-e', ms: 4000 },
+  { id: 'mockup-cofounder', ms: 82000 },
+  { id: 'logo-f', ms: 4000 }, // final bumper before loop restart
 ];
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -120,22 +158,28 @@ function HookScene() {
 }
 
 function ProblemScene() {
+  // Devlin's "moment of theatre" — one full-bleed serif sentence,
+  // no eyebrow, no sub. The scene stops the walker.
   return (
-    <div className="tv-stage">
-      <Rise className="tv-eyebrow" delay={0.1}>
-        The problem
-      </Rise>
-      <Rise className="tv-display" delay={0.35}>
-        The owner is the only
-        <br />
-        integration layer.
-      </Rise>
-      <Rise className="tv-punch" delay={2.8}>
-        Alone.
-      </Rise>
-      <Rise className="tv-sub" delay={5}>
-        And the math won&rsquo;t pay for the team that would carry the rest.
-      </Rise>
+    <div className="tv-stage tv-stage-theatre">
+      <motion.div
+        className="tv-theatre"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.4, ease: EASE }}
+      >
+        <span className="tv-theatre-line">
+          The owner is the only integration layer.
+        </span>{' '}
+        <motion.span
+          className="tv-theatre-punch"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: EASE, delay: 2.4 }}
+        >
+          Alone.
+        </motion.span>
+      </motion.div>
     </div>
   );
 }
@@ -265,6 +309,54 @@ function RealScene() {
   );
 }
 
+// — Mockup video beats: each loads the LIVE mockup in an iframe and
+// plays its own internal loop. The iframe remounts on each beat entry
+// so each mockup video starts from the top.
+function MockupScene({ src, label }: { src: string; label: string }) {
+  return (
+    <div className="tv-stage tv-stage-mockup">
+      <iframe className="tv-mockup-iframe" src={src} title={label} />
+    </div>
+  );
+}
+
+const KEY_PARAM = '?key=balabite-nra-2026';
+
+const WhatsAppScene = () => (
+  <MockupScene src={`/booth-mockups/whatsapp${KEY_PARAM}`} label="Staff chat" />
+);
+const MenuScene = () => (
+  <MockupScene src={`/booth-mockups/menu${KEY_PARAM}`} label="AI waiter" />
+);
+const LoyaltyScene = () => (
+  <MockupScene src={`/booth-mockups/loyalty${KEY_PARAM}`} label="The room" />
+);
+const MarketingScene = () => (
+  <MockupScene src={`/booth-mockups/marketing${KEY_PARAM}`} label="Marketing" />
+);
+const RecipesScene = () => (
+  <MockupScene src={`/booth-mockups/recipes${KEY_PARAM}`} label="Recipes" />
+);
+const CofounderScene = () => (
+  <MockupScene src={`/booth-mockups/cofounder-chat${KEY_PARAM}`} label="Cofounder" />
+);
+
+function LogoScene() {
+  return (
+    <div className="tv-stage tv-stage-logo">
+      <motion.div
+        className="tv-lockup tv-lockup-xl"
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.1, ease: EASE }}
+      >
+        <span className="tv-lockup-palm" aria-hidden="true" />
+        <span className="tv-lockup-word">balabite</span>
+      </motion.div>
+    </div>
+  );
+}
+
 const SCENES: Record<BeatId, () => React.ReactElement> = {
   hook: HookScene,
   problem: ProblemScene,
@@ -272,6 +364,19 @@ const SCENES: Record<BeatId, () => React.ReactElement> = {
   how: HowScene,
   product: ProductScene,
   real: RealScene,
+  logo: LogoScene,
+  'logo-a': LogoScene,
+  'logo-b': LogoScene,
+  'logo-c': LogoScene,
+  'logo-d': LogoScene,
+  'logo-e': LogoScene,
+  'logo-f': LogoScene,
+  'mockup-whatsapp': WhatsAppScene,
+  'mockup-menu': MenuScene,
+  'mockup-loyalty': LoyaltyScene,
+  'mockup-marketing': MarketingScene,
+  'mockup-recipes': RecipesScene,
+  'mockup-cofounder': CofounderScene,
 };
 
 export default function BoothTvLoop() {

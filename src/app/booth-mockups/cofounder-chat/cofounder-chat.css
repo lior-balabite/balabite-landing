@@ -1,0 +1,506 @@
+/* ————————————————————————————————————————————————————————————
+   /booth-mockups/cofounder-chat — spotlight + side transcript
+   Main spotlight reads from 6ft: large body type, single active beat,
+   amber underline on key values. The side rail accumulates the full
+   transcript in small text — the "what's been said" log.
+   ———————————————————————————————————————————————————————————— */
+
+.cc-root {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Inter, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+.cc-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% -10%,
+    rgba(251, 191, 36, 0.06),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ——— Top scrim + attribution pill ——— */
+.cc-top-scrim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 84px;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 1) 0%,
+    rgba(10, 10, 10, 0.96) 60%,
+    rgba(10, 10, 10, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cc-attrib {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.85);
+  background: rgba(15, 12, 4, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(252, 211, 77, 0.28);
+  padding: 7px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+
+.cc-attrib-sep {
+  color: rgba(252, 211, 77, 0.45);
+  margin: 0 2px;
+}
+
+.cc-attrib-muted {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+}
+
+/* ——— Two-column layout ——— */
+.cc-layout {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 0;
+}
+
+@media (max-width: 1024px) {
+  .cc-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+}
+
+@media (max-width: 720px) {
+  .cc-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ——— Spotlight (main) ——— */
+.cc-spotlight {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px 6vw 8vh 6vw;
+  min-height: 100%;
+  max-width: 880px;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.cc-spotlight-body {
+  margin-top: 24px;
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cc-env-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cc-env-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-env-palm {
+  display: inline-block;
+  width: 14px;
+  height: 18px;
+  background-color: #fcd34d;
+  -webkit-mask: url(/palm-1592.svg) no-repeat center / contain;
+  mask: url(/palm-1592.svg) no-repeat center / contain;
+}
+
+.cc-env-name {
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(252, 211, 77, 0.9);
+}
+
+.cc-env-sep,
+.cc-env-time {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Spotlight beats — bigger type than the inline chat version */
+.cc-spot-p {
+  margin: 0;
+  font-size: clamp(24px, 2.4vw, 38px);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.96);
+  max-width: 24ch;
+}
+
+.cc-spot-p strong,
+.cc-spot-bullet strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.cc-spot-bullet {
+  position: relative;
+  font-size: clamp(22px, 2.1vw, 34px);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.94);
+  padding-left: 28px;
+  max-width: 28ch;
+}
+
+.cc-spot-bullet::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.8em;
+  width: 16px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.cc-spot-row {
+  display: flex;
+}
+
+.cc-spot-user-row {
+  justify-content: flex-end;
+  padding-right: 4vw;
+}
+
+.cc-spot-user {
+  display: inline-block;
+  padding: 14px 26px;
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: clamp(20px, 1.8vw, 26px);
+  border-radius: 24px;
+  border-top-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Spotlight table head + row */
+.cc-spot-table-head {
+  display: grid;
+  grid-template-columns: 1fr 160px 110px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 12px 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  max-width: 640px;
+}
+
+.cc-spot-table-row {
+  display: grid;
+  grid-template-columns: 1fr 160px 110px;
+  align-items: center;
+  padding: 14px 0;
+  font-size: clamp(20px, 1.9vw, 28px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.cc-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+.cc-cell-driver {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.cc-cell-num {
+  text-align: right;
+}
+
+/* Emphasis — amber color + underline draw under .cc-mark */
+.cc-mark {
+  position: relative;
+  color: #fcd34d;
+  font-weight: 600;
+  animation: cc-mark-color 0.55s ease-out 0.05s 1 both;
+}
+
+.cc-mark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(251, 191, 36, 0.95),
+    rgba(252, 211, 77, 0.6)
+  );
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: cc-mark-underline 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s 1
+    both;
+}
+
+@keyframes cc-mark-color {
+  from {
+    color: rgba(255, 255, 255, 0.94);
+  }
+  to {
+    color: #fcd34d;
+  }
+}
+
+@keyframes cc-mark-underline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Typing cursor at the end of an active spotlight paragraph */
+.cc-cursor {
+  display: inline-block;
+  width: 9px;
+  height: 1.05em;
+  background: rgba(252, 211, 77, 0.7);
+  margin-left: 8px;
+  vertical-align: -0.18em;
+  animation: cc-cursor-blink 1.05s steps(2, end) infinite;
+}
+
+@keyframes cc-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Typing indicator below spotlight */
+.cc-typing-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+.cc-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+}
+
+.cc-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(252, 211, 77, 0.85);
+  animation: cc-typing-bounce 1.1s ease-in-out infinite;
+}
+
+.cc-typing-dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.cc-typing-dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes cc-typing-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  40% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.cc-typing-label {
+  font-style: italic;
+}
+
+/* ——— Transcript (side rail) ——— */
+.cc-transcript {
+  position: relative;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+  padding: 96px 22px 6vh 22px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cc-transcript::-webkit-scrollbar {
+  display: none;
+}
+
+.cc-trans-head {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.cc-trans-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cc-trans-author {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.75);
+}
+
+.cc-trans-author-user {
+  color: rgba(255, 255, 255, 0.6);
+  text-align: right;
+}
+
+.cc-trans-user-block {
+  align-items: flex-end;
+}
+
+.cc-trans-row {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.cc-trans-row strong {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+.cc-trans-row .cc-mark {
+  color: #fcd34d;
+  /* Disable animations in the transcript — keeps the rail calm */
+  animation: none;
+}
+
+.cc-trans-row .cc-mark::after {
+  display: none;
+}
+
+.cc-trans-bullet {
+  padding-left: 14px;
+  position: relative;
+}
+
+.cc-trans-bullet::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.cc-trans-table-head,
+.cc-trans-table-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.cc-trans-table-head {
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cc-trans-table-row {
+  color: rgba(255, 255, 255, 0.78);
+  padding: 3px 0;
+}
+
+.cc-trans-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cc-trans-user-row {
+  display: inline-block;
+  align-self: flex-end;
+}
+
+.cc-trans-user {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  border-radius: 14px;
+  border-top-right-radius: 6px;
+}
+
+/* Booth-TV breakpoint */
+@media (min-width: 1280px) {
+  .cc-spot-p {
+    font-size: clamp(28px, 2.6vw, 44px);
+  }
+  .cc-spot-bullet {
+    font-size: clamp(24px, 2.3vw, 38px);
+  }
+}
