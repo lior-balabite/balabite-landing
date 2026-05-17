@@ -32,14 +32,12 @@
 }
 
 /* ——— Phone shell ——— */
-/* Size BY HEIGHT first so the phone never overflows shorter viewports
-   (Android TV browser w/ URL bar). Aspect-ratio derives the width. */
+/* Width-first sizing (so the chat header buttons fit), but capped to
+   whatever width keeps the 9:19.5 phone within 92vh tall. */
 .wa-phone {
   position: relative;
-  height: min(720px, 92vh);
+  width: min(480px, 30vw, calc(92vh * 9 / 19.5));
   aspect-ratio: 9 / 19.5;
-  width: auto;
-  max-width: 90vw;
   background: #efeae2;
   border-radius: clamp(28px, 5vh, 52px);
   overflow: hidden;
