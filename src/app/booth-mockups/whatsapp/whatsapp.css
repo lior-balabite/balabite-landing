@@ -15,7 +15,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
     system-ui, sans-serif;
   overflow: hidden;
-  padding: 4vh 4vw;
+  padding: 1vh 4vw;
   user-select: none;
 }
 
@@ -36,7 +36,7 @@
    whatever width keeps the 9:19.5 phone within 92vh tall. */
 .wa-phone {
   position: relative;
-  width: min(480px, 30vw, calc(92vh * 9 / 19.5));
+  width: min(560px, 38vw, calc(98vh * 9 / 19.5));
   aspect-ratio: 9 / 19.5;
   background: #efeae2;
   border-radius: clamp(28px, 5vh, 52px);

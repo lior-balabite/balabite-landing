@@ -390,21 +390,49 @@ function useChicagoClock() {
 function JohnScene() {
   const clock = useChicagoClock();
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  // Bump this on every recoverable error to force a fresh <video> element.
+  const [videoKey, setVideoKey] = useState(0);
 
-  // Trust HTML autoplay (muted + playsInline + loop) — calling .play()
-  // programmatically on Android TV WebViews can get blocked + show black.
-  // We only force currentTime=0 so each scene mount restarts the video,
-  // and only AFTER the video reports it can play.
+  // SELF-HEAL: on Android TV WebView, after several scene mount/unmount
+  // cycles the video can get stuck (autoplay refused, decode hiccup,
+  // memory pressure). Watchdog: if the video is paused mid-scene OR
+  // errors out OR stalls, force a fresh <video> element by bumping its key.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+
+    // Reset to frame 0 once loadable.
     const start = () => {
       try { v.currentTime = 0; } catch {}
     };
     if (v.readyState >= 2) start();
     else v.addEventListener('loadeddata', start, { once: true });
-    return () => v.removeEventListener('loadeddata', start);
-  }, []);
+
+    // Trigger remount on hard errors.
+    const onError = () => setVideoKey((k) => k + 1);
+
+    // Watchdog: every 4s check if video is healthy.
+    // If paused but not at end (loop should keep it going), remount.
+    const interval = setInterval(() => {
+      if (!videoRef.current) return;
+      const cur = videoRef.current;
+      if (cur.error) { setVideoKey((k) => k + 1); return; }
+      if (cur.paused && !cur.ended && cur.readyState >= 2) {
+        // Try to nudge it first
+        cur.play().catch(() => setVideoKey((k) => k + 1));
+      }
+    }, 4000);
+
+    v.addEventListener('error', onError);
+    v.addEventListener('stalled', onError);
+
+    return () => {
+      v.removeEventListener('loadeddata', start);
+      v.removeEventListener('error', onError);
+      v.removeEventListener('stalled', onError);
+      clearInterval(interval);
+    };
+  }, [videoKey]);
 
   return (
     <div className="tv-john-full">
@@ -462,6 +490,7 @@ function JohnScene() {
 
         <div className="tv-john-video-wrap">
           <video
+            key={videoKey}
             ref={videoRef}
             className="tv-john-video"
             src="/walkthrough.mp4"
@@ -470,6 +499,8 @@ function JohnScene() {
             muted
             loop
             playsInline
+            preload="auto"
+            disableRemotePlayback
           />
           <div className="tv-john-video-tag">
             <span className="tv-john-dot" />
