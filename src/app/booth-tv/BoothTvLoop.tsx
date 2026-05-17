@@ -391,12 +391,19 @@ function JohnScene() {
   const clock = useChicagoClock();
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Force the video to start from frame 0 every time the John scene mounts
+  // Trust HTML autoplay (muted + playsInline + loop) — calling .play()
+  // programmatically on Android TV WebViews can get blocked + show black.
+  // We only force currentTime=0 so each scene mount restarts the video,
+  // and only AFTER the video reports it can play.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
+    const start = () => {
+      try { v.currentTime = 0; } catch {}
+    };
+    if (v.readyState >= 2) start();
+    else v.addEventListener('loadeddata', start, { once: true });
+    return () => v.removeEventListener('loadeddata', start);
   }, []);
 
   return (

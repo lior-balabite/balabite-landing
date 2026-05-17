@@ -122,6 +122,7 @@
   grid-template-columns: 220px 1fr 320px;
   gap: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1100px) {
@@ -132,12 +133,15 @@
 
 /* ——— Rails ——— */
 .mk-rail {
-  padding: 24px 20px;
+  padding: clamp(14px, 2.6vh, 24px) clamp(14px, 1.4vw, 20px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: clamp(10px, 1.8vh, 16px);
   min-height: 0;
+  overflow: hidden;
 }
+.mk-rail-left { overflow-y: auto; scrollbar-width: none; }
+.mk-rail-left::-webkit-scrollbar { display: none; }
 
 .mk-rail-left {
   border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -263,11 +267,12 @@
 
 /* ——— Center stage ——— */
 .mk-stage {
-  padding: 32px 36px;
+  padding: clamp(16px, 3vh, 32px) clamp(20px, 2.4vw, 36px);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: clamp(12px, 2vh, 22px);
   min-width: 0;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
 }
