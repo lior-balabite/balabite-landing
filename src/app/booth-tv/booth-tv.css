@@ -9,12 +9,17 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
+  z-index: 200; /* above the site-wide NRA banner (z-60) so it never peeks through */
   background-color: #020617;
   color: var(--color-cream-100, #faf5ee);
   font-family: var(--font-inter), system-ui, sans-serif;
   cursor: none; /* kiosk — hide the pointer */
   user-select: none;
 }
+
+/* Belt-and-suspenders: also hide the NRA marquee banner when the booth-tv
+   loop is the active surface. Kiosk views are not for site promos. */
+body:has(.tv-root) .nra-banner-bg { display: none !important; }
 
 /* Ambient amber glow from the top — same warmth as /booth-8332 */
 .tv-root::before {
