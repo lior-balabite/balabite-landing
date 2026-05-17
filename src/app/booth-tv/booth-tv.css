@@ -635,8 +635,9 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;       /* show the full width of every Cofounder screen — no horizontal crop */
   object-position: center;
+  background: #020617;        /* matches container so any letterbox blends */
 }
 .tv-john-video-tag {
   position: absolute;
