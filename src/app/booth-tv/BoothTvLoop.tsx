@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // ————————————————————————————————————————————————————————————
@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 // ————————————————————————————————————————————————————————————
 
 type BeatId =
+  | 'john'
   | 'hook'
   | 'problem'
   | 'proof'
@@ -33,6 +34,7 @@ type BeatId =
   | 'logo-d'
   | 'logo-e'
   | 'logo-f'
+  | 'logo-john'
   | 'mockup-whatsapp'
   | 'mockup-menu'
   | 'mockup-loyalty'
@@ -44,6 +46,10 @@ type BeatId =
 // "balabite.ai" station bumper (logo) between every clip. Snappy mockups
 // first; deep ones last.
 const BEATS: { id: BeatId; ms: number }[] = [
+  // — LEAD: yesterday's news (overnight build for John from NY)
+  { id: 'john', ms: 56000 },
+  { id: 'logo-john', ms: 4000 },
+
   // — Narrative spine (original 6 beats)
   { id: 'hook', ms: 8000 },
   { id: 'problem', ms: 9000 },
@@ -357,7 +363,110 @@ function LogoScene() {
   );
 }
 
+// — The "John from NY" lead scene — split layout: story (left) + walkthrough video (right).
+// The story is the call-to-action: yesterday a guy stopped by, we built him this overnight,
+// come find us and we'll do it for you too.
+function useChicagoClock() {
+  const [, tick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => tick((x) => x + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  return new Date().toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Chicago',
+  });
+}
+
+function JohnScene() {
+  const clock = useChicagoClock();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Force the video to start from frame 0 every time the John scene mounts
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, []);
+
+  return (
+    <div className="tv-john-full">
+      <header className="tv-john-head">
+        <div className="tv-john-brand">
+          <span className="tv-lockup-palm" aria-hidden="true" />
+          <div>
+            <div className="tv-john-mark">balabite</div>
+            <div className="tv-john-sub">AI Cofounder · for independent restaurants</div>
+          </div>
+        </div>
+        <div className="tv-john-meta">
+          <div><span>Booth</span><strong>8332</strong></div>
+          <div><span>NRA Day</span><strong>2 of 4</strong></div>
+          <div><span>Chicago</span><strong>{clock}</strong></div>
+        </div>
+        <div className="tv-john-live">
+          <span className="tv-john-dot" />
+          Live · yesterday&rsquo;s news
+        </div>
+      </header>
+
+      <div className="tv-john-main">
+        <aside className="tv-john-story">
+          <div className="tv-john-eyebrow">Yesterday · this booth</div>
+          <h1 className="tv-john-title">
+            John from NY<br />
+            <em>stopped to talk.</em>
+          </h1>
+
+          <div className="tv-john-lines">
+            <p>He owns <strong>2 restaurants.</strong></p>
+            <p>He said scheduling is his biggest pain.</p>
+            <p className="tv-john-spacer">·</p>
+            <p>We built this <em>in an hour.</em> Overnight. →</p>
+          </div>
+
+          <div className="tv-john-card">
+            <div className="tv-john-card-eyebrow">A gift · for you, John</div>
+            <div className="tv-john-card-title">
+              Hey John&nbsp;&mdash;<br />
+              <span className="tv-john-card-em">this one&rsquo;s for you!</span>
+            </div>
+            <div className="tv-john-card-meta">come find us &middot; booth 8332</div>
+          </div>
+
+          <div className="tv-john-cta">
+            <div className="tv-john-cta-label">Your turn →</div>
+            <div className="tv-john-cta-text">
+              Walk over. Share <em>your</em> hardest problem.<br />
+              We&rsquo;ll build it tonight &mdash; your story shows up here <span className="tv-john-amber">tomorrow.</span>
+            </div>
+          </div>
+        </aside>
+
+        <div className="tv-john-video-wrap">
+          <video
+            ref={videoRef}
+            className="tv-john-video"
+            src="/walkthrough.mp4"
+            poster="/walkthrough-poster.jpg"
+            autoPlay
+            muted
+            playsInline
+          />
+          <div className="tv-john-video-tag">
+            <span className="tv-john-dot" />
+            What John will see today
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const SCENES: Record<BeatId, () => React.ReactElement> = {
+  john: JohnScene,
   hook: HookScene,
   problem: ProblemScene,
   proof: ProofScene,
@@ -371,6 +480,7 @@ const SCENES: Record<BeatId, () => React.ReactElement> = {
   'logo-d': LogoScene,
   'logo-e': LogoScene,
   'logo-f': LogoScene,
+  'logo-john': LogoScene,
   'mockup-whatsapp': WhatsAppScene,
   'mockup-menu': MenuScene,
   'mockup-loyalty': LoyaltyScene,
