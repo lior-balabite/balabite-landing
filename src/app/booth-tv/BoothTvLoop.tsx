@@ -47,7 +47,9 @@ type BeatId =
 // first; deep ones last.
 const BEATS: { id: BeatId; ms: number }[] = [
   // — LEAD: yesterday's news (overnight build for John from NY)
-  { id: 'john', ms: 56000 },
+  // Runs for 112s — the walkthrough video loops once so passersby get full
+  // reading time on the story panel AND see the demo play through twice.
+  { id: 'john', ms: 112000 },
   { id: 'logo-john', ms: 4000 },
 
   // — Narrative spine (original 6 beats)
@@ -453,6 +455,7 @@ function JohnScene() {
             poster="/walkthrough-poster.jpg"
             autoPlay
             muted
+            loop
             playsInline
           />
           <div className="tv-john-video-tag">
