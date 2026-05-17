@@ -36,6 +36,7 @@ type BeatId =
   | 'logo-f'
   | 'logo-john'
   | 'mockup-whatsapp'
+  | 'mockup-whatsapp-swap'
   | 'mockup-menu'
   | 'mockup-loyalty'
   | 'mockup-marketing'
@@ -62,7 +63,9 @@ const BEATS: { id: BeatId; ms: number }[] = [
 
   // — Mockup video reel, each separated by the BalaBite sign —
   { id: 'logo', ms: 4000 },
-  { id: 'mockup-whatsapp', ms: 22000 },
+  { id: 'mockup-whatsapp', ms: 22000 },        // "86 salmon" staff chat
+  { id: 'logo-a', ms: 4000 },
+  { id: 'mockup-whatsapp-swap', ms: 22000 },   // shift-swap scenario
   { id: 'logo-a', ms: 4000 },
   { id: 'mockup-menu', ms: 22000 },
   { id: 'logo-b', ms: 4000 },
@@ -331,7 +334,10 @@ function MockupScene({ src, label }: { src: string; label: string }) {
 const KEY_PARAM = '?key=balabite-nra-2026';
 
 const WhatsAppScene = () => (
-  <MockupScene src={`/booth-mockups/whatsapp${KEY_PARAM}`} label="Staff chat" />
+  <MockupScene src={`/booth-mockups/whatsapp${KEY_PARAM}`} label="Staff chat — 86 salmon" />
+);
+const WhatsAppSwapScene = () => (
+  <MockupScene src={`/booth-mockups/whatsapp-shift-swap${KEY_PARAM}`} label="Staff chat — shift swap" />
 );
 const MenuScene = () => (
   <MockupScene src={`/booth-mockups/menu${KEY_PARAM}`} label="AI waiter" />
@@ -485,6 +491,7 @@ const SCENES: Record<BeatId, () => React.ReactElement> = {
   'logo-f': LogoScene,
   'logo-john': LogoScene,
   'mockup-whatsapp': WhatsAppScene,
+  'mockup-whatsapp-swap': WhatsAppSwapScene,
   'mockup-menu': MenuScene,
   'mockup-loyalty': LoyaltyScene,
   'mockup-marketing': MarketingScene,
