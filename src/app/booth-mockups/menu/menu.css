@@ -39,12 +39,16 @@
 }
 
 /* ——— Phone shell ——— */
+/* Size by HEIGHT first so the phone never overflows shorter viewports
+   (Android TV browser with URL bar). Width derives from aspect ratio. */
 .mw-phone {
   position: relative;
-  width: min(420px, 32vw);
+  height: min(720px, 92vh);
   aspect-ratio: 9 / 19.5;
+  width: auto;
+  max-width: 90vw;
   background: #f8f4ec;
-  border-radius: 52px;
+  border-radius: clamp(28px, 5vh, 52px);
   overflow: hidden;
   box-shadow:
     0 0 0 12px #020617,
