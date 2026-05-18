@@ -1,14 +1,27 @@
+'use client';
+
 // Reusable WhatsApp group-chat phone frame.
 //
-// Renders the iOS status bar + chat header + thread + input bar; receives
-// the message list as a prop so multiple scenarios share the same visual
-// scaffolding (86-salmon, shift swap, complaint-while-away, …).
+// Plays the thread LIVE on the booth TV: typing indicator with the sender's
+// avatar pulses ~1.1s, then the bubble lands (scale 0.96 → 1.0), then a
+// ~2.2s hold, then the next sender starts typing. After the last bubble
+// lands, holds longer, then fades + restarts the loop. This matches the
+// 86-salmon mockup at /booth-mockups/whatsapp.
+//
+// Pages stay the same shape — they pass thread/members; defaults for typing
+// and hold timing live here, so page data shapes don't need timing fields.
 //
 // Sender names follow real WA group palette: each Member gets a stable
 // tone. BalaBite has the palm avatar; the Owner's outbound bubble is
 // right-aligned green with read ticks.
 
-import type React from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export type AvatarTone =
   | 'amber'
@@ -61,6 +74,14 @@ const SENDER_CLASS: Record<AvatarTone, string> = {
   rose: 'wa-sender-rose',
   teal: 'wa-sender-teal',
 };
+
+// Defaults baked in — pages don't need to specify timing.
+const TYPING_MS = 1100;
+const HOLD_MS = 2200;
+const FINAL_HOLD_MS = 4500; // last bubble holds longer before loop restart
+const RESET_PAUSE_MS = 700;
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const Icon = {
   Back: () => (
@@ -145,6 +166,14 @@ const Icon = {
   ),
 };
 
+function TypingDots() {
+  return (
+    <span className="wa-typing-dots" aria-hidden="true">
+      <span /> <span /> <span />
+    </span>
+  );
+}
+
 function Avatar({ member }: { member: Member }) {
   if (member.isBalaBite) {
     return (
@@ -162,7 +191,7 @@ function Avatar({ member }: { member: Member }) {
                 WebkitMask:
                   'url(/palm-1592.svg) no-repeat center / contain',
                 mask: 'url(/palm-1592.svg) no-repeat center / contain',
-              }}
+              } as CSSProperties}
             />
           </g>
         </svg>
@@ -186,7 +215,12 @@ function Avatar({ member }: { member: Member }) {
 function MessageRow({ msg }: { msg: Message }) {
   if (msg.isOwner) {
     return (
-      <div className="wa-msg wa-msg-out">
+      <motion.div
+        className="wa-msg wa-msg-out"
+        initial={{ opacity: 0, scale: 0.96, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
         <div className="wa-bubble wa-bubble-out">
           <div className="wa-body">{msg.body}</div>
           {msg.bodySoft && (
@@ -198,7 +232,7 @@ function MessageRow({ msg }: { msg: Message }) {
           </div>
           <span className="wa-tail wa-tail-out" aria-hidden="true" />
         </div>
-      </div>
+      </motion.div>
     );
   }
   // Real WhatsApp shows only the name; role is kept on the Member for
@@ -208,7 +242,12 @@ function MessageRow({ msg }: { msg: Message }) {
     ? 'wa-sender-bb'
     : SENDER_CLASS[msg.sender.tone];
   return (
-    <div className="wa-msg wa-msg-in">
+    <motion.div
+      className="wa-msg wa-msg-in"
+      initial={{ opacity: 0, scale: 0.96, y: 6 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: EASE }}
+    >
       <Avatar member={msg.sender} />
       <div className="wa-bubble wa-bubble-in">
         <div className={`wa-sender ${senderClass}`}>{senderLabel}</div>
@@ -221,9 +260,28 @@ function MessageRow({ msg }: { msg: Message }) {
         </div>
         <span className="wa-tail" aria-hidden="true" />
       </div>
-    </div>
+    </motion.div>
   );
 }
+
+function TypingRow({ sender }: { sender: Member }) {
+  return (
+    <motion.div
+      className="wa-msg wa-msg-in wa-msg-typing"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: EASE }}
+    >
+      <Avatar member={sender} />
+      <div className="wa-bubble wa-bubble-in wa-bubble-typing">
+        <TypingDots />
+      </div>
+    </motion.div>
+  );
+}
+
+type Phase = { kind: 'typing'; idx: number } | { kind: 'shown'; idx: number };
 
 export function WhatsAppFrame({
   groupName,
@@ -233,6 +291,57 @@ export function WhatsAppFrame({
   dataTestId,
   datePill = 'TODAY',
 }: WhatsAppFrameProps) {
+  const [phase, setPhase] = useState<Phase>({ kind: 'typing', idx: 0 });
+  const [runId, setRunId] = useState(0);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Guard against the brief reset state (idx === -1) and out-of-bounds.
+    if (phase.idx < 0 || phase.idx >= thread.length) return;
+    if (phase.kind === 'typing') {
+      const t = setTimeout(
+        () => setPhase({ kind: 'shown', idx: phase.idx }),
+        TYPING_MS,
+      );
+      return () => clearTimeout(t);
+    }
+    // shown: hold (longer on the last bubble), then advance OR loop
+    const isLast = phase.idx === thread.length - 1;
+    const t = setTimeout(
+      () => {
+        const next = phase.idx + 1;
+        if (next >= thread.length) {
+          // fade + restart
+          setPhase({ kind: 'typing', idx: -1 });
+          setTimeout(() => {
+            setRunId((n) => n + 1);
+            setPhase({ kind: 'typing', idx: 0 });
+          }, RESET_PAUSE_MS);
+        } else {
+          setPhase({ kind: 'typing', idx: next });
+        }
+      },
+      isLast ? FINAL_HOLD_MS : HOLD_MS,
+    );
+    return () => clearTimeout(t);
+  }, [phase, thread.length]);
+
+  useEffect(() => {
+    const s = scrollRef.current;
+    if (!s) return;
+    s.scrollTo({ top: s.scrollHeight, behavior: 'smooth' });
+  }, [phase, runId]);
+
+  const shownMessages: Message[] = [];
+  for (let i = 0; i < thread.length; i++) {
+    if (phase.idx >= 0 && i < phase.idx) shownMessages.push(thread[i]);
+    else if (phase.kind === 'shown' && i === phase.idx)
+      shownMessages.push(thread[i]);
+  }
+  const showTyping =
+    phase.kind === 'typing' && phase.idx >= 0 && phase.idx < thread.length;
+  const typingSender = showTyping ? thread[phase.idx].sender : null;
+
   return (
     <main className="wa-root" data-testid={dataTestId}>
       <div className="wa-phone">
@@ -298,7 +407,7 @@ export function WhatsAppFrame({
         </header>
 
         {/* Thread */}
-        <div className="wa-thread">
+        <div className="wa-thread" key={`run-${runId}`} ref={scrollRef}>
           <div className="wa-encrypt">
             <Icon.Lock />
             <span>
@@ -309,9 +418,17 @@ export function WhatsAppFrame({
 
           <div className="wa-date-pill">{datePill}</div>
 
-          {thread.map((msg, i) => (
-            <MessageRow key={i} msg={msg} />
-          ))}
+          <AnimatePresence initial={false}>
+            {shownMessages.map((msg, i) => (
+              <MessageRow key={i} msg={msg} />
+            ))}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showTyping && typingSender && (
+              <TypingRow key={`typing-${phase.idx}`} sender={typingSender} />
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Input bar */}
