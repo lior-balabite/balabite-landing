@@ -417,7 +417,7 @@ function JohnScene() {
         </div>
         <div className="tv-john-meta">
           <div><span>Booth</span><strong>8332</strong></div>
-          <div><span>NRA Day</span><strong>2 of 4</strong></div>
+          <div><span>NRA Day</span><strong>3 of 4</strong></div>
           <div><span>Chicago</span><strong>{clock}</strong></div>
         </div>
         <div className="tv-john-live">
