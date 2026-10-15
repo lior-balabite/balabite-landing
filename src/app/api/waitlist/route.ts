@@ -85,19 +85,26 @@ interface EmailOptions {
   bcc?: string | string[];
 }
 
-async function sendEmail(options: EmailOptions) {
+// Resend's SDK does not throw on an API failure: it resolves to
+// { data: null, error }. A send counts only when Resend returned no error AND
+// an email id (i.e. Resend accepted the message and holds it in its log).
+async function sendEmail(options: EmailOptions): Promise<{ accepted: boolean; id?: string }> {
   if (!resend) {
     console.error("Resend API key not configured");
-    return { error: "Email service not configured" };
+    return { accepted: false };
   }
-  
+
   try {
-    const result = await resend.emails.send(options);
-    console.log(`Email sent to ${options.to}`, result);
-    return { success: true, result };
+    const { data, error } = await resend.emails.send(options);
+    if (error || !data?.id) {
+      console.error(`Resend rejected email to ${options.to}:`, error ?? 'no email id returned');
+      return { accepted: false };
+    }
+    console.log(`Email accepted by Resend for ${options.to}`, data.id);
+    return { accepted: true, id: data.id };
   } catch (error) {
     console.error(`Failed to send email to ${options.to}:`, error);
-    return { error };
+    return { accepted: false };
   }
 }
 
@@ -208,25 +215,38 @@ export async function POST(request: Request) {
       databaseSuccess = false;
     }
     
-    // Send welcome email to customer - with better error handling
-    const welcomeEmailResult = await sendEmail({
-      from: 'BalaBite AI <hello@waitlist.balabite.ai>',
-      to: data.email,
-      subject: 'WELCOME TO THE FUTURE OF DINING',
-      html: getWelcomeEmailTemplate(data),
-    });
-    emailResults.welcome = !welcomeEmailResult.error;
-
-    // Send notification email to admin
+    // Notify the admin first. When the database write failed, an admin email
+    // that Resend ACCEPTED (awaited, no error, an email id) is the only other
+    // place this signup exists, so it is the only fallback that counts as
+    // "recorded". The file backup does not count: on Vercel the deployment
+    // filesystem is read-only/ephemeral, so a write there is not durable.
     const adminEmailResult = await sendEmail({
       from: 'BalaBite Waitlist <notifications@waitlist.balabite.ai>',
       to: ADMIN_EMAIL,
       subject: `New Waitlist Signup: ${data.restaurantName}`,
       html: getAdminNotificationTemplate(data, submissionId),
     });
-    emailResults.admin = !adminEmailResult.error;
+    emailResults.admin = adminEmailResult.accepted;
 
-    // Send Slack notification if webhook is configured
+    const recordedVia: 'database' | 'admin_email' | null = databaseSuccess
+      ? 'database'
+      : emailResults.admin
+        ? 'admin_email'
+        : null;
+
+    // Only welcome someone onto a list they are actually on.
+    if (recordedVia) {
+      const welcomeEmailResult = await sendEmail({
+        from: 'BalaBite AI <hello@waitlist.balabite.ai>',
+        to: data.email,
+        subject: 'WELCOME TO THE FUTURE OF DINING',
+        html: getWelcomeEmailTemplate(data),
+      });
+      emailResults.welcome = welcomeEmailResult.accepted;
+    }
+
+    // Send Slack notification if webhook is configured (also on failure, so a
+    // person sees an unrecorded signup)
     if (SLACK_WEBHOOK) {
       try {
         await fetch(SLACK_WEBHOOK, {
@@ -235,7 +255,7 @@ export async function POST(request: Request) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            text: `🎉 *New Waitlist Signup*\n*Restaurant:* ${data.restaurantName}\n*Owner:* ${data.ownerName}\n*Location:* ${data.location}\n*Type:* ${data.restaurantType}\n*Email:* ${data.email}\n*Phone:* ${data.phone}\n*Storage:* ${databaseSuccess ? 'Database ✅' : 'Database ❌'} | ${fileBackupSuccess ? 'File Backup ✅' : 'File Backup ❌'} | *Emails:* ${emailResults.welcome ? 'Welcome ✅' : 'Welcome ❌'} | ${emailResults.admin ? 'Admin ✅' : 'Admin ❌'}`,
+            text: `${recordedVia ? '🎉 *New Waitlist Signup*' : '🚨 *Waitlist signup NOT RECORDED (visitor was shown an error)*'}\n*Restaurant:* ${data.restaurantName}\n*Owner:* ${data.ownerName}\n*Location:* ${data.location}\n*Type:* ${data.restaurantType}\n*Email:* ${data.email}\n*Phone:* ${data.phone}\n*Storage:* ${databaseSuccess ? 'Database ✅' : 'Database ❌'} | ${fileBackupSuccess ? 'File Backup ✅' : 'File Backup ❌'} | *Emails:* ${emailResults.welcome ? 'Welcome ✅' : 'Welcome ❌'} | ${emailResults.admin ? 'Admin ✅' : 'Admin ❌'}`,
           }),
         });
       } catch (slackError) {
@@ -243,9 +263,21 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ 
+    if (!recordedVia) {
+      console.error('Waitlist signup was not recorded: database insert failed and the admin email was not accepted');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'We could not save your signup right now. Please try again later or email hello@balabite.ai.',
+        },
+        { status: 503 }
+      );
+    }
+
+    return NextResponse.json({
       success: true,
       message: 'Successfully joined the waitlist',
+      recordedVia,
       storage: {
         database: databaseSuccess,
         fileBackup: fileBackupSuccess
