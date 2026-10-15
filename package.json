@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:waitlist": "playwright test -c playwright.waitlist.config.ts"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
